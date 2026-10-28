@@ -1,0 +1,28 @@
+{%- comment -%}
+  Хамелеон: a paint tin drawn in CSS (used when there is no product photo).
+  The label stripe takes the colour, so the tin shows the chosen shade.
+  Accepts:
+  - name: {String} product name, e.g. Vitex Vito
+  - pack: {String} pack size label, e.g. 9 л (optional)
+  - color: {String} hex colour for the label stripe (optional)
+  - class: {String} extra classes (optional)
+  The same markup is built in assets/hameleon-calculator.js (tinHTML); keep them in step.
+{%- endcomment -%}
+{%- liquid
+  assign brand = name | split: ' ' | first
+  assign rest = name | remove_first: brand | strip
+  if rest == blank
+    assign rest = name
+    assign brand = 'Vitex'
+  endif
+-%}
+<span class="hm-tin {{ class }}"{% if color != blank %} style="--tin: {{ color }};"{% endif %} aria-hidden="true">
+  <span class="hm-tin__handle"></span>
+  <span class="hm-tin__lid"></span>
+  <span class="hm-tin__body">
+    <span class="hm-tin__brand">{{ brand | escape }}</span>
+    <span class="hm-tin__name">{{ rest | escape }}</span>
+    {%- if pack != blank -%}<span class="hm-tin__size">{{ pack | escape }}</span>{%- endif -%}
+    <span class="hm-tin__wave"></span>
+  </span>
+</span>

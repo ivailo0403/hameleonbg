@@ -1,0 +1,497 @@
+{%- comment -%}
+  Хамелеон: promo banners for a category (power tools, hand tools, garden and so on).
+  One banner fills the width; two sit side by side; three make one large and two small.
+  Each "banner" block has its own style, icon art (or a photo), tag chips and a button.
+{%- endcomment -%}
+{%- style -%}
+  .hm-promo-{{ section.id }} {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-promo-{{ section.id }} {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- style -%}
+  .hm-promos {
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .hm-promo {
+    --pr-bg: #141618;
+    --pr-fg: #ffffff;
+    --pr-muted: #c9cfcc;
+    --pr-accent: #8ee0ab;
+    --pr-art: linear-gradient(135deg, #19a54a, #00aac1);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 30rem;
+    border-radius: 2.4rem;
+    background: var(--pr-bg);
+    color: var(--pr-fg);
+    text-decoration: none;
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow: var(--hm-shadow-md);
+    transition: transform 0.4s var(--hm-ease), box-shadow 0.4s var(--hm-ease);
+  }
+
+  .hm-promo:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hm-shadow-lg);
+  }
+
+  .hm-promo--green {
+    --pr-bg: var(--hm-gradient-deep);
+    --pr-muted: rgba(255, 255, 255, 0.86);
+    --pr-accent: #ffffff;
+    --pr-art: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08));
+  }
+
+  .hm-promo--sand {
+    --pr-bg: linear-gradient(135deg, #f6efe4, #ecdcc4);
+    --pr-fg: #1a1c1e;
+    --pr-muted: #5b544b;
+    --pr-accent: #b5651d;
+    --pr-art: linear-gradient(135deg, #e98b3a, #c8572a);
+  }
+
+  .hm-promo--mint {
+    --pr-bg: linear-gradient(135deg, #e9f6ee, #d8efe3);
+    --pr-fg: #1a1c1e;
+    --pr-muted: #45514a;
+    --pr-accent: #12803a;
+    --pr-art: linear-gradient(135deg, #19a54a, #0f6e33);
+  }
+
+  .hm-promo--dark::before {
+    content: '';
+    position: absolute;
+    inset: auto -20% -50% auto;
+    z-index: -1;
+    width: 50rem;
+    height: 50rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(254, 154, 40, 0.35), transparent 65%);
+  }
+
+  .hm-promo__copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 2.8rem 2.4rem;
+  }
+
+  .hm-promo__eyebrow {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--pr-accent);
+  }
+
+  .hm-promo__title {
+    margin: 0;
+    max-width: 52rem;
+    font-family: var(--hm-font-display);
+    font-size: clamp(2.6rem, 3.4vw, 4.4rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--pr-fg);
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: manual;
+  }
+
+  .hm-promo__text {
+    margin: 0;
+    max-width: 44rem;
+    font-size: 1.6rem;
+    line-height: 1.55;
+    color: var(--pr-muted);
+  }
+
+  .hm-promo__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-promo__tags li {
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--hm-radius-pill);
+    background: color-mix(in srgb, var(--pr-fg) 10%, transparent);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--pr-fg);
+  }
+
+  .hm-promo__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: auto;
+    padding: 1.2rem 2rem;
+    border-radius: var(--hm-radius-pill);
+    background: var(--pr-fg);
+    color: var(--pr-bg);
+    font-family: var(--hm-font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .hm-promo--dark .hm-promo__go,
+  .hm-promo--green .hm-promo__go {
+    color: #1a1c1e;
+  }
+
+  .hm-promo--sand .hm-promo__go,
+  .hm-promo--mint .hm-promo__go {
+    color: #ffffff;
+    background: #1a1c1e;
+  }
+
+  .hm-promo__go span {
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-promo:hover .hm-promo__go span {
+    transform: translateX(4px);
+  }
+
+  /* Art: a big gradient icon tile with smaller tiles orbiting it */
+  .hm-promo__art {
+    position: relative;
+    min-height: 22rem;
+  }
+
+  .hm-promo__art img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hm-promo__hero-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 15rem;
+    height: 15rem;
+    margin: -7.5rem 0 0 -7.5rem;
+    border-radius: 4rem;
+    background: var(--pr-art);
+    color: #ffffff;
+    box-shadow: 0 2.4rem 4.8rem rgba(0, 0, 0, 0.28);
+    transform: rotate(-8deg);
+    transition: transform 0.6s var(--hm-ease);
+  }
+
+  .hm-promo:hover .hm-promo__hero-icon {
+    transform: rotate(0deg) scale(1.04);
+  }
+
+  .hm-promo__hero-icon svg {
+    width: 8rem;
+    height: 8rem;
+    stroke-width: 1.4;
+  }
+
+  .hm-promo__orbit {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6.4rem;
+    height: 6.4rem;
+    border-radius: 1.8rem;
+    background: color-mix(in srgb, var(--pr-fg) 12%, transparent);
+    backdrop-filter: blur(6px);
+    color: var(--pr-fg);
+    animation: hm-float 6s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -1.4s);
+  }
+
+  .hm-promo--sand .hm-promo__orbit,
+  .hm-promo--mint .hm-promo__orbit {
+    background: #ffffff;
+    color: var(--pr-accent);
+    box-shadow: var(--hm-shadow-md);
+  }
+
+  .hm-promo__orbit svg {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .hm-promo__orbit--1 { left: 10%; top: 16%; }
+  .hm-promo__orbit--2 { right: 10%; top: 20%; }
+  .hm-promo__orbit--3 { left: 16%; bottom: 14%; }
+  .hm-promo__orbit--4 { right: 16%; bottom: 18%; }
+
+  .hm-promo__brands {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.6rem;
+    display: flex;
+    gap: 1.6rem;
+    font-family: var(--hm-font-display);
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--pr-fg) 45%, transparent);
+  }
+
+  @media screen and (max-width: 749px) {
+    .hm-promo__art {
+      min-height: 18rem;
+    }
+
+    .hm-promo__hero-icon {
+      width: 10rem;
+      height: 10rem;
+      margin: -5rem 0 0 -5rem;
+      border-radius: 2.8rem;
+    }
+
+    .hm-promo__hero-icon svg {
+      width: 5.6rem;
+      height: 5.6rem;
+    }
+
+    .hm-promo__orbit {
+      width: 5.2rem;
+      height: 5.2rem;
+      border-radius: 1.4rem;
+    }
+
+    .hm-promo__brands {
+      display: none;
+    }
+
+    .hm-promo__title {
+      font-size: 2.4rem;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-promo__copy {
+      padding: 4rem;
+    }
+
+    .hm-promos--2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hm-promos--3 {
+      grid-template-columns: 1.3fr 1fr;
+    }
+
+    .hm-promos--3 > :first-child {
+      grid-row: span 2;
+    }
+
+    .hm-promos--1 .hm-promo {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: stretch;
+    }
+
+    .hm-promos--1 .hm-promo__title {
+      font-size: clamp(3rem, 3.6vw, 4.6rem);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-promos--1 .hm-promo {
+      min-height: 38rem;
+    }
+
+    .hm-promos--1 .hm-promo__copy {
+      padding: 5.6rem;
+    }
+
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-promos--2 .hm-promo,
+    .hm-promos--3 .hm-promo {
+      min-height: 36rem;
+    }
+
+    .hm-promos--2 .hm-promo__copy,
+    .hm-promos--3 .hm-promo__copy {
+      max-width: 60%;
+      box-sizing: border-box;
+    }
+
+    .hm-promos--2 .hm-promo__title,
+    .hm-promos--3 .hm-promo__title {
+      font-size: clamp(2.4rem, 2.6vw, 3.4rem);
+    }
+
+    .hm-promos--2 .hm-promo__art,
+    .hm-promos--3 .hm-promo__art {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 44%;
+    }
+
+    .hm-promos--2 .hm-promo__hero-icon,
+    .hm-promos--3 .hm-promo__hero-icon {
+      width: 12rem;
+      height: 12rem;
+      margin: -6rem 0 0 -6rem;
+      border-radius: 3.2rem;
+    }
+
+    .hm-promos--2 .hm-promo__hero-icon svg,
+    .hm-promos--3 .hm-promo__hero-icon svg {
+      width: 6.4rem;
+      height: 6.4rem;
+    }
+  }
+{%- endstyle -%}
+
+{%- assign count = section.blocks.size | at_most: 3 -%}
+<section class="hm-section hm-promo-{{ section.id }}">
+  <div class="page-width">
+    <div class="hm-promos hm-promos--{{ count }}">
+      {%- for block in section.blocks limit: 3 -%}
+        {%- liquid
+          assign href = block.settings.link
+          if href == blank
+            assign q = block.settings.title | url_encode
+            assign href = routes.search_url | append: '?type=product&q=' | append: q
+          endif
+          assign tags = block.settings.tags | split: ','
+          assign icons = 'power,screwdriver,grinder,hammerdrill'
+          case block.settings.icon
+            when 'hand'
+              assign icons = 'hand,ruler,fasteners,kit'
+            when 'garden'
+              assign icons = 'garden,saw,battery,kit'
+            when 'fasteners'
+              assign icons = 'fasteners,hand,kit,ruler'
+            when 'paint'
+              assign icons = 'paint,swatch,plaster,ruler'
+          endcase
+          assign orbit = icons | split: ','
+        -%}
+        <a class="hm-promo hm-promo--{{ block.settings.style }}" href="{{ href }}" data-reveal="scale" style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <div class="hm-promo__copy">
+            {%- if block.settings.eyebrow != blank -%}
+              <p class="hm-promo__eyebrow">{{ block.settings.eyebrow | escape }}</p>
+            {%- endif -%}
+            <h2 class="hm-promo__title">{{ block.settings.title | escape }}</h2>
+            {%- if block.settings.text != blank -%}
+              <p class="hm-promo__text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+            {%- if block.settings.tags != blank -%}
+              <ul class="hm-promo__tags">
+                {%- for tag in tags -%}
+                  <li>{{ tag | strip | escape }}</li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+            <span class="hm-promo__go">{{ block.settings.button_label | escape }} <span aria-hidden="true">→</span></span>
+          </div>
+          <div class="hm-promo__art" aria-hidden="true">
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 900, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: '' }}
+            {%- else -%}
+              {%- for ic in orbit offset: 1 -%}
+                <span class="hm-promo__orbit hm-promo__orbit--{{ forloop.index }}" style="--i: {{ forloop.index }}">{%- render 'hameleon-icon', icon: ic -%}</span>
+              {%- endfor -%}
+              <span class="hm-promo__hero-icon">{%- render 'hameleon-icon', icon: orbit[0] -%}</span>
+              <span class="hm-promo__orbit hm-promo__orbit--4" style="--i: 4">{%- render 'hameleon-icon', icon: 'check' -%}</span>
+            {%- endif -%}
+            {%- if block.settings.brands != blank -%}
+              <span class="hm-promo__brands">
+                {%- assign brands = block.settings.brands | split: ',' -%}
+                {%- for b in brands -%}<span>{{ b | strip | escape }}</span>{%- endfor -%}
+              </span>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: promo banners",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Железария" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Електроинструменти за всеки ремонт" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Бормашини, винтоверти, ъглошлайфи и перфоратори. Батерии и зарядни на склад." },
+        { "type": "text", "id": "tags", "label": "Tag chips (comma separated)", "default": "Бормашини, Винтоверти, Ъглошлайфи" },
+        { "type": "text", "id": "brands", "label": "Brands (comma separated, optional)" },
+        { "type": "text", "id": "button_label", "label": "Button label", "default": "Разгледайте" },
+        { "type": "url", "id": "link", "label": "Link (defaults to a search for the title)" },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "default": "dark",
+          "options": [
+            { "value": "dark", "label": "Dark" },
+            { "value": "green", "label": "Brand green" },
+            { "value": "sand", "label": "Warm sand" },
+            { "value": "mint", "label": "Light mint" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon art",
+          "default": "power",
+          "options": [
+            { "value": "power", "label": "Power tools" },
+            { "value": "hand", "label": "Hand tools" },
+            { "value": "garden", "label": "Garden" },
+            { "value": "fasteners", "label": "Fasteners" },
+            { "value": "paint", "label": "Paint" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "Photo (replaces the icon art)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: promo banners",
+      "blocks": [{ "type": "banner" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,247 @@
+{%- comment -%}
+  Хамелеон: the paint calculator (home page and paint catalogue).
+  1. Category  2. Product  3. Area (or room size)  4. Coats  → litres, the pack mix with the least
+  left over, a price when the product is linked, and "add to cart" with the colour code.
+  The colour comes from the catalogue (a "hameleon:color" event) or ?color= in the address.
+  Accepts:
+  - section: {Object} the section; its "product" blocks are the paints
+  - catalogue_url: {String} the paint catalogue page, for "Изберете цвят" (optional)
+  - in_catalogue: {Boolean} true on the catalogue page (picking a colour scrolls up instead of leaving)
+{%- endcomment -%}
+{{ 'hameleon-calculator.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'hameleon-calculator.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign has_interior = false
+  assign has_exterior = false
+  assign has_plaster = false
+  for block in section.blocks
+    case block.settings.category
+      when 'interior'
+        assign has_interior = true
+      when 'exterior'
+        assign has_exterior = true
+      when 'plaster'
+        assign has_plaster = true
+    endcase
+  endfor
+  assign first_cat = 'plaster'
+  if has_exterior
+    assign first_cat = 'exterior'
+  endif
+  if has_interior
+    assign first_cat = 'interior'
+  endif
+  assign default_coats = section.settings.default_coats | plus: 0
+  if default_coats < 1
+    assign default_coats = 2
+  endif
+-%}
+
+<hameleon-paint-calc
+  class="hm-pc"
+  data-catalogue-url="{{ catalogue_url }}"
+  {% if in_catalogue %}data-in-catalogue{% endif %}
+  data-cart-url="{{ routes.cart_url }}"
+  data-cart-add-url="{{ routes.cart_add_url }}"
+>
+  <div class="hm-pc__form">
+    <fieldset class="hm-pc__step">
+      <legend class="hm-pc__label"><span class="hm-pc__num">1</span>Какво боядисвате?</legend>
+      <div class="hm-pc__seg">
+        {%- if has_interior -%}
+          <label class="hm-pc__opt">
+            <input type="radio" name="HmPcCat-{{ section.id }}" value="interior" data-cat{% if first_cat == 'interior' %} checked{% endif %}>
+            <span class="hm-pc__seg-face">{%- render 'hameleon-icon', icon: 'sofa' -%}Стени вътре</span>
+          </label>
+        {%- endif -%}
+        {%- if has_exterior -%}
+          <label class="hm-pc__opt">
+            <input type="radio" name="HmPcCat-{{ section.id }}" value="exterior" data-cat{% if first_cat == 'exterior' %} checked{% endif %}>
+            <span class="hm-pc__seg-face">{%- render 'hameleon-icon', icon: 'house' -%}Фасада</span>
+          </label>
+        {%- endif -%}
+        {%- if has_plaster -%}
+          <label class="hm-pc__opt">
+            <input type="radio" name="HmPcCat-{{ section.id }}" value="plaster" data-cat{% if first_cat == 'plaster' %} checked{% endif %}>
+            <span class="hm-pc__seg-face">{%- render 'hameleon-icon', icon: 'plaster' -%}Мазилка</span>
+          </label>
+        {%- endif -%}
+      </div>
+    </fieldset>
+
+    <fieldset class="hm-pc__step">
+      <legend class="hm-pc__label"><span class="hm-pc__num">2</span>Изберете боя</legend>
+      <div class="hm-pc__products">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign p = block.settings.product
+            assign tintable = true
+            if block.settings.tintable == false
+              assign tintable = false
+            endif
+            assign url = block.settings.link
+            if p != blank
+              assign url = p.url
+            endif
+          -%}
+          <label class="hm-pc__opt hm-pc__product" data-product-cat="{{ block.settings.category }}"{% if block.settings.category != first_cat %} hidden{% endif %} {{ block.shopify_attributes }}>
+            <input
+              type="radio"
+              name="HmPcProduct-{{ section.id }}"
+              value="{{ block.id }}"
+              data-product
+              data-cat-value="{{ block.settings.category }}"
+              data-name="{{ block.settings.name | escape }}"
+              data-pack-l="{{ block.settings.pack_litres | escape }}"
+              data-pack-sqm="{{ block.settings.pack_sqm | escape }}"
+              data-sizes="{{ block.settings.sizes | escape }}"
+              data-tintable="{{ tintable }}"
+              data-url="{{ url }}"
+              {%- if p != blank %}
+                data-variants="[{%- for v in p.variants -%}{&quot;id&quot;:{{ v.id }},&quot;title&quot;:{{ v.title | json | escape }},&quot;available&quot;:{{ v.available }},&quot;price&quot;:{{ v.price }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]"
+              {%- endif %}
+            >
+            <span class="hm-pc__card">
+              <span class="hm-pc__media">
+                {%- if block.settings.image != blank -%}
+                  {{ block.settings.image | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 300', sizes: '150px', alt: block.settings.name }}
+                {%- elsif p.featured_image != blank -%}
+                  {{ p.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 300', sizes: '150px', alt: block.settings.name }}
+                {%- else -%}
+                  {%- liquid
+                    assign tin_color = '#19A54A'
+                    case block.settings.category
+                      when 'exterior'
+                        assign tin_color = '#0095AB'
+                      when 'plaster'
+                        assign tin_color = '#B9975B'
+                    endcase
+                    unless tintable
+                      assign tin_color = '#DCE3E0'
+                    endunless
+                  -%}
+                  {%- render 'hameleon-paint-tin', name: block.settings.name, color: tin_color, class: 'hm-pc__tin' -%}
+                {%- endif -%}
+                <span class="hm-pc__check">{%- render 'hameleon-icon', icon: 'check' -%}</span>
+              </span>
+              <span class="hm-pc__info">
+                <span class="hm-pc__p-name">{{ block.settings.name | escape }}</span>
+                {%- if block.settings.class != blank -%}
+                  <span class="hm-pc__p-class">{{ block.settings.class | escape }}</span>
+                {%- endif -%}
+                <span class="hm-pc__p-tags">
+                  <span class="hm-pc__p-cov" data-coverage-label></span>
+                  {%- if block.settings.note != blank -%}
+                    <span class="hm-pc__p-note">{{ block.settings.note | escape }}</span>
+                  {%- endif -%}
+                </span>
+              </span>
+            </span>
+          </label>
+        {%- endfor -%}
+      </div>
+    </fieldset>
+
+    <div class="hm-pc__row">
+      <div class="hm-pc__step">
+        <label class="hm-pc__label" for="HmPcArea-{{ section.id }}"><span class="hm-pc__num">3</span>Площ за боядисване</label>
+        <div class="hm-pc__area">
+          <button type="button" class="hm-pc__stepper" data-area-step="-1" aria-label="Намалете площта">{%- render 'hameleon-icon', icon: 'minus' -%}</button>
+          <input
+            id="HmPcArea-{{ section.id }}"
+            type="number"
+            inputmode="decimal"
+            min="1"
+            max="9999"
+            step="any"
+            value="{{ section.settings.default_area | default: 40 }}"
+            data-area
+          >
+          <span class="hm-pc__unit" aria-hidden="true">м²</span>
+          <button type="button" class="hm-pc__stepper" data-area-step="1" aria-label="Увеличете площта">{%- render 'hameleon-icon', icon: 'plus' -%}</button>
+        </div>
+        <details class="hm-pc__room">
+          <summary>{%- render 'hameleon-icon', icon: 'ruler' -%}Не знаете площта? Изчислете по размерите на стаята</summary>
+          <div class="hm-pc__room-grid">
+            <label>Дължина<span><input type="number" inputmode="decimal" min="0" step="any" placeholder="4" data-room="l"> м</span></label>
+            <label>Ширина<span><input type="number" inputmode="decimal" min="0" step="any" placeholder="3,5" data-room="w"> м</span></label>
+            <label>Височина<span><input type="number" inputmode="decimal" min="0" step="any" value="2.6" data-room="h"> м</span></label>
+            <label>Врати и прозорци<span><input type="number" inputmode="numeric" min="0" step="1" value="2" data-room="o"> бр.</span></label>
+          </div>
+          <label class="hm-pc__ceiling"><input type="checkbox" data-room="c"> С тавана</label>
+          <p class="hm-pc__room-out" data-room-out></p>
+        </details>
+      </div>
+
+      <fieldset class="hm-pc__step">
+        <legend class="hm-pc__label"><span class="hm-pc__num">4</span>Брой ръце</legend>
+        <div class="hm-pc__seg hm-pc__seg--coats">
+          {%- for n in (1..3) -%}
+            <label class="hm-pc__opt">
+              <input type="radio" name="HmPcCoats-{{ section.id }}" value="{{ n }}" data-coats{% if n == default_coats %} checked{% endif %}>
+              <span class="hm-pc__seg-face">
+                {{- n }} {% if n == 1 %}ръка{% else %}ръце{% endif -%}
+                {%- if n == 2 %}<small>препоръчано</small>{% endif -%}
+              </span>
+            </label>
+          {%- endfor -%}
+        </div>
+        <p class="hm-pc__hint">Две ръце дават равен цвят без петна.</p>
+      </fieldset>
+    </div>
+  </div>
+
+  <aside class="hm-pc__result" aria-live="polite">
+    <div class="hm-pc__glow" aria-hidden="true"></div>
+    <div class="hm-pc__r-top">
+      <span class="hm-pc__r-tin" data-r-tin></span>
+      <div class="hm-pc__r-main">
+        <p class="hm-pc__r-eyebrow">Вашата сметка</p>
+        <p class="hm-pc__r-litres"><span data-r-litres>0</span><small>л</small></p>
+        <p class="hm-pc__r-detail" data-r-detail>Изберете боя и площ.</p>
+      </div>
+    </div>
+
+    <div class="hm-pc__color" data-r-color>
+      <span class="hm-pc__color-chip" data-r-color-chip></span>
+      <span class="hm-pc__color-text">
+        <span class="hm-pc__color-label">Цвят</span>
+        <strong data-r-color-name>Не е избран</strong>
+      </span>
+      <a class="hm-pc__color-link" href="{{ catalogue_url | default: '#' }}" data-r-color-link>Изберете</a>
+    </div>
+
+    <div class="hm-pc__packs-wrap" data-r-content hidden>
+      <p class="hm-pc__r-title">Опаковки</p>
+      <ul class="hm-pc__packs" data-r-packs></ul>
+      <div class="hm-pc__use">
+        <span class="hm-pc__use-bar"><span data-r-use-bar></span></span>
+        <span class="hm-pc__use-text" data-r-use></span>
+      </div>
+    </div>
+
+    <p class="hm-pc__price" data-r-price hidden></p>
+
+    <div class="hm-pc__actions">
+      <button type="button" class="hm-btn hm-btn--light hm-pc__add" data-r-add hidden>
+        {%- render 'hameleon-icon', icon: 'cart' -%}<span data-r-add-label>Добавете в количката</span>
+      </button>
+      <a class="hm-btn hm-btn--light hm-pc__pick" href="{{ catalogue_url | default: '#' }}" data-r-pick hidden>
+        {%- render 'hameleon-icon', icon: 'swatch' -%}<span>Изберете цвят</span>
+      </a>
+      <a class="hm-btn hm-btn--ghost-light" href="#" data-r-link hidden>Вижте продукта</a>
+      <p class="hm-pc__added" data-r-added hidden></p>
+    </div>
+
+    {%- if section.settings.warning != blank -%}
+      <div class="hm-pc__warn">
+        {%- render 'hameleon-icon', icon: 'warning' -%}
+        <div>{{ section.settings.warning }}</div>
+      </div>
+    {%- endif -%}
+    {%- if section.settings.footnote != blank -%}
+      <p class="hm-pc__foot">{{ section.settings.footnote | escape }}</p>
+    {%- endif -%}
+  </aside>
+</hameleon-paint-calc>

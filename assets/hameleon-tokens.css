@@ -499,3 +499,121 @@ a.hm-card:hover,
   font-family: var(--hm-font-display);
   font-weight: 700;
 }
+
+/* Paint tin drawn in CSS (snippets/hameleon-paint-tin.liquid). Size it with font-size: the tin is 10em × 11em. */
+.hm-tin {
+  --tin: #19a54a;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 10em;
+  height: 11.6em;
+  font-size: 1rem;
+  filter: drop-shadow(0 0.8em 1.2em rgba(20, 30, 25, 0.18));
+}
+
+.hm-tin__handle {
+  position: absolute;
+  top: 0;
+  left: 1.2em;
+  right: 1.2em;
+  height: 4.4em;
+  border: 0.35em solid #9aa3a7;
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+.hm-tin__lid {
+  position: relative;
+  z-index: 1;
+  width: 10em;
+  height: 1.5em;
+  margin-top: 1.6em;
+  border-radius: 0.5em 0.5em 0.3em 0.3em;
+  background: linear-gradient(180deg, #ffffff, #dfe4e2 60%, #c9d0cd);
+  box-shadow: inset 0 -0.15em 0 rgba(0, 0, 0, 0.08);
+}
+
+.hm-tin__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 9.4em;
+  height: 8.5em;
+  padding-top: 1.1em;
+  box-sizing: border-box;
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+  border-radius: 0 0 0.8em 0.8em;
+  background: linear-gradient(90deg, #dde2e0, #ffffff 28%, #fbfcfb 62%, #d3d9d6);
+  overflow: hidden;
+  text-align: center;
+}
+
+.hm-tin__brand {
+  position: relative;
+  z-index: 1;
+  font-family: var(--hm-font-display);
+  font-size: 1.15em;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #1d6b3a;
+}
+
+.hm-tin__name {
+  position: relative;
+  z-index: 1;
+  max-width: 8em;
+  margin-top: 0.35em;
+  font-family: var(--hm-font-display);
+  font-size: 0.95em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #2b2f31;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hm-tin__size {
+  position: absolute;
+  z-index: 2;
+  right: 0.9em;
+  bottom: 0.8em;
+  padding: 0.25em 0.55em;
+  border-radius: 0.5em;
+  background: #ffffff;
+  font-family: var(--hm-font-display);
+  font-size: 0.9em;
+  font-weight: 800;
+  color: #1a1c1e;
+  box-shadow: 0 0.1em 0.4em rgba(0, 0, 0, 0.15);
+}
+
+.hm-tin__wave {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -0.2em;
+  height: 52%;
+  border-radius: 55% 45% 0 0 / 38% 30% 0 0;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.35), transparent 45%),
+    var(--tin);
+  transition: background-color 0.5s var(--hm-ease);
+}
+
+.hm-tin__wave::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 30%;
+  top: -0.9em;
+  height: 1.4em;
+  border-radius: 50%;
+  background: var(--tin);
+  opacity: 0.45;
+}

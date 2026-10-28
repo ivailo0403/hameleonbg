@@ -66,6 +66,12 @@
         "id": "hm_hours_weekend",
         "label": "Weekend hours (HH:MM – HH:MM, leave empty if closed)",
         "default": "09:00 – 17:00"
+      },
+      {
+        "type": "url",
+        "id": "hm_catalogue_page",
+        "label": "Paint catalogue page",
+        "info": "The page that uses the \"page.paint-catalogue\" template. Empty = /pages/katalog-tsvetove"
       }
     ]
   },

@@ -3,19 +3,21 @@
     "hero": {
       "type": "hameleon-hero",
       "settings": {
-        "eyebrow": "Тониране на място · Велико Търново",
-        "heading": "Изберете цвят онлайн. Вземете го",
-        "heading_highlight": "тониран от магазина.",
-        "text": "1320 цвята Vitex, точното количество боя и съвет от хора, които го правят от години.",
-        "button_label_1": "Изберете цвят",
+        "eyebrow": "Боя онлайн · тониране във Велико Търново",
+        "heading": "Изберете цвят. Поръчайте онлайн.",
+        "heading_highlight": "Ние я тонираме.",
+        "text": "1320 цвята Vitex и 78 мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика.",
+        "button_label_1": "Отворете каталога",
         "button_label_2": "Колко боя ми трябва?",
-        "trust_1": "Готово до 3 работни дни",
-        "trust_2": "Плащане в магазина",
-        "trust_3": "Без предплащане",
+        "trust_1": "Поръчка онлайн 24/7",
+        "trust_2": "Готово до 3 работни дни",
+        "trust_3": "Вземане от магазина",
         "wall_colors": "Blue Bliss|#0095AB\nAquadazzle|#217553\nZambia|#FE9A28\nPurple Hollyhock|#D771AF\nHappy Face|#FED426\nCherished One|#F89495\nJob's Tears|#00627E\nGlass Bottle|#96BC5E",
         "ready_title": "Поръчката е готова",
         "ready_text": "Тонирана и чака Ви на щанда",
         "families_label": "Цветови групи",
+        "picker_title": "Пробвайте цвят на стената.",
+        "picker_hint": "Изберете група, после нюанс.",
         "card_link_label": "Всички 1320 цвята"
       },
       "blocks": {
@@ -23,70 +25,80 @@
           "type": "family",
           "settings": {
             "name": "Бели",
-            "color": "#E4E2D9"
+            "color": "#E4E2D9",
+            "family": "white"
           }
         },
         "family-2": {
           "type": "family",
           "settings": {
             "name": "Бежови",
-            "color": "#BCA180"
+            "color": "#BCA180",
+            "family": "beige"
           }
         },
         "family-3": {
           "type": "family",
           "settings": {
             "name": "Жълти",
-            "color": "#FED426"
+            "color": "#FED426",
+            "family": "yellow"
           }
         },
         "family-4": {
           "type": "family",
           "settings": {
             "name": "Оранжеви",
-            "color": "#FE9A28"
+            "color": "#FE9A28",
+            "family": "orange"
           }
         },
         "family-5": {
           "type": "family",
           "settings": {
             "name": "Червени",
-            "color": "#F89495"
+            "color": "#F89495",
+            "family": "red"
           }
         },
         "family-6": {
           "type": "family",
           "settings": {
             "name": "Виолетови",
-            "color": "#D771AF"
+            "color": "#D771AF",
+            "family": "purple"
           }
         },
         "family-7": {
           "type": "family",
           "settings": {
             "name": "Сини",
-            "color": "#0095AB"
+            "color": "#0095AB",
+            "family": "blue"
           }
         },
         "family-8": {
           "type": "family",
           "settings": {
             "name": "Зелени",
-            "color": "#217553"
+            "color": "#217553",
+            "family": "green"
           }
         },
         "family-9": {
           "type": "family",
           "settings": {
             "name": "Кафяви",
-            "color": "#AD8D6D"
+            "color": "#AD8D6D",
+            "family": "brown"
           }
         },
         "family-10": {
           "type": "family",
           "settings": {
             "name": "Сиви",
-            "color": "#B7B8BC"
+            "color": "#B7B8BC",
+            "family": "gray"
           }
         }
       },
@@ -140,7 +152,7 @@
         "category-3": {
           "type": "category",
           "settings": {
-            "title": "Електро\u00adинструменти",
+            "title": "Електро­инструменти",
             "icon": "power",
             "text": "Бормашини, винтоверти, шлайфи"
           }
@@ -188,8 +200,8 @@
         "step_1_text": "От каталога онлайн или по код, който вече имате.",
         "step_2_title": "Изчислете количеството",
         "step_2_text": "Квадратура, ръце и разходна норма. Без излишни кофи.",
-        "step_3_title": "Запазете и вземете",
-        "step_3_text": "Тонираме я до 3 работни дни и Ви се обаждаме. Плащате в магазина."
+        "step_3_title": "Поръчайте онлайн",
+        "step_3_text": "Добавете боята в количката с кода на цвета. Тонираме до 3 работни дни и Ви се обаждаме."
       }
     },
     "calculator": {
@@ -201,7 +213,6 @@
         "default_coats": "2",
         "warning": "<p><strong>Важно!</strong> По технология преди всяка боя трябва да има <strong>грунд</strong> и да се минат <strong>две ръце</strong>.</p>",
         "footnote": "Разходната норма зависи от основата. Проверяваме сметката и на щанда.",
-        "color_scheme": "scheme-2",
         "padding_top": 48,
         "padding_bottom": 48
       },
@@ -215,7 +226,8 @@
             "pack_litres": "3",
             "pack_sqm": "19",
             "sizes": "3, 9, 15",
-            "note": "Само бяло"
+            "note": "Само бяло",
+            "tintable": false
           }
         },
         "product-2": {
@@ -227,7 +239,8 @@
             "pack_litres": "1",
             "pack_sqm": "9",
             "sizes": "3, 9, 15",
-            "note": "Само бяло"
+            "note": "Само бяло",
+            "tintable": false
           }
         },
         "product-3": {
@@ -376,9 +389,9 @@
         "stat-4": {
           "type": "stat",
           "settings": {
-            "number": 0,
-            "unit": "€",
-            "label": "предплащане. Плащате при взимане"
+            "number": 24,
+            "unit": "/ 7",
+            "label": "поръчвате онлайн, когато Ви е удобно"
           }
         }
       },
@@ -494,39 +507,43 @@
       "settings": {
         "eyebrow": "Декоративни мазилки",
         "heading": "Стена, която спира погледа",
-        "text": "Motivo Gold, Silver и Titanium дават метален блясък и дълбочина, които боята не може. Вижте мострите на живо в магазина.",
+        "text": "Motivo дава метален блясък и дълбочина, които боята не може. 78 цвята, всеки показан тук от истинска мостра. Вижте ги и на живо в магазина.",
         "point_1": "Мостри на живо на щанда",
         "point_2": "Тониране във всеки цвят",
         "point_3": "Съвет как се полага",
-        "button_label": "Разгледайте мазилките"
+        "button_label": "Вижте 78-те цвята Motivo"
       },
       "blocks": {
         "finish-1": {
           "type": "finish",
           "settings": {
-            "name": "Motivo Gold",
-            "texture": "gold"
+            "name": "Motivo M36",
+            "texture": "gold",
+            "motivo": 36
           }
         },
         "finish-2": {
           "type": "finish",
           "settings": {
-            "name": "Motivo Silver",
-            "texture": "silver"
+            "name": "Motivo M20",
+            "texture": "silver",
+            "motivo": 20
           }
         },
         "finish-3": {
           "type": "finish",
           "settings": {
-            "name": "Motivo Titanium",
-            "texture": "titanium"
+            "name": "Motivo M50",
+            "texture": "titanium",
+            "motivo": 50
           }
         },
         "finish-4": {
           "type": "finish",
           "settings": {
-            "name": "Motivo",
-            "texture": "motivo"
+            "name": "Motivo M58",
+            "texture": "motivo",
+            "motivo": 58
           }
         }
       },
@@ -551,21 +568,85 @@
       "type": "hameleon-cta",
       "settings": {
         "heading": "Изберете цвят днес. Вземете го до 3 дни.",
-        "text": "Запазвате онлайн, ние тонираме и Ви се обаждаме. Плащате, когато дойдете.",
+        "text": "Поръчвате онлайн, ние тонираме и Ви се обаждаме, когато е готова.",
         "button_label_1": "Изберете цвят",
         "button_label_2": "Обадете се: 089 500 10 44"
+      }
+    },
+    "promo_power": {
+      "type": "hameleon-promo",
+      "blocks": {
+        "banner-power": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Железария",
+            "title": "Електроинструменти, които издържат",
+            "text": "Бормашини, винтоверти, ъглошлайфи и перфоратори. Батерии и зарядни на склад, съвет от хора, които ги ползват.",
+            "tags": "Бормашини, Винтоверти, Ъглошлайфи, Перфоратори",
+            "brands": "TOTAL, RAIDER, DeWALT",
+            "button_label": "Разгледайте",
+            "style": "dark",
+            "icon": "power"
+          }
+        }
+      },
+      "block_order": [
+        "banner-power"
+      ],
+      "settings": {
+        "padding_top": 16,
+        "padding_bottom": 16
+      }
+    },
+    "promo_duo": {
+      "type": "hameleon-promo",
+      "blocks": {
+        "banner-hand": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Ръчни инструменти",
+            "title": "Ключове, клещи и всичко за измерване",
+            "text": "Качествени ръчни инструменти за майстори и за дома.",
+            "tags": "Ключове, Клещи, Ролетки",
+            "button_label": "Към инструментите",
+            "style": "mint",
+            "icon": "hand"
+          }
+        },
+        "banner-garden": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Градина",
+            "title": "Градината е готова за сезона",
+            "text": "Машини, ръчни инструменти и консумативи за двора.",
+            "tags": "Тримери, Ножици, Маркучи",
+            "button_label": "Към градината",
+            "style": "sand",
+            "icon": "garden"
+          }
+        }
+      },
+      "block_order": [
+        "banner-hand",
+        "banner-garden"
+      ],
+      "settings": {
+        "padding_top": 16,
+        "padding_bottom": 16
       }
     }
   },
   "order": [
     "hero",
-    "colours",
     "categories",
+    "promo_power",
+    "colours",
+    "promo_duo",
     "how_it_works",
     "calculator",
     "numbers",
-    "tools",
     "plasters",
+    "tools",
     "store",
     "cta"
   ]

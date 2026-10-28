@@ -1,7 +1,7 @@
 {%- comment -%}
   Хамелеон: line icons (24×24, 1.75 stroke, currentColor).
   Accepts:
-  - icon: {String} paint, plaster, power, hand, garden, fasteners, pin, phone, clock, warning, check, screwdriver, grinder, hammerdrill, saw, battery, kit
+  - icon: {String} paint, plaster, power, hand, garden, fasteners, pin, phone, clock, warning, check, house, cart, ruler, swatch, search, plus, minus, truck, sofa, bed, screwdriver, grinder, hammerdrill, saw, battery, kit
 {%- endcomment -%}
 {%- liquid
   case icon
@@ -37,6 +37,26 @@
       assign path = 'M12 3l10 18H2zM12 10v5M12 18h.01'
     when 'clock'
       assign path = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2'
+    when 'house'
+      assign path = 'M3 11l9-7 9 7M5 9.5V20h14V9.5M10 20v-6h4v6'
+    when 'cart'
+      assign path = 'M3 4h2l2.4 11h10.8L21 7H6.2M10 20h.01M17 20h.01'
+    when 'ruler'
+      assign path = 'M3 17L17 3l4 4L7 21zM7 13l2 2M10 10l2 2M13 7l2 2'
+    when 'swatch'
+      assign path = 'M4 4h6v16H4zM10 8l6-3 4 11-10 4M7 16h.01'
+    when 'search'
+      assign path = 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4'
+    when 'plus'
+      assign path = 'M12 5v14M5 12h14'
+    when 'minus'
+      assign path = 'M5 12h14'
+    when 'truck'
+      assign path = 'M3 6h11v10H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z'
+    when 'sofa'
+      assign path = 'M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3zM5 18v2M19 18v2'
+    when 'bed'
+      assign path = 'M3 19V6M3 14h18v5M21 14v-2a3 3 0 0 0-3-3h-7v5M6 11.5a1.5 1.5 0 1 0 0-.01'
     else
       assign path = 'M5 12l5 5 9-10'
   endcase

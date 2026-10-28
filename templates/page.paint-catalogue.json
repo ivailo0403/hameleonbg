@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "catalogue": {
+      "type": "hameleon-paint-catalogue",
+      "blocks": {
+        "product-1": { "type": "product", "settings": { "category": "interior", "name": "Vitex Vi", "class": "Нисък клас", "note": "Само бяло", "tintable": false, "pack_litres": "3", "pack_sqm": "19", "sizes": "3, 9, 15" } },
+        "product-2": { "type": "product", "settings": { "category": "interior", "name": "Vitex Vipol", "class": "Средно-нисък клас", "note": "Само бяло", "tintable": false, "pack_litres": "1", "pack_sqm": "9", "sizes": "3, 9, 15" } },
+        "product-3": { "type": "product", "settings": { "category": "interior", "name": "Vitex Vito", "class": "Среден клас", "pack_litres": "1", "pack_sqm": "11", "sizes": "1, 3, 9, 15" } },
+        "product-4": { "type": "product", "settings": { "category": "interior", "name": "Vitex Aspire", "class": "Средно-висок клас", "pack_litres": "1", "pack_sqm": "12", "sizes": "1, 3, 10" } },
+        "product-5": { "type": "product", "settings": { "category": "interior", "name": "Vitex Classic", "class": "Висок клас", "pack_litres": "1", "pack_sqm": "15", "sizes": "1, 3, 10" } },
+        "product-6": { "type": "product", "settings": { "category": "interior", "name": "Vitex Kitchen & Bath", "class": "Антибактериална", "note": "Кухня и баня", "pack_litres": "1", "pack_sqm": "14", "sizes": "1, 3" } },
+        "product-7": { "type": "product", "settings": { "category": "exterior", "name": "Vitex Vito Acrylic", "class": "Среден клас", "pack_litres": "1", "pack_sqm": "11", "sizes": "1, 5, 10, 15" } },
+        "product-8": { "type": "product", "settings": { "category": "exterior", "name": "Vitex Acrylan", "class": "Висок клас", "pack_litres": "1", "pack_sqm": "15", "sizes": "1, 3, 10" } },
+        "product-9": { "type": "product", "settings": { "category": "plaster", "name": "Vitex Motivo Silver", "class": "База", "pack_litres": "0.905", "pack_sqm": "12", "sizes": "0.905, 2.715" } },
+        "product-10": { "type": "product", "settings": { "category": "plaster", "name": "Vitex Motivo Gold", "class": "База", "pack_litres": "0.905", "pack_sqm": "12", "sizes": "0.905, 2.715" } },
+        "product-11": { "type": "product", "settings": { "category": "plaster", "name": "Vitex Motivo Titanium", "class": "База", "pack_litres": "0.905", "pack_sqm": "12", "sizes": "0.905, 2.715" } }
+      },
+      "block_order": ["product-1", "product-2", "product-3", "product-4", "product-5", "product-6", "product-7", "product-8", "product-9", "product-10", "product-11"],
+      "settings": {}
+    }
+  },
+  "order": ["catalogue"]
+}

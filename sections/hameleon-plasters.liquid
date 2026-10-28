@@ -140,7 +140,7 @@
         {%- endfor -%}
       </ul>
       {%- if section.settings.button_label != blank -%}
-        <a class="hm-btn hm-btn--primary" data-reveal style="--d: 4" href="{% if section.settings.button_link != blank %}{{ section.settings.button_link }}{% else %}{{ routes.search_url }}?type=product&amp;q=Motivo{% endif %}">
+        <a class="hm-btn hm-btn--primary" data-reveal style="--d: 4" href="{% if section.settings.button_link != blank %}{{ section.settings.button_link }}{% else %}{{ settings.hm_catalogue_page | default: '/pages/katalog-tsvetove' }}?tab=motivo{% endif %}">
           {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
         </a>
       {%- endif -%}
@@ -151,6 +151,9 @@
         <div class="hm-finish hm-finish--{{ block.settings.texture }}" data-reveal="scale" style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
           {%- if block.settings.image != blank -%}
             {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '300, 500, 800', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.name }}
+          {%- elsif block.settings.motivo > 0 -%}
+            {%- assign n = block.settings.motivo | prepend: '0' | slice: -2, 2 -%}
+            <img src="{{ 'hm-motivo-' | append: n | append: '.jpg' | asset_url }}" alt="{{ block.settings.name | escape }}" width="400" height="400" loading="lazy">
           {%- endif -%}
           <span class="hm-finish__name">{{ block.settings.name | escape }}</span>
         </div>
@@ -172,7 +175,7 @@
     { "type": "text", "id": "point_1", "label": "Point 1", "default": "Мостри на живо на щанда" },
     { "type": "text", "id": "point_2", "label": "Point 2", "default": "Тониране във всеки цвят" },
     { "type": "text", "id": "point_3", "label": "Point 3", "default": "Съвет как се полага" },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Разгледайте мазилките" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Вижте 78-те цвята Motivo" },
     { "type": "url", "id": "button_link", "label": "Button link" }
   ],
   "blocks": [
@@ -193,6 +196,7 @@
             { "value": "motivo", "label": "Sand / Motivo" }
           ]
         },
+        { "type": "number", "id": "motivo", "label": "Motivo colour number 1–78 (shows the real sample)", "info": "Used when there is no photo. 0 = the drawn texture." },
         { "type": "image_picker", "id": "image", "label": "Photo of the finish (optional)" }
       ]
     }

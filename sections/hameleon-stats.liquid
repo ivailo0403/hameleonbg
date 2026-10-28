@@ -30,14 +30,23 @@
 
   .hm-stat {
     display: flex;
-    flex-direction: column-reverse;
-    gap: 0.6rem;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1rem;
+    min-width: 0;
+    padding-left: 1.6rem;
+    border-left: 2px solid rgba(142, 224, 171, 0.35);
   }
 
   .hm-stat dd {
+    order: -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.6rem;
     margin: 0;
     font-family: var(--hm-font-display);
-    font-size: clamp(4rem, 6vw, 6.4rem);
+    font-size: clamp(4rem, 4.4vw, 5.6rem);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -48,13 +57,13 @@
     font-size: 0.45em;
     font-weight: 700;
     letter-spacing: 0;
-    margin-left: 0.4rem;
     color: #8ee0ab;
   }
 
   .hm-stat dt {
+    max-width: 24rem;
     font-size: 1.5rem;
-    line-height: 1.4;
+    line-height: 1.45;
     color: #c9cfcc;
   }
 
@@ -106,7 +115,7 @@
         { "type": "stat", "settings": { "number": 1320, "unit": "цвята", "label": "в каталога Vitex, тонирани на място" } },
         { "type": "stat", "settings": { "number": 3, "unit": "дни", "label": "най-много, докато поръчката е готова" } },
         { "type": "stat", "settings": { "number": 7, "unit": "дни", "label": "пазим готовата поръчка за Вас" } },
-        { "type": "stat", "settings": { "number": 0, "unit": "€", "label": "предплащане. Плащате при взимане" } }
+        { "type": "stat", "settings": { "number": 24, "unit": "/ 7", "label": "поръчвате онлайн, когато Ви е удобно" } }
       ]
     }
   ]

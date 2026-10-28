@@ -1,0 +1,118 @@
+{%- comment -%}
+  Хамелеон: a living room drawn in SVG whose back wall takes the chosen colour.
+  The wall colour is the CSS variable --wall on any parent. For a plaster photo, JS sets
+  [data-room-pattern] (an <image>) and switches [data-room-wall] to fill="url(#…-tex)".
+  Accepts:
+  - id: {String} unique id for the SVG gradients (required when there are two rooms on a page)
+  - scene: {String} living (default) or bedroom
+{%- endcomment -%}
+{%- assign rid = id | default: 'hm-room' -%}
+<svg class="hm-room" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Стая с боядисана стена" data-room-svg>
+  <defs>
+    <linearGradient id="{{ rid }}-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0.10"/>
+      <stop offset="0.35" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.16"/>
+    </linearGradient>
+    <radialGradient id="{{ rid }}-light" cx="0.18" cy="0.25" r="0.75">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.38"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="{{ rid }}-floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b8916c"/>
+      <stop offset="1" stop-color="#d2ae88"/>
+    </linearGradient>
+    <linearGradient id="{{ rid }}-sofa" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f1ede6"/>
+      <stop offset="1" stop-color="#ddd6cb"/>
+    </linearGradient>
+    <filter id="{{ rid }}-blur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+    <pattern id="{{ rid }}-tex" patternUnits="userSpaceOnUse" width="400" height="400">
+      <image data-room-pattern width="400" height="400" preserveAspectRatio="xMidYMid slice" href=""/>
+    </pattern>
+  </defs>
+
+  {%- comment -%} Wall {%- endcomment -%}
+  <rect data-room-wall x="0" y="0" width="800" height="452" style="fill: var(--wall, #e8e2d6); transition: fill 0.7s ease;"/>
+  <rect x="0" y="0" width="800" height="452" fill="url(#{{ rid }}-shade)"/>
+  <rect x="0" y="0" width="800" height="452" fill="url(#{{ rid }}-light)"/>
+
+  {%- comment -%} Skirting and floor {%- endcomment -%}
+  <rect x="0" y="444" width="800" height="12" fill="#f4f2ee"/>
+  <rect x="0" y="456" width="800" height="104" fill="url(#{{ rid }}-floor)"/>
+  <g stroke="#a7805c" stroke-opacity="0.35" stroke-width="1.5">
+    <path d="M0 478h800M0 504h800M0 534h800"/>
+    <path d="M120 456v22M420 456v22M700 456v22M40 478v26M300 478v26M580 478v26M200 504v30M500 504v30M760 504v30"/>
+  </g>
+
+  {%- if scene == 'bedroom' -%}
+    {%- comment -%} Bed {%- endcomment -%}
+    <ellipse cx="400" cy="470" rx="290" ry="22" fill="#000" opacity="0.22" filter="url(#{{ rid }}-blur)"/>
+    <rect x="170" y="250" width="460" height="150" rx="22" fill="#6f6259"/>
+    <rect x="182" y="262" width="436" height="128" rx="16" fill="#85776c"/>
+    <rect x="150" y="372" width="500" height="78" rx="16" fill="url(#{{ rid }}-sofa)"/>
+    <path d="M150 396h500v40a14 14 0 0 1-14 14H164a14 14 0 0 1-14-14z" fill="#cfc6b8"/>
+    <rect x="205" y="330" width="170" height="58" rx="22" fill="#fbfaf7"/>
+    <rect x="425" y="330" width="170" height="58" rx="22" fill="#fbfaf7"/>
+    <path d="M330 372h320v30H330z" fill="#9db1a4"/>
+    <rect x="166" y="448" width="10" height="16" fill="#5b4c42"/><rect x="624" y="448" width="10" height="16" fill="#5b4c42"/>
+    {%- comment -%} Nightstands and lamps {%- endcomment -%}
+    <rect x="60" y="370" width="74" height="82" rx="8" fill="#c8a47f"/><rect x="66" y="404" width="62" height="3" fill="#a9845f"/>
+    <rect x="666" y="370" width="74" height="82" rx="8" fill="#c8a47f"/><rect x="672" y="404" width="62" height="3" fill="#a9845f"/>
+    <path d="M78 318h38l8 34H70z" fill="#f6efe2"/><rect x="95" y="352" width="4" height="18" fill="#8a7a6c"/>
+    <path d="M684 318h38l8 34h-54z" fill="#f6efe2"/><rect x="701" y="352" width="4" height="18" fill="#8a7a6c"/>
+    {%- comment -%} Art {%- endcomment -%}
+    <rect x="300" y="110" width="200" height="110" rx="4" fill="#fbfaf7" stroke="#2f2a26" stroke-width="5"/>
+    <path d="M318 200c30-40 60-58 92-30s58 6 72-14v44H318z" fill="#d9b48f"/><circle cx="452" cy="146" r="14" fill="#e98b5f"/>
+  {%- else -%}
+    {%- comment -%} Art above the sofa {%- endcomment -%}
+    <rect x="296" y="96" width="132" height="168" rx="3" fill="#fbfaf7" stroke="#2f2a26" stroke-width="5"/>
+    <rect x="312" y="112" width="100" height="136" fill="#efe7dc"/>
+    <circle cx="362" cy="160" r="30" fill="#e2a46f"/><path d="M312 248c22-40 60-56 100-34v34z" fill="#3f5f55"/>
+    <rect x="444" y="132" width="96" height="96" rx="3" fill="#fbfaf7" stroke="#2f2a26" stroke-width="5"/>
+    <path d="M458 214l24-40 18 26 12-14 14 28z" fill="#9db1a4"/>
+
+    {%- comment -%} Sofa {%- endcomment -%}
+    <ellipse cx="420" cy="462" rx="260" ry="20" fill="#000" opacity="0.25" filter="url(#{{ rid }}-blur)"/>
+    <rect x="200" y="300" width="440" height="96" rx="26" fill="#d7cfc3"/>
+    <rect x="214" y="290" width="200" height="92" rx="22" fill="url(#{{ rid }}-sofa)"/>
+    <rect x="426" y="290" width="200" height="92" rx="22" fill="url(#{{ rid }}-sofa)"/>
+    <rect x="180" y="350" width="480" height="78" rx="22" fill="#e4ddd2"/>
+    <rect x="204" y="356" width="212" height="42" rx="14" fill="url(#{{ rid }}-sofa)"/>
+    <rect x="424" y="356" width="212" height="42" rx="14" fill="url(#{{ rid }}-sofa)"/>
+    <rect x="160" y="330" width="56" height="104" rx="24" fill="#ddd5c9"/>
+    <rect x="624" y="330" width="56" height="104" rx="24" fill="#ddd5c9"/>
+    <rect x="194" y="428" width="10" height="20" rx="3" fill="#6b5545"/><rect x="636" y="428" width="10" height="20" rx="3" fill="#6b5545"/>
+    {%- comment -%} Cushions {%- endcomment -%}
+    <rect x="232" y="306" width="78" height="62" rx="16" fill="#2f5d50" transform="rotate(-8 271 337)"/>
+    <rect x="530" y="306" width="78" height="62" rx="16" fill="#e2a46f" transform="rotate(7 569 337)"/>
+    <rect x="306" y="314" width="70" height="56" rx="14" fill="#f4efe6" transform="rotate(-3 341 342)"/>
+
+    {%- comment -%} Floor lamp {%- endcomment -%}
+    <rect x="714" y="230" width="5" height="226" fill="#2f2a26"/>
+    <ellipse cx="716" cy="456" rx="26" ry="5" fill="#2f2a26"/>
+    <path d="M684 192h66l14 52h-94z" fill="#f6efe2"/>
+    <ellipse cx="717" cy="250" rx="70" ry="16" fill="#fff6dc" opacity="0.35" filter="url(#{{ rid }}-blur)"/>
+
+    {%- comment -%} Plant {%- endcomment -%}
+    <path d="M70 392h64l-8 62H78z" fill="#c26e4b"/>
+    <path d="M70 392h64v10H70z" fill="#a95c3c"/>
+    <g fill="#3f7a52">
+      <ellipse cx="88" cy="340" rx="14" ry="44" transform="rotate(-24 88 340)"/>
+      <ellipse cx="120" cy="330" rx="14" ry="50" transform="rotate(18 120 330)"/>
+      <ellipse cx="102" cy="318" rx="13" ry="58"/>
+    </g>
+    <g fill="#5a9a6b">
+      <ellipse cx="74" cy="364" rx="11" ry="34" transform="rotate(-48 74 364)"/>
+      <ellipse cx="134" cy="360" rx="11" ry="34" transform="rotate(46 134 360)"/>
+    </g>
+
+    {%- comment -%} Rug and coffee table {%- endcomment -%}
+    <ellipse cx="420" cy="514" rx="250" ry="34" fill="#efe9df" opacity="0.92"/>
+    <ellipse cx="420" cy="498" rx="96" ry="12" fill="#000" opacity="0.18" filter="url(#{{ rid }}-blur)"/>
+    <rect x="340" y="468" width="160" height="14" rx="7" fill="#2f2a26"/>
+    <rect x="356" y="482" width="6" height="20" fill="#2f2a26"/><rect x="478" y="482" width="6" height="20" fill="#2f2a26"/>
+    <rect x="372" y="452" width="36" height="16" rx="3" fill="#e2a46f"/><circle cx="460" cy="460" r="8" fill="#fbfaf7"/>
+  {%- endif -%}
+</svg>

@@ -29,6 +29,8 @@
     font-weight: 800;
     line-height: 1.08;
     letter-spacing: -0.02em;
+    color: #ffffff;
+    text-shadow: 0 2px 24px rgba(0, 40, 30, 0.25);
   }
 
   .hm-cta__text {
@@ -37,6 +39,7 @@
     max-width: 52rem;
     font-size: 1.7rem;
     line-height: 1.6;
+    color: rgba(255, 255, 255, 0.92);
   }
 
   .hm-cta__buttons {
@@ -65,11 +68,13 @@
     }
   }
 
-  @media screen and (max-width: 749px) {
+  @media screen and (max-width: 989px) {
     .hm-cta__dots {
       display: none;
     }
+  }
 
+  @media screen and (max-width: 749px) {
     .hm-cta__buttons .hm-btn {
       width: 100%;
     }
@@ -80,7 +85,7 @@
   <div class="page-width">
     <div class="hm-cta" data-reveal="scale">
       <div class="hm-cta__dots" aria-hidden="true">
-        {%- assign dots = 'FED426:78%:18%:9,FE9A28:88%:52%:6,D771AF:70%:70%:7.5,96BC5E:92%:12%:5,F89495:62%:30%:4.5' | split: ',' -%}
+        {%- assign dots = 'FED426:80%:18%:9,FE9A28:90%:56%:6,D771AF:75%:66%:7.5,96BC5E:93%:12%:5,F89495:71%:34%:4.5' | split: ',' -%}
         {%- for d in dots -%}
           {%- assign p = d | split: ':' -%}
           <span style="--i: {{ forloop.index0 }}; background: #{{ p[0] }}; left: {{ p[1] }}; top: {{ p[2] }}; width: {{ p[3] }}rem; height: {{ p[3] }}rem;"></span>
@@ -113,7 +118,7 @@
   "class": "section",
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Изберете цвят днес. Вземете го до 3 дни." },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Запазвате онлайн, ние тонираме и Ви се обаждаме. Плащате, когато дойдете." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Поръчвате онлайн, ние тонираме и Ви се обаждаме, когато е готова." },
     { "type": "text", "id": "button_label_1", "label": "Primary button", "default": "Изберете цвят" },
     { "type": "url", "id": "button_link_1", "label": "Primary button link" },
     { "type": "text", "id": "button_label_2", "label": "Secondary button", "default": "Обадете се: 089 500 10 44" },

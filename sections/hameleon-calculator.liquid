@@ -1,14 +1,21 @@
 {%- comment -%}
-  Хамелеон: paint calculator (based on Ivaylo's Seliton calculator).
-  1. Category tab (Интериорна / Фасадна / Мазилки)  2. Product card  3. Area  4. Coats.
-  Each "product" block holds one paint: its category, coverage (one pack of X litres covers Y m² per coat)
-  and the pack sizes sold. litres = area × coats ÷ (m² per litre); then the mix of pack sizes
-  with the least paint left over (fewest packs on a tie).
+  Хамелеон: paint calculator section (based on Ivaylo's Seliton calculator).
+  The calculator itself is snippets/hameleon-paint-calc.liquid; each "product" block is one paint.
 {%- endcomment -%}
-<script src="{{ 'hameleon-calculator.js' | asset_url }}" defer="defer"></script>
 {%- style -%}
   .hm-calc-{{ section.id }} {
     padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    background:
+      radial-gradient(60rem 40rem at 100% 0%, rgba(0, 170, 193, 0.12), transparent 60%),
+      radial-gradient(50rem 40rem at 0% 100%, rgba(25, 165, 74, 0.12), transparent 60%),
+      var(--hm-surface-sunken);
+  }
+
+  .hm-calc-{{ section.id }} .hm-calc__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 3.2rem;
   }
 
   @media screen and (min-width: 750px) {
@@ -17,496 +24,11 @@
     }
   }
 {%- endstyle -%}
-{%- style -%}
-  .hm-calc__head {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-bottom: 2rem;
-  }
 
-  .hm-calc__title {
-    font-size: 2.6rem;
-  }
-
-  .hm-calc__layout {
-    display: grid;
-    gap: 1.6rem;
-    align-items: start;
-  }
-
-  .hm-calc__card,
-  .hm-calc__result {
-    border: 1px solid var(--hm-border);
-    border-radius: 2rem;
-    background: var(--hm-surface);
-    box-shadow: var(--hm-shadow-md);
-  }
-
-  .hm-calc__card {
-    display: flex;
-    flex-direction: column;
-    gap: 2.4rem;
-    padding: 2rem 1.6rem;
-  }
-
-  .hm-calc__step {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    min-width: 0;
-  }
-
-  .hm-calc__step-label {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin: 0 0 1.2rem;
-    padding: 0;
-    font-family: var(--hm-font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--hm-text-strong);
-  }
-
-  .hm-calc__step-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 2.6rem;
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: var(--hm-radius-pill);
-    background: var(--hm-in-stock-bg);
-    color: var(--hm-in-stock);
-    font-size: 1.3rem;
-    font-weight: 800;
-  }
-
-  /* Radio buttons styled as pills and cards */
-  .hm-calc__choice {
-    position: relative;
-    display: block;
-  }
-
-  .hm-calc__choice[hidden] {
-    display: none;
-  }
-
-  .hm-calc__choice input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .hm-calc__choice input:focus-visible + .hm-calc__face {
-    outline: 3px solid var(--hm-link);
-    outline-offset: 2px;
-  }
-
-  .hm-calc__face {
-    display: block;
-    border: 1px solid var(--hm-border-strong);
-    border-radius: var(--hm-radius-md);
-    background: var(--hm-surface);
-    color: var(--hm-text-strong);
-  }
-
-  .hm-calc__choice:hover .hm-calc__face {
-    border-color: var(--hm-primary);
-  }
-
-  .hm-calc__choice input:checked + .hm-calc__face {
-    border: 2px solid var(--hm-primary);
-    background: var(--hm-in-stock-bg);
-  }
-
-  .hm-calc__tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-  }
-
-  .hm-calc__tabs .hm-calc__face {
-    display: flex;
-    align-items: center;
-    min-height: 4.4rem;
-    padding: 0 1.8rem;
-    box-sizing: border-box;
-    border-radius: var(--hm-radius-pill);
-    font-family: var(--hm-font-display);
-    font-size: 1.4rem;
-    font-weight: 700;
-  }
-
-  .hm-calc__tabs input:checked + .hm-calc__face {
-    background: var(--hm-primary);
-    border-color: var(--hm-primary);
-    color: #ffffff;
-  }
-
-  .hm-calc__products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-    gap: 0.8rem;
-  }
-
-  .hm-calc__products .hm-calc__face {
-    height: 100%;
-    box-sizing: border-box;
-    padding: 1.2rem 1.4rem;
-  }
-
-  .hm-calc__p-name {
-    display: block;
-    font-family: var(--hm-font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
-  .hm-calc__p-class {
-    display: block;
-    margin-top: 0.2rem;
-    font-size: 1.3rem;
-    color: var(--hm-text-muted);
-  }
-
-  .hm-calc__p-cov {
-    display: block;
-    margin-top: 0.6rem;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--hm-in-stock);
-  }
-
-  .hm-calc__p-note {
-    display: inline-block;
-    margin-top: 0.6rem;
-    padding: 0.1rem 0.6rem;
-    border-radius: var(--hm-radius-sm);
-    background: #fff4e0;
-    color: var(--hm-low-stock);
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-
-  .hm-calc__inputs {
-    display: grid;
-    gap: 2.4rem;
-  }
-
-  .hm-calc__area {
-    display: flex;
-    align-items: center;
-    height: 4.8rem;
-    padding: 0 1.4rem;
-    box-sizing: border-box;
-    border: 1px solid var(--hm-border-strong);
-    border-radius: var(--hm-radius-md);
-    background: var(--hm-surface);
-  }
-
-  .hm-calc__area:focus-within {
-    outline: 3px solid var(--hm-link);
-    outline-offset: 1px;
-  }
-
-  .hm-calc__area input {
-    flex: 1;
-    min-width: 0;
-    border: 0;
-    background: transparent;
-    font-family: var(--hm-font-display);
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--hm-text-strong);
-    outline: none;
-    -moz-appearance: textfield;
-  }
-
-  .hm-calc__area input::-webkit-inner-spin-button,
-  .hm-calc__area input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .hm-calc__area span {
-    font-weight: 700;
-    color: var(--hm-text-muted);
-  }
-
-  .hm-calc__coats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.8rem;
-  }
-
-  .hm-calc__coats .hm-calc__face {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 4.8rem;
-    box-sizing: border-box;
-    font-family: var(--hm-font-display);
-    font-size: 1.4rem;
-    font-weight: 700;
-  }
-
-  .hm-calc__hint {
-    margin: 0.8rem 0 0;
-    font-size: 1.3rem;
-    color: var(--hm-text-muted);
-  }
-
-  /* Result */
-  .hm-calc__result {
-    overflow: hidden;
-  }
-
-  .hm-calc__r-head {
-    display: flex;
-    align-items: center;
-    gap: 1.6rem;
-    padding: 2rem;
-    background: linear-gradient(135deg, #e7f5ec, #e3f4f6);
-    border-bottom: 1px solid var(--hm-border);
-  }
-
-  .hm-can {
-    flex: 0 0 6.4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .hm-can__lid {
-    width: 6.4rem;
-    height: 1rem;
-    border-radius: 0.6rem 0.6rem 0.2rem 0.2rem;
-    background: #8a9297;
-  }
-
-  .hm-can__body {
-    position: relative;
-    width: 5.6rem;
-    height: 7.2rem;
-    border-radius: 0 0 1rem 1rem;
-    background: #ffffff;
-    box-shadow: inset 0 0 0 2px #c9cfcc, var(--hm-shadow-sm);
-    overflow: hidden;
-  }
-
-  .hm-can__fill {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 0;
-    background: var(--hm-gradient);
-    transition: height 0.9s var(--hm-ease);
-  }
-
-  .hm-can__fill::before {
-    content: '';
-    position: absolute;
-    left: -10%;
-    right: -10%;
-    top: -0.4rem;
-    height: 0.8rem;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.45);
-  }
-
-  .hm-calc__r-use {
-    margin: 0.4rem 0 0;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--hm-in-stock);
-  }
-
-  .hm-calc__r-name {
-    margin: 0;
-    font-family: var(--hm-font-display);
-    font-size: 1.8rem;
-    font-weight: 800;
-    line-height: 1.25;
-    color: var(--hm-in-stock);
-  }
-
-  .hm-calc__r-detail {
-    margin: 0.2rem 0 0;
-    font-size: 1.4rem;
-  }
-
-  .hm-calc__r-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
-    padding: 1.6rem;
-  }
-
-  .hm-calc__r-body [hidden] {
-    display: none;
-  }
-
-  .hm-calc__stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.8rem;
-    margin: 0;
-  }
-
-  .hm-calc__stat {
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-    gap: 0.2rem;
-    padding: 1.2rem 0.4rem;
-    border-radius: var(--hm-radius-md);
-    background: var(--hm-surface-sunken);
-    text-align: center;
-  }
-
-  .hm-calc__stat dt {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--hm-text-muted);
-  }
-
-  .hm-calc__stat dd {
-    margin: 0;
-    transition: transform 0.3s var(--hm-ease);
-    font-family: var(--hm-font-display);
-    font-size: 2.4rem;
-    font-weight: 800;
-    line-height: 1.1;
-    color: var(--hm-text-strong);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .hm-calc__packs-title {
-    margin: 0 0 0.8rem;
-    font-family: var(--hm-font-display);
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--hm-text-strong);
-  }
-
-  .hm-calc__packs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .hm-calc__pack {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    padding: 0.8rem 1.2rem;
-    border: 1px solid var(--hm-primary);
-    border-radius: var(--hm-radius-md);
-    background: var(--hm-in-stock-bg);
-    color: var(--hm-in-stock);
-    font-weight: 700;
-  }
-
-  .hm-calc__pack strong {
-    font-family: var(--hm-font-display);
-    font-size: 1.8rem;
-    font-weight: 800;
-  }
-
-  .hm-calc__warn {
-    display: flex;
-    gap: 1rem;
-    padding: 1.2rem 1.4rem;
-    border-radius: var(--hm-radius-md);
-    background: #fff4e0;
-    color: var(--hm-low-stock);
-    font-size: 1.4rem;
-    line-height: 1.5;
-  }
-
-  .hm-calc__warn p {
-    margin: 0;
-  }
-
-  .hm-calc__warn svg {
-    flex: 0 0 2rem;
-    width: 2rem;
-    height: 2rem;
-    margin-top: 0.1rem;
-  }
-
-  .hm-calc__r-body .hm-btn {
-    width: 100%;
-  }
-
-  @media screen and (min-width: 750px) {
-    .hm-calc__title {
-      font-size: 3.2rem;
-    }
-
-    .hm-calc__card {
-      padding: 3.2rem;
-    }
-
-    .hm-calc__inputs {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media screen and (min-width: 990px) {
-    .hm-calc__layout {
-      grid-template-columns: minmax(0, 1fr) 38rem;
-      gap: 2.4rem;
-    }
-
-    .hm-calc__result {
-      position: sticky;
-      top: 2.4rem;
-    }
-  }
-{%- endstyle -%}
-
-{%- liquid
-  assign has_interior = false
-  assign has_exterior = false
-  assign has_plaster = false
-  for block in section.blocks
-    case block.settings.category
-      when 'interior'
-        assign has_interior = true
-      when 'exterior'
-        assign has_exterior = true
-      when 'plaster'
-        assign has_plaster = true
-    endcase
-  endfor
-  assign first_cat = 'plaster'
-  if has_exterior
-    assign first_cat = 'exterior'
-  endif
-  if has_interior
-    assign first_cat = 'interior'
-  endif
-  assign default_coats = section.settings.default_coats | plus: 0
--%}
-
-<section id="kalkulator" class="hm-section hm-calc-{{ section.id }} color-{{ section.settings.color_scheme }} gradient" style="background: radial-gradient(60rem 40rem at 100% 0%, rgba(0, 170, 193, 0.1), transparent 60%), radial-gradient(50rem 40rem at 0% 100%, rgba(25, 165, 74, 0.1), transparent 60%), var(--hm-surface-sunken);">
+{%- assign catalogue_url = settings.hm_catalogue_page | default: '/pages/katalog-tsvetove' -%}
+<section id="kalkulator" class="hm-section hm-calc-{{ section.id }}">
   <div class="page-width">
-    <div class="hm-calc__head">
+    <div class="hm-calc__head hm-section-head">
       {%- if section.settings.eyebrow != blank -%}
         <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
       {%- endif -%}
@@ -515,132 +37,9 @@
         <p class="hm-sub" data-reveal style="--d: 2">{{ section.settings.text | escape }}</p>
       {%- endif -%}
     </div>
-
-    <hameleon-paint-calc class="hm-calc__layout" data-reveal style="--d: 2">
-      <div class="hm-calc__card">
-        <fieldset class="hm-calc__step">
-          <legend class="hm-calc__step-label"><span class="hm-calc__step-num">1</span>Изберете категория</legend>
-          <div class="hm-calc__tabs">
-            {%- if has_interior -%}
-              <label class="hm-calc__choice">
-                <input type="radio" name="HmCalcCat-{{ section.id }}" value="interior" data-cat{% if first_cat == 'interior' %} checked{% endif %}>
-                <span class="hm-calc__face">Интериорна боя</span>
-              </label>
-            {%- endif -%}
-            {%- if has_exterior -%}
-              <label class="hm-calc__choice">
-                <input type="radio" name="HmCalcCat-{{ section.id }}" value="exterior" data-cat{% if first_cat == 'exterior' %} checked{% endif %}>
-                <span class="hm-calc__face">Фасадна боя</span>
-              </label>
-            {%- endif -%}
-            {%- if has_plaster -%}
-              <label class="hm-calc__choice">
-                <input type="radio" name="HmCalcCat-{{ section.id }}" value="plaster" data-cat{% if first_cat == 'plaster' %} checked{% endif %}>
-                <span class="hm-calc__face">Мазилки</span>
-              </label>
-            {%- endif -%}
-          </div>
-        </fieldset>
-
-        <fieldset class="hm-calc__step">
-          <legend class="hm-calc__step-label"><span class="hm-calc__step-num">2</span>Изберете продукт</legend>
-          <div class="hm-calc__products">
-            {%- for block in section.blocks -%}
-              <label class="hm-calc__choice" data-product-cat="{{ block.settings.category }}"{% if block.settings.category != first_cat %} hidden{% endif %} {{ block.shopify_attributes }}>
-                <input
-                  type="radio"
-                  name="HmCalcProduct-{{ section.id }}"
-                  value="{{ block.id }}"
-                  data-product
-                  data-name="{{ block.settings.name | escape }}"
-                  data-pack-l="{{ block.settings.pack_litres | escape }}"
-                  data-pack-sqm="{{ block.settings.pack_sqm | escape }}"
-                  data-sizes="{{ block.settings.sizes | escape }}"
-                  data-url="{% if block.settings.product != blank %}{{ block.settings.product.url }}{% else %}{{ block.settings.link }}{% endif %}"
-                >
-                <span class="hm-calc__face">
-                  <span class="hm-calc__p-name">{{ block.settings.name | escape }}</span>
-                  {%- if block.settings.class != blank -%}
-                    <span class="hm-calc__p-class">{{ block.settings.class | escape }}</span>
-                  {%- endif -%}
-                  <span class="hm-calc__p-cov" data-coverage-label></span>
-                  {%- if block.settings.note != blank -%}
-                    <span class="hm-calc__p-note">{{ block.settings.note | escape }}</span>
-                  {%- endif -%}
-                </span>
-              </label>
-            {%- endfor -%}
-          </div>
-        </fieldset>
-
-        <div class="hm-calc__inputs">
-          <div class="hm-calc__step">
-            <label class="hm-calc__step-label" for="HmCalcArea-{{ section.id }}"><span class="hm-calc__step-num">3</span>Площ за боядисване</label>
-            <span class="hm-calc__area">
-              <input
-                id="HmCalcArea-{{ section.id }}"
-                type="number"
-                inputmode="decimal"
-                min="1"
-                max="9999"
-                step="any"
-                placeholder="напр. 45"
-                data-area
-              >
-              <span aria-hidden="true">м²</span>
-            </span>
-            <p class="hm-calc__hint">Стени и таван, без вратите и прозорците.</p>
-          </div>
-
-          <fieldset class="hm-calc__step">
-            <legend class="hm-calc__step-label"><span class="hm-calc__step-num">4</span>Брой ръце (слоя)</legend>
-            <div class="hm-calc__coats">
-              {%- for n in (1..3) -%}
-                <label class="hm-calc__choice">
-                  <input type="radio" name="HmCalcCoats-{{ section.id }}" value="{{ n }}" data-coats{% if n == default_coats %} checked{% endif %}>
-                  <span class="hm-calc__face">{{ n }} {% if n == 1 %}ръка{% else %}ръце{% endif %}</span>
-                </label>
-              {%- endfor -%}
-            </div>
-          </fieldset>
-        </div>
-      </div>
-
-      <div class="hm-calc__result">
-        <div class="hm-calc__r-head">
-          <div class="hm-can" aria-hidden="true">
-            <span class="hm-can__lid"></span>
-            <span class="hm-can__body"><span class="hm-can__fill" data-r-fill></span></span>
-          </div>
-          <div aria-live="polite">
-            <p class="hm-calc__r-name" data-r-name>Вашият резултат</p>
-            <p class="hm-calc__r-detail" data-r-detail>Изберете продукт и въведете площта.</p>
-            <p class="hm-calc__r-use" data-r-use hidden></p>
-          </div>
-        </div>
-        <div class="hm-calc__r-body">
-          <dl class="hm-calc__stats" data-r-content hidden>
-            <div class="hm-calc__stat"><dt>литра</dt><dd data-r-litres></dd></div>
-            <div class="hm-calc__stat"><dt data-r-packs-label>опаковки</dt><dd data-r-packs></dd></div>
-            <div class="hm-calc__stat"><dt>м² общо</dt><dd data-r-area></dd></div>
-          </dl>
-          <div data-r-content hidden>
-            <p class="hm-calc__packs-title">Препоръчителни опаковки</p>
-            <ul class="hm-calc__packs" data-r-pack-list></ul>
-          </div>
-          {%- if section.settings.warning != blank -%}
-            <div class="hm-calc__warn">
-              {%- render 'hameleon-icon', icon: 'warning' -%}
-              <div>{{ section.settings.warning }}</div>
-            </div>
-          {%- endif -%}
-          <a class="hm-btn hm-btn--primary" href="#" data-r-link hidden>Вижте продукта</a>
-          {%- if section.settings.footnote != blank -%}
-            <p class="hm-calc__hint" style="margin: 0;">{{ section.settings.footnote | escape }}</p>
-          {%- endif -%}
-        </div>
-      </div>
-    </hameleon-paint-calc>
+    <div data-reveal style="--d: 2">
+      {%- render 'hameleon-paint-calc', section: section, catalogue_url: catalogue_url -%}
+    </div>
   </div>
 </section>
 
@@ -665,9 +64,9 @@
         { "value": "3", "label": "3" }
       ]
     },
+    { "type": "number", "id": "default_area", "label": "Area shown at start (m²)", "default": 40 },
     { "type": "richtext", "id": "warning", "label": "Warning under the result", "default": "<p><strong>Важно!</strong> По технология преди всяка боя трябва да има <strong>грунд</strong> и да се минат <strong>две ръце</strong>.</p>" },
     { "type": "text", "id": "footnote", "label": "Small note at the end", "default": "Разходната норма зависи от основата. Проверяваме сметката и на щанда." },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" },
     { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 48 },
     { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 48 }
   ],
@@ -690,10 +89,12 @@
         { "type": "text", "id": "name", "label": "Name", "default": "Vitex Vito" },
         { "type": "text", "id": "class", "label": "Class", "default": "Среден клас" },
         { "type": "text", "id": "note", "label": "Note (e.g. Само бяло)" },
+        { "type": "checkbox", "id": "tintable", "label": "Can be tinted", "default": true, "info": "Off for white-only paints: they go to the cart without a colour code." },
+        { "type": "image_picker", "id": "image", "label": "Photo of the tin (optional)", "info": "Without a photo or a linked product, the tin is drawn." },
         { "type": "text", "id": "pack_litres", "label": "Coverage: one pack of … litres", "default": "1", "info": "With the next field: one pack of this many litres covers that many m² in one coat." },
         { "type": "text", "id": "pack_sqm", "label": "Coverage: … covers this many m² (one coat)", "default": "11" },
         { "type": "text", "id": "sizes", "label": "Pack sizes sold, in litres, comma separated", "default": "1, 3, 9, 15", "info": "Use a dot for decimals, e.g. 0.905" },
-        { "type": "product", "id": "product", "label": "Shopify product (optional)" },
+        { "type": "product", "id": "product", "label": "Shopify product (for price and add to cart)", "info": "Name the variants by pack size, e.g. \"1 л\", \"3 л\", \"9 л\". Each size the calculator picks must have a variant." },
         { "type": "url", "id": "link", "label": "Or a link (optional)" }
       ]
     }
@@ -702,8 +103,8 @@
     {
       "name": "Хамелеон: calculator",
       "blocks": [
-        { "type": "product", "settings": { "category": "interior", "name": "Vitex Vi", "class": "Нисък клас", "note": "Само бяло", "pack_litres": "3", "pack_sqm": "19", "sizes": "3, 9, 15" } },
-        { "type": "product", "settings": { "category": "interior", "name": "Vitex Vipol", "class": "Средно-нисък клас", "note": "Само бяло", "pack_litres": "1", "pack_sqm": "9", "sizes": "3, 9, 15" } },
+        { "type": "product", "settings": { "category": "interior", "name": "Vitex Vi", "class": "Нисък клас", "note": "Само бяло", "tintable": false, "pack_litres": "3", "pack_sqm": "19", "sizes": "3, 9, 15" } },
+        { "type": "product", "settings": { "category": "interior", "name": "Vitex Vipol", "class": "Средно-нисък клас", "note": "Само бяло", "tintable": false, "pack_litres": "1", "pack_sqm": "9", "sizes": "3, 9, 15" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Vito", "class": "Среден клас", "pack_litres": "1", "pack_sqm": "11", "sizes": "1, 3, 9, 15" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Aspire", "class": "Средно-висок клас", "pack_litres": "1", "pack_sqm": "12", "sizes": "1, 3, 10" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Classic", "class": "Висок клас", "pack_litres": "1", "pack_sqm": "15", "sizes": "1, 3, 10" } },

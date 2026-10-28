@@ -1,31 +1,107 @@
 /*
-  Хамелеон: paint calculator (sections/hameleon-calculator.liquid).
+  Хамелеон: paint calculator (snippets/hameleon-paint-calc.liquid).
   litres = area × coats ÷ (m² per litre), then the mix of the product's pack sizes
   with the least paint left over (fewest packs on a tie).
+  The colour comes from a "hameleon:color" event on document ({ code, name, hex, catalogue, image })
+  or from ?color= in the address. "Add to cart" posts one line per pack size, each carrying the colour.
 */
+window.Hameleon = window.Hameleon || {};
+
+/* The tin markup from snippets/hameleon-paint-tin.liquid; keep them in step. */
+window.Hameleon.tinHTML = (name, size, color) => {
+  const esc = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const words = String(name || '').trim().split(/\s+/);
+  const brand = words.length > 1 ? words[0] : 'Vitex';
+  const rest = words.length > 1 ? words.slice(1).join(' ') : name;
+  return (
+    `<span class="hm-tin"${color ? ` style="--tin: ${esc(color)};"` : ''} aria-hidden="true">` +
+    '<span class="hm-tin__handle"></span><span class="hm-tin__lid"></span><span class="hm-tin__body">' +
+    `<span class="hm-tin__brand">${esc(brand)}</span><span class="hm-tin__name">${esc(rest)}</span>` +
+    (size ? `<span class="hm-tin__size">${esc(size)}</span>` : '') +
+    '<span class="hm-tin__wave"></span></span></span>'
+  );
+};
+
+/* Finds a colour by code in the Vitex or Motivo catalogue (assets/hameleon-colors.js). */
+window.Hameleon.findColor = (code) => {
+  const value = String(code || '').trim();
+  if (!value) return null;
+  const motivo = value.match(/^m-?(\d+)$/i);
+  if (motivo && window.HameleonMotivo) {
+    const item = window.HameleonMotivo.find((m) => m[0] === parseInt(motivo[1], 10));
+    if (item) return { code: `M${item[0]}`, name: `Motivo ${item[0]}`, hex: `#${item[1]}`, catalogue: 'Motivo' };
+  }
+  if (window.HameleonColors) {
+    for (const family of window.HameleonColors.families) {
+      const item = family.items.find((c) => String(c[0]) === value);
+      if (item) return { code: String(item[0]), name: item[1], hex: `#${item[2]}`, catalogue: 'Vitex', family: family.name };
+    }
+  }
+  return null;
+};
+
 if (!customElements.get('hameleon-paint-calc')) {
   customElements.define(
     'hameleon-paint-calc',
     class HameleonPaintCalc extends HTMLElement {
       connectedCallback() {
         this.areaInput = this.querySelector('[data-area]');
+        this.color = null;
+        this.combo = [];
+
         this.querySelectorAll('[data-product]').forEach((input) => {
           const label = input.closest('label').querySelector('[data-coverage-label]');
           const packL = this.num(input.dataset.packL);
           const packSqm = this.num(input.dataset.packSqm);
-          if (label && packL && packSqm) {
-            label.textContent =
-              packL === 1
-                ? `1 л покрива ${this.format(packSqm)} м²`
-                : `${this.size(packL)} покрива ${this.format(packSqm)} м²`;
-          }
+          if (label && packL && packSqm) label.textContent = `${this.format(packSqm / packL)} м²/л`;
         });
 
         this.addEventListener('change', (event) => {
           if (event.target.matches('[data-cat]')) this.showCategory(event.target.value);
+          if (event.target.matches('[data-room]')) return this.roomArea();
           this.update();
         });
-        this.areaInput.addEventListener('input', () => this.update());
+        this.addEventListener('input', (event) => {
+          if (event.target.matches('[data-room]')) this.roomArea();
+          if (event.target === this.areaInput) this.update();
+        });
+        this.querySelectorAll('[data-area-step]').forEach((button) =>
+          button.addEventListener('click', () => {
+            const next = Math.max(1, Math.round(this.num(this.areaInput.value)) + parseInt(button.dataset.areaStep, 10) * 5);
+            this.areaInput.value = next;
+            this.update();
+          })
+        );
+        this.querySelector('[data-r-add]').addEventListener('click', () => this.addToCart());
+        this.querySelector('[data-r-color-link]').addEventListener('click', (event) => this.pickColor(event));
+        this.querySelector('[data-r-pick]').addEventListener('click', (event) => this.pickColor(event));
+
+        document.addEventListener('hameleon:color', (event) => this.setColor(event.detail));
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('area')) this.areaInput.value = params.get('area');
+        if (params.get('coats')) {
+          const coats = this.querySelector(`[data-coats][value="${params.get('coats')}"]`);
+          if (coats) coats.checked = true;
+        }
+        if (params.get('paint')) {
+          const wanted = params.get('paint').toLowerCase();
+          const match = [...this.querySelectorAll('[data-product]')].find((p) => p.dataset.name.toLowerCase() === wanted);
+          if (match) {
+            const cat = this.querySelector(`[data-cat][value="${match.dataset.catValue}"]`);
+            if (cat) cat.checked = true;
+            this.showCategory(match.dataset.catValue);
+            match.checked = true;
+          }
+        }
+        if (!this.querySelector('[data-product]:checked')) {
+          const first =
+            this.querySelector('[data-product-cat]:not([hidden]) [data-product]:not([data-tintable="false"])') ||
+            this.querySelector('[data-product-cat]:not([hidden]) [data-product]');
+          if (first) first.checked = true;
+        }
+        const fromPage = window.Hameleon.currentColor || window.Hameleon.findColor(params.get('color'));
+        if (fromPage) this.color = fromPage;
         this.update();
       }
 
@@ -34,10 +110,82 @@ if (!customElements.get('hameleon-paint-calc')) {
       }
 
       showCategory(cat) {
+        let firstShown = null;
         this.querySelectorAll('[data-product-cat]').forEach((label) => {
           const match = label.dataset.productCat === cat;
           label.hidden = !match;
-          if (!match) label.querySelector('input').checked = false;
+          const input = label.querySelector('input');
+          if (!match) input.checked = false;
+          else if (!firstShown || (firstShown.dataset.tintable === 'false' && input.dataset.tintable !== 'false')) firstShown = input;
+        });
+        if (firstShown && !this.querySelector('[data-product]:checked')) firstShown.checked = true;
+      }
+
+      roomArea() {
+        const v = (key) => this.num(this.querySelector(`[data-room="${key}"]`).value);
+        const l = v('l');
+        const w = v('w');
+        const h = v('h');
+        const openings = v('o');
+        const ceiling = this.querySelector('[data-room="c"]').checked;
+        const out = this.querySelector('[data-room-out]');
+        if (!l || !w || !h) {
+          out.textContent = 'Въведете дължина, ширина и височина.';
+          return;
+        }
+        const walls = 2 * (l + w) * h;
+        const area = Math.max(1, Math.round(walls - openings * 1.8 + (ceiling ? l * w : 0)));
+        this.areaInput.value = area;
+        out.innerHTML = `Стени ${this.format(walls)} м²${ceiling ? ` + таван ${this.format(l * w)} м²` : ''}${openings ? `, без ${openings} отвора` : ''} = <strong>${area} м²</strong>`;
+        this.update();
+      }
+
+      setColor(color) {
+        this.color = color || null;
+        this.update();
+      }
+
+      /* Which catalogue fits the chosen product: plasters use Motivo, paints use Vitex. */
+      catalogueFor(product) {
+        return product && product.dataset.catValue === 'plaster' ? 'Motivo' : 'Vitex';
+      }
+
+      pickColor(event) {
+        const product = this.querySelector('[data-product]:checked');
+        const catalogue = this.catalogueFor(product);
+        if (this.hasAttribute('data-in-catalogue')) {
+          event.preventDefault();
+          document.dispatchEvent(new CustomEvent('hameleon:open-catalogue', { detail: { catalogue } }));
+          return;
+        }
+        const base = this.dataset.catalogueUrl;
+        if (!base || base === '#') return;
+        event.preventDefault();
+        const url = new URL(base, window.location.origin);
+        if (product) url.searchParams.set('paint', product.dataset.name);
+        url.searchParams.set('area', this.num(this.areaInput.value));
+        const coats = this.querySelector('[data-coats]:checked');
+        if (coats) url.searchParams.set('coats', coats.value);
+        if (catalogue === 'Motivo') url.searchParams.set('tab', 'motivo');
+        window.location.href = url.toString();
+      }
+
+      variantsOf(product) {
+        try {
+          return JSON.parse(product.dataset.variants || '[]');
+        } catch (e) {
+          return [];
+        }
+      }
+
+      /* Matches a pack size (litres) to a variant whose title holds that size, e.g. "9 л", "0,905 L". */
+      variantFor(variants, size) {
+        return variants.find((v) => {
+          const m = String(v.title).replace(',', '.').match(/(\d+(?:\.\d+)?)\s*(мл|ml|л|l|кг|kg)?/i);
+          if (!m) return false;
+          let value = parseFloat(m[1]);
+          if (m[2] && /^(мл|ml)$/i.test(m[2])) value /= 1000;
+          return Math.abs(value - size) < 0.01;
         });
       }
 
@@ -47,67 +195,177 @@ if (!customElements.get('hameleon-paint-calc')) {
         const coatsInput = this.querySelector('[data-coats]:checked');
         const coats = coatsInput ? parseInt(coatsInput.value, 10) : 2;
         const contents = this.querySelectorAll('[data-r-content]');
-        const link = this.querySelector('[data-r-link]');
-        const name = this.querySelector('[data-r-name]');
         const detail = this.querySelector('[data-r-detail]');
+        const tintable = product && product.dataset.tintable !== 'false';
+        const catalogue = this.catalogueFor(product);
+        const color = this.color && this.color.catalogue === catalogue ? this.color : null;
 
-        const fill = this.querySelector('[data-r-fill]');
-        const use = this.querySelector('[data-r-use]');
+        this.renderColor(product, tintable, color, catalogue);
+        this.querySelector('[data-r-tin]').innerHTML = window.Hameleon.tinHTML(
+          product ? product.dataset.name : 'Vitex',
+          '',
+          tintable ? (color ? color.hex : 'var(--hm-gradient)') : '#E4E8E6'
+        );
+        this.style.setProperty('--pc-glow', color ? `${color.hex}88` : '');
 
-        if (!product || area <= 0) {
+        const sizes = product
+          ? String(product.dataset.sizes || '')
+              .split(',')
+              .map((s) => this.num(s))
+              .filter((n) => n > 0)
+              .sort((a, b) => b - a)
+          : [];
+        const packL = product ? this.num(product.dataset.packL) : 0;
+        const packSqm = product ? this.num(product.dataset.packSqm) : 0;
+
+        if (!product || area <= 0 || !packL || !packSqm || !sizes.length) {
           contents.forEach((el) => (el.hidden = true));
-          fill.style.height = '0%';
-          use.hidden = true;
-          link.hidden = true;
-          name.textContent = product ? product.dataset.name : 'Вашият резултат';
-          detail.textContent = product ? 'Въведете площта в м².' : 'Изберете продукт и въведете площта.';
+          this.combo = [];
+          this.querySelector('[data-r-litres]').textContent = '0';
+          detail.textContent = product ? 'Въведете площта в м².' : 'Изберете боя и площ.';
+          this.renderActions(product, tintable, color);
           return;
         }
-
-        const packL = this.num(product.dataset.packL);
-        const packSqm = this.num(product.dataset.packSqm);
-        const sizes = String(product.dataset.sizes || '')
-          .split(',')
-          .map((s) => this.num(s))
-          .filter((n) => n > 0)
-          .sort((a, b) => b - a);
-        if (!packL || !packSqm || !sizes.length) return;
 
         const totalArea = area * coats;
         const litres = totalArea / (packSqm / packL);
         const combo = this.packs(litres, sizes);
         const total = combo.reduce((sum, p) => sum + p.count * p.size, 0);
-        const count = combo.reduce((sum, p) => sum + p.count, 0);
+        this.combo = combo;
 
-        name.textContent = product.dataset.name;
-        detail.textContent = `${this.format(area)} м² · ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л`;
+        detail.textContent = `${product.dataset.name} · ${this.format(area)} м² × ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л`;
         this.animate(this.querySelector('[data-r-litres]'), total);
-        this.animate(this.querySelector('[data-r-packs]'), count);
-        this.querySelector('[data-r-packs-label]').textContent = count === 1 ? 'опаковка' : 'опаковки';
-        this.animate(this.querySelector('[data-r-area]'), totalArea);
-        const ratio = Math.min(litres / total, 1);
-        fill.style.height = `${Math.max(ratio * 100, 6)}%`;
-        use.textContent = `Използвате ${Math.round(ratio * 100)}% от купената боя`;
-        use.hidden = false;
 
-        const list = this.querySelector('[data-r-pack-list]');
-        list.replaceChildren(
-          ...combo.map((p) => {
-            const li = document.createElement('li');
-            li.className = 'hm-calc__pack';
-            const strong = document.createElement('strong');
-            strong.textContent = `${p.count} ×`;
-            li.append(strong, ` ${this.size(p.size)}`);
-            return li;
-          })
-        );
+        const ratio = Math.min(litres / total, 1);
+        this.querySelector('[data-r-use-bar]').style.width = `${Math.round(ratio * 100)}%`;
+        this.querySelector('[data-r-use]').textContent = `Използвате ${Math.round(ratio * 100)}% от купената боя`;
+
+        const tinColor = tintable ? (color ? color.hex : '#19A54A') : '#E4E8E6';
+        this.querySelector('[data-r-packs]').innerHTML = combo
+          .map(
+            (p, i) =>
+              `<li class="hm-pc__pack" style="animation-delay: ${i * 0.08}s">${window.Hameleon.tinHTML(product.dataset.name, '', tinColor)}<strong>${p.count} ×</strong><span>${this.size(p.size)}</span></li>`
+          )
+          .join('');
         contents.forEach((el) => (el.hidden = false));
 
-        if (product.dataset.url) {
+        this.renderPrice(product, combo);
+        this.renderActions(product, tintable, color);
+      }
+
+      renderColor(product, tintable, color, catalogue) {
+        const box = this.querySelector('[data-r-color]');
+        const chip = this.querySelector('[data-r-color-chip]');
+        const name = this.querySelector('[data-r-color-name]');
+        const link = this.querySelector('[data-r-color-link]');
+        box.hidden = !product;
+        if (!tintable) {
+          chip.style.background = '#F4F4F0';
+          name.textContent = 'Бяла, без тониране';
+          link.hidden = true;
+          return;
+        }
+        link.hidden = false;
+        if (color) {
+          chip.style.background = color.image ? `center / cover url("${color.image}")` : color.hex;
+          name.textContent = `${color.code} · ${color.name}`;
+          link.textContent = 'Смени';
+        } else {
+          chip.style.background = '';
+          name.textContent = catalogue === 'Motivo' ? 'Не е избран (Motivo)' : 'Не е избран';
+          link.textContent = 'Изберете';
+        }
+      }
+
+      renderPrice(product, combo) {
+        const el = this.querySelector('[data-r-price]');
+        const variants = this.variantsOf(product);
+        let cents = 0;
+        for (const p of combo) {
+          const v = this.variantFor(variants, p.size);
+          if (!v) {
+            el.hidden = true;
+            return;
+          }
+          cents += v.price * p.count;
+        }
+        el.innerHTML = `<span>Ориентировъчна цена</span><strong>${(cents / 100).toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>`;
+        el.hidden = !cents;
+      }
+
+      renderActions(product, tintable, color) {
+        const add = this.querySelector('[data-r-add]');
+        const pick = this.querySelector('[data-r-pick]');
+        const link = this.querySelector('[data-r-link]');
+        const variants = product ? this.variantsOf(product) : [];
+        const canBuy = this.combo.length > 0 && this.combo.every((p) => this.variantFor(variants, p.size));
+        const needsColor = tintable && !color;
+
+        add.hidden = !(canBuy && !needsColor);
+        pick.hidden = !(needsColor && this.combo.length);
+        if (product && product.dataset.url) {
           link.href = product.dataset.url;
           link.hidden = false;
         } else {
           link.hidden = true;
+        }
+        this.querySelector('[data-r-added]').hidden = true;
+      }
+
+      async addToCart() {
+        const product = this.querySelector('[data-product]:checked');
+        if (!product || !this.combo.length) return;
+        const variants = this.variantsOf(product);
+        const tintable = product.dataset.tintable !== 'false';
+        const color = this.color;
+        const area = this.num(this.areaInput.value);
+        const coatsInput = this.querySelector('[data-coats]:checked');
+        const coats = coatsInput ? coatsInput.value : '2';
+        const properties = {
+          'Цвят': tintable && color ? `${color.code} ${color.name}` : 'Бяла (без тониране)',
+          'Каталог': tintable && color ? color.catalogue : '—',
+          'Сметка': `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
+        };
+        const items = this.combo.map((p) => ({ id: this.variantFor(variants, p.size).id, quantity: p.count, properties }));
+        const button = this.querySelector('[data-r-add]');
+        const note = this.querySelector('[data-r-added]');
+        button.setAttribute('aria-busy', 'true');
+        try {
+          const response = await fetch(`${this.dataset.cartAddUrl || '/cart/add'}.js`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ items }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.description || data.message || 'Грешка');
+          const what = this.combo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ');
+          note.classList.remove('is-error');
+          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${tintable && color ? `, цвят ${color.code}` : ''}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
+          note.hidden = false;
+          this.refreshCartBubble();
+          document.dispatchEvent(new CustomEvent('hameleon:cart-updated'));
+        } catch (error) {
+          note.classList.add('is-error');
+          note.textContent = `Не успяхме да добавим боята: ${error.message}`;
+          note.hidden = false;
+        } finally {
+          button.removeAttribute('aria-busy');
+        }
+      }
+
+      /* Refreshes Dawn's cart count in the header. */
+      async refreshCartBubble() {
+        try {
+          const response = await fetch(`${window.location.pathname}?sections=cart-icon-bubble`);
+          const sections = await response.json();
+          const bubble = document.getElementById('cart-icon-bubble');
+          if (bubble && sections['cart-icon-bubble']) {
+            const html = new DOMParser().parseFromString(sections['cart-icon-bubble'], 'text/html');
+            const inner = html.querySelector('.shopify-section');
+            bubble.innerHTML = inner ? inner.innerHTML : sections['cart-icon-bubble'];
+          }
+        } catch (e) {
+          /* The count catches up on the next page load. */
         }
       }
 
@@ -137,7 +395,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         return sizes.map((size, i) => ({ size, count: best.counts[i] })).filter((p) => p.count > 0);
       }
 
-      /* Counts a stat from its current value to the new one. */
+      /* Counts a number from its current value to the new one. */
       animate(el, to) {
         const from = this.num(el.dataset.value);
         el.dataset.value = to;
