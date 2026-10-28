@@ -8,6 +8,68 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "Хамелеон: магазин",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Store details used by the Хамелеон store card and store page."
+      },
+      {
+        "type": "text",
+        "id": "hm_store_name",
+        "label": "Store name",
+        "default": "Хамелеон Железария"
+      },
+      {
+        "type": "text",
+        "id": "hm_store_address",
+        "label": "Address",
+        "default": "бул. „България“ 21, Велико Търново"
+      },
+      {
+        "type": "text",
+        "id": "hm_store_phone",
+        "label": "Phone (as shown)",
+        "default": "089 500 10 44"
+      },
+      {
+        "type": "text",
+        "id": "hm_store_phone_link",
+        "label": "Phone (international, for the call link)",
+        "default": "+359895001044"
+      },
+      {
+        "type": "url",
+        "id": "hm_store_maps_link",
+        "label": "Google Maps link (for Упътване)"
+      },
+      {
+        "type": "text",
+        "id": "hm_hours_weekdays_label",
+        "label": "Weekdays label",
+        "default": "Понеделник – Петък"
+      },
+      {
+        "type": "text",
+        "id": "hm_hours_weekdays",
+        "label": "Weekday hours (HH:MM – HH:MM)",
+        "default": "08:00 – 19:00"
+      },
+      {
+        "type": "text",
+        "id": "hm_hours_weekend_label",
+        "label": "Weekend label",
+        "default": "Събота – Неделя"
+      },
+      {
+        "type": "text",
+        "id": "hm_hours_weekend",
+        "label": "Weekend hours (HH:MM – HH:MM, leave empty if closed)",
+        "default": "09:00 – 17:00"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.logo.name",
     "settings": [
       {

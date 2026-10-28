@@ -1,0 +1,291 @@
+/*
+  Хамелеон design tokens and shared styles.
+  Source: brand/design-system/tokens.json (Хамелеон design system).
+  Loaded after base.css so it can override Dawn's font variables.
+*/
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url('hameleon-montserrat-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url('hameleon-montserrat-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('hameleon-manrope-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('hameleon-manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --hm-primary: #12803a;
+  --hm-primary-hover: #0f6e33;
+  --hm-link: #0b6c7a;
+  --hm-link-hover: #085560;
+  --hm-brand-green: #19a54a;
+  --hm-brand-cyan: #00aac1;
+  --hm-text: #414042;
+  --hm-text-strong: #1a1c1e;
+  --hm-text-muted: #5b6166;
+  --hm-border: #dde2e0;
+  --hm-border-strong: #8a9297;
+  --hm-surface: #ffffff;
+  --hm-surface-sunken: #f4f6f5;
+  --hm-in-stock: #0f6e33;
+  --hm-in-stock-bg: #e7f5ec;
+  --hm-low-stock: #8a4b00;
+  --hm-sale: #b42318;
+  --hm-footer: #1a1c1e;
+
+  --hm-radius-sm: 6px;
+  --hm-radius-md: 10px;
+  --hm-radius-lg: 16px;
+  --hm-radius-pill: 999px;
+
+  --hm-gradient: linear-gradient(225deg, #00aac1, #19a54a);
+
+  --hm-font-display: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  --hm-font-body: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+
+  /* Dawn font variables */
+  --font-body-family: var(--hm-font-body);
+  --font-body-style: normal;
+  --font-body-weight: 500;
+  --font-body-weight-bold: 700;
+  --font-heading-family: var(--hm-font-display);
+  --font-heading-style: normal;
+  --font-heading-weight: 700;
+}
+
+body {
+  font-family: var(--hm-font-body);
+}
+
+/* Text links in content (not on the dark footer scheme) */
+.color-scheme-1 .rte a,
+.color-scheme-2 .rte a,
+.hm-contact a {
+  color: var(--hm-link);
+}
+
+.color-scheme-1 .rte a:hover,
+.color-scheme-2 .rte a:hover,
+.hm-contact a:hover {
+  color: var(--hm-link-hover);
+}
+
+.button,
+.shopify-challenge__button,
+.customer button {
+  font-family: var(--hm-font-display);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.badge {
+  font-family: var(--hm-font-display);
+  font-weight: 700;
+}
+
+/* Shared building blocks for the hameleon-* sections */
+
+.hm-section {
+  color: var(--hm-text);
+}
+
+.hm-eyebrow {
+  margin: 0;
+  font-family: var(--hm-font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--hm-link);
+}
+
+.hm-heading {
+  margin: 0;
+  font-family: var(--hm-font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--hm-text-strong);
+}
+
+.hm-lead {
+  margin: 0;
+  font-size: 1.8rem;
+  line-height: 1.55;
+}
+
+.hm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.8rem;
+  padding: 0 2.4rem;
+  border-radius: var(--hm-radius-md);
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  font-family: var(--hm-font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hm-btn--primary,
+a.hm-btn--primary {
+  background: var(--hm-primary);
+  color: #ffffff;
+}
+
+.hm-btn--primary:hover,
+a.hm-btn--primary:hover {
+  background: var(--hm-primary-hover);
+  color: #ffffff;
+}
+
+.hm-btn--secondary,
+a.hm-btn--secondary {
+  border-color: var(--hm-link);
+  color: var(--hm-link);
+  background: transparent;
+}
+
+.hm-btn--secondary:hover,
+a.hm-btn--secondary:hover {
+  border-color: var(--hm-link-hover);
+  color: var(--hm-link-hover);
+}
+
+.hm-btn:focus-visible,
+.hm-tile:focus-visible,
+.hm-chip:focus-visible {
+  outline: 3px solid var(--hm-link);
+  outline-offset: 2px;
+}
+
+.hm-tag {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--hm-radius-sm);
+  background: var(--hm-in-stock-bg);
+  color: var(--hm-in-stock);
+  font-family: var(--hm-font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.hm-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.6rem;
+  border-radius: var(--hm-radius-lg);
+  background: var(--hm-surface-sunken);
+  color: var(--hm-text-muted);
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.hm-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Opening hours (snippets/hameleon-hours.liquid) */
+
+.hm-hours {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.hm-hours__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.hm-hours__title {
+  font-size: 1.8rem;
+}
+
+.hm-hours__list {
+  margin: 0;
+}
+
+.hm-hours__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--hm-border);
+}
+
+.hm-hours__row dt,
+.hm-hours__row dd {
+  margin: 0;
+}
+
+.hm-hours__row dd {
+  font-weight: 600;
+  color: var(--hm-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-tag--closed {
+  background: var(--hm-surface-sunken);
+  color: var(--hm-text-muted);
+}
+
+/* Contact lines with an icon (store card and store page) */
+
+.hm-contact {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.hm-contact svg {
+  flex: 0 0 2.4rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin-top: 0.2rem;
+  color: var(--hm-brand-green);
+}
+
+.hm-contact strong {
+  display: block;
+  color: var(--hm-text-strong);
+}

@@ -5,8 +5,8 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "settings": {
-        "color_scheme": "scheme-1",
-        "show_line_separator": true,
+        "color_scheme": "scheme-3",
+        "show_line_separator": false,
         "show_social": false,
         "auto_rotate": false,
         "change_slides_speed": 5,
@@ -17,9 +17,9 @@
         "announcement-bar-0": {
           "type": "announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Готово до 3 работни дни · Вземете от магазина на бул. „България“ 21",
             "text_alignment": "center",
-            "color_scheme": "scheme-1",
+            "color_scheme": "scheme-3",
             "link": ""
           }
         }
@@ -38,12 +38,12 @@
         "menu_type_desktop": "dropdown",
         "sticky_header_type": "on-scroll-up",
         "show_line_separator": true,
-        "enable_country_selector": true,
-        "enable_language_selector": true,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
         "mobile_logo_position": "center",
         "margin_bottom": 0,
-        "padding_top": 20,
-        "padding_bottom": 20
+        "padding_top": 12,
+        "padding_bottom": 12
       }
     }
   },

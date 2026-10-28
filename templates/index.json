@@ -1,75 +1,450 @@
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "hero": {
+      "type": "hameleon-hero",
+      "blocks": {
+        "family-1": {
+          "type": "family",
+          "settings": {
+            "name": "Бели",
+            "color": "#E4E2D9"
+          }
+        },
+        "family-2": {
+          "type": "family",
+          "settings": {
+            "name": "Бежови",
+            "color": "#BCA180"
+          }
+        },
+        "family-3": {
+          "type": "family",
+          "settings": {
+            "name": "Жълти",
+            "color": "#F0E3C7"
+          }
+        },
+        "family-4": {
+          "type": "family",
+          "settings": {
+            "name": "Оранжеви",
+            "color": "#EFD5AB"
+          }
+        },
+        "family-5": {
+          "type": "family",
+          "settings": {
+            "name": "Червени",
+            "color": "#D9B9BF"
+          }
+        },
+        "family-6": {
+          "type": "family",
+          "settings": {
+            "name": "Виолетови",
+            "color": "#8E90C8"
+          }
+        },
+        "family-7": {
+          "type": "family",
+          "settings": {
+            "name": "Сини",
+            "color": "#527C9F"
+          }
+        },
+        "family-8": {
+          "type": "family",
+          "settings": {
+            "name": "Зелени",
+            "color": "#3E8145"
+          }
+        },
+        "family-9": {
+          "type": "family",
+          "settings": {
+            "name": "Кафяви",
+            "color": "#AD8D6D"
+          }
+        },
+        "family-10": {
+          "type": "family",
+          "settings": {
+            "name": "Сиви",
+            "color": "#9D9E9E"
+          }
+        }
+      },
+      "block_order": [
+        "family-1",
+        "family-2",
+        "family-3",
+        "family-4",
+        "family-5",
+        "family-6",
+        "family-7",
+        "family-8",
+        "family-9",
+        "family-10"
+      ],
+      "settings": {
+        "eyebrow": "Тониране на място",
+        "heading": "Изберете цвят онлайн. Вземете го тониран от магазина.",
+        "text": "1320 цвята Vitex, точното количество боя и съвет от хора, които го правят от години. Във Велико Търново.",
+        "button_label_1": "Изберете цвят",
+        "button_label_2": "Колко боя ми трябва?",
+        "button_link_2": "#kalkulator",
+        "families_label": "Цветови групи",
+        "card_link_label": "Всички 1320 цвята",
+        "color_scheme": "scheme-1",
+        "padding_top": 64,
+        "padding_bottom": 32
+      }
+    },
+    "categories": {
+      "type": "hameleon-categories",
+      "blocks": {
+        "category-1": {
+          "type": "category",
+          "settings": {
+            "title": "Бои и тониране",
+            "icon": "paint"
+          }
+        },
+        "category-2": {
+          "type": "category",
+          "settings": {
+            "title": "Мазилки",
+            "icon": "plaster"
+          }
+        },
+        "category-3": {
+          "type": "category",
+          "settings": {
+            "title": "Електроинструменти",
+            "icon": "power"
+          }
+        },
+        "category-4": {
+          "type": "category",
+          "settings": {
+            "title": "Ръчни инструменти",
+            "icon": "hand"
+          }
+        },
+        "category-5": {
+          "type": "category",
+          "settings": {
+            "title": "Градина",
+            "icon": "garden"
+          }
+        },
+        "category-6": {
+          "type": "category",
+          "settings": {
+            "title": "Крепежи и консумативи",
+            "icon": "fasteners"
+          }
+        }
+      },
+      "block_order": [
+        "category-1",
+        "category-2",
+        "category-3",
+        "category-4",
+        "category-5",
+        "category-6"
+      ],
+      "settings": {
+        "label": "Категории",
+        "color_scheme": "scheme-1",
+        "padding_top": 16,
+        "padding_bottom": 32
+      }
+    },
+    "how_it_works": {
+      "type": "hameleon-points",
+      "blocks": {
+        "step-1": {
+          "type": "point",
+          "settings": {
+            "title": "Изберете цвят",
+            "text": "От каталога онлайн или по код, който вече имате."
+          }
+        },
+        "step-2": {
+          "type": "point",
+          "settings": {
+            "title": "Изчислете количеството",
+            "text": "Квадратура, слоеве и разходна норма. Без излишни кофи."
+          }
+        },
+        "step-3": {
+          "type": "point",
+          "settings": {
+            "title": "Запазете и вземете",
+            "text": "Тонираме я и Ви се обаждаме. Плащате в магазина."
+          }
+        }
+      },
+      "block_order": [
+        "step-1",
+        "step-2",
+        "step-3"
+      ],
+      "settings": {
+        "heading": "Как работи",
+        "style": "cards",
+        "color_scheme": "scheme-1",
+        "padding_top": 32,
+        "padding_bottom": 32
+      }
+    },
+    "paints": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Бои за тониране",
+        "heading_size": "h2",
+        "show_description": false,
+        "description_style": "body",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "link",
+        "color_scheme": "scheme-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": true,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 32,
+        "padding_bottom": 32
+      }
+    },
+    "calculator": {
+      "type": "hameleon-calculator",
+      "settings": {
+        "heading": "Колко боя ми трябва?",
+        "text": "Въведете квадратурата на стените и слоевете. Ще Ви кажем колко литра и кои разфасовки.",
+        "default_area": 42,
+        "coverage": 9,
+        "sizes": "10, 5, 2.5",
+        "note": "Пример при разходна норма 9 м²/л. Точните норми и разфасовки идват от избрания продукт. Проверяваме сметката и на щанда.",
+        "color_scheme": "scheme-1",
+        "padding_top": 32,
+        "padding_bottom": 48
+      }
+    },
+    "tools": {
+      "type": "hameleon-tools",
+      "blocks": {
+        "tools-1": {
+          "type": "chip",
+          "settings": {
+            "title": "Бормашини"
+          }
+        },
+        "tools-2": {
+          "type": "chip",
+          "settings": {
+            "title": "Винтоверти"
+          }
+        },
+        "tools-3": {
+          "type": "chip",
+          "settings": {
+            "title": "Ъглошлайфи"
+          }
+        },
+        "tools-4": {
+          "type": "chip",
+          "settings": {
+            "title": "Перфоратори"
+          }
+        },
+        "tools-5": {
+          "type": "chip",
+          "settings": {
+            "title": "Циркуляри"
+          }
+        },
+        "tools-6": {
+          "type": "chip",
+          "settings": {
+            "title": "Батерии и зарядни"
+          }
+        },
+        "tools-7": {
+          "type": "chip",
+          "settings": {
+            "title": "Комплекти машини"
+          }
+        },
+        "tools-8": {
+          "type": "chip",
+          "settings": {
+            "title": "Ръчни инструменти"
+          }
+        },
+        "tools-9": {
+          "type": "brand",
+          "settings": {
+            "name": "TOTAL"
+          }
+        },
+        "tools-10": {
+          "type": "brand",
+          "settings": {
+            "name": "RAIDER"
+          }
+        },
+        "tools-11": {
+          "type": "brand",
+          "settings": {
+            "name": "DeWALT"
+          }
+        }
+      },
+      "block_order": [
+        "tools-1",
+        "tools-2",
+        "tools-3",
+        "tools-4",
+        "tools-5",
+        "tools-6",
+        "tools-7",
+        "tools-8",
+        "tools-9",
+        "tools-10",
+        "tools-11"
+      ],
+      "settings": {
+        "eyebrow": "Железария",
+        "heading": "Инструменти за ремонта",
+        "text": "Електро и ръчни инструменти, градина, крепежи и консумативи. Всичко за ремонта на едно място.",
+        "products_to_show": 4,
+        "brands_label": "Марки:",
+        "button_label": "Всички инструменти",
+        "color_scheme": "scheme-2",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "plasters": {
+      "type": "image-with-text",
       "blocks": {
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "heading": "Декоративни мазилки",
+            "heading_size": "h1"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Motivo, Gold и Silver: вижте истинските текстури и изберете цвят. Мострите са в магазина.</p>",
+            "text_style": "body"
           }
         },
         "button": {
-          "type": "buttons",
+          "type": "button",
           "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
+            "button_label": "Разгледайте мазилките",
+            "button_style_secondary": true
           }
         }
       },
       "block_order": [
         "heading",
+        "text",
         "button"
       ],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
         "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "content_layout": "no-overlap",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "scheme-1",
+        "color_scheme": "scheme-1",
+        "padding_top": 48,
+        "padding_bottom": 32
       }
     },
-    "featured_collection": {
-      "type": "featured-collection",
+    "store": {
+      "type": "hameleon-store-card",
       "settings": {
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "collection": "all",
-        "products_to_show": 8,
-        "columns_desktop": 4,
+        "eyebrow": "Магазинът",
+        "page_link_label": "Как да ни намерите",
         "color_scheme": "scheme-1",
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "padding_top": 44,
-        "padding_bottom": 36
+        "padding_top": 32,
+        "padding_bottom": 48
+      }
+    },
+    "trust": {
+      "type": "hameleon-points",
+      "blocks": {
+        "trust-1": {
+          "type": "point",
+          "settings": {
+            "title": "Тониране на място",
+            "text": "Точният код, и за следващата кофа."
+          }
+        },
+        "trust-2": {
+          "type": "point",
+          "settings": {
+            "title": "Съвет от майстори",
+            "text": "Коя боя, колко и с грунд или без."
+          }
+        },
+        "trust-3": {
+          "type": "point",
+          "settings": {
+            "title": "Плащане в магазина",
+            "text": "В брой или с карта при вземане."
+          }
+        },
+        "trust-4": {
+          "type": "point",
+          "settings": {
+            "title": "Готово до 3 работни дни",
+            "text": "Ако е по-рано, звъним по-рано."
+          }
+        }
+      },
+      "block_order": [
+        "trust-1",
+        "trust-2",
+        "trust-3",
+        "trust-4"
+      ],
+      "settings": {
+        "label": "Защо Хамелеон",
+        "style": "plain",
+        "color_scheme": "scheme-2",
+        "padding_top": 32,
+        "padding_bottom": 32
       }
     }
   },
   "order": [
-    "image_banner",
-    "featured_collection"
+    "hero",
+    "categories",
+    "how_it_works",
+    "paints",
+    "calculator",
+    "tools",
+    "plasters",
+    "store",
+    "trust"
   ]
 }

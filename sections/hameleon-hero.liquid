@@ -1,0 +1,213 @@
+{%- comment -%}
+  Хамелеон: home hero. Text and two buttons on the left, colour-family swatches on the brand gradient on the right.
+  Each "family" block is one swatch that links to its colour collection.
+{%- endcomment -%}
+{%- style -%}
+  .hm-hero {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  .hm-hero__inner {
+    display: grid;
+    gap: 2.8rem;
+    align-items: center;
+  }
+
+  .hm-hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  .hm-hero__title {
+    font-size: 3rem;
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .hm-hero__buttons {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .hm-hero__card {
+    padding: 2rem 1.6rem;
+    border-radius: var(--hm-radius-lg);
+    background: var(--hm-gradient);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.4rem 0.6rem;
+  }
+
+  .hm-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
+
+  .hm-swatch__dot {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: var(--hm-radius-pill);
+    border: 3px solid #ffffff;
+    box-sizing: border-box;
+  }
+
+  .hm-swatch__label {
+    padding: 0.1rem 0.6rem;
+    border-radius: var(--hm-radius-sm);
+    background: #ffffff;
+    color: var(--hm-text-strong);
+    font-family: var(--hm-font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  .hm-hero__card-note {
+    grid-column: 1 / -1;
+    justify-self: center;
+    padding: 0.4rem 1.2rem;
+    border-radius: var(--hm-radius-pill);
+    background: #ffffff;
+    color: var(--hm-text-strong);
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-hero {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+
+    .hm-hero__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4.8rem;
+    }
+
+    .hm-hero__title {
+      font-size: 4.4rem;
+    }
+
+    .hm-hero__buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+    }
+
+    .hm-hero__card {
+      padding: 3.2rem;
+      gap: 1.8rem;
+    }
+
+    .hm-swatch__dot {
+      width: 7.2rem;
+      height: 7.2rem;
+      border-width: 4px;
+    }
+
+    .hm-swatch__label {
+      font-size: 1.2rem;
+    }
+  }
+{%- endstyle -%}
+
+<section class="hm-section hm-hero color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width hm-hero__inner">
+    <div class="hm-hero__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hm-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="hm-heading hm-hero__title">{{ section.settings.heading | escape }}</h1>
+      {%- if section.settings.text != blank -%}
+        <p class="hm-lead">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+      <div class="hm-hero__buttons">
+        {%- if section.settings.button_label_1 != blank -%}
+          <a class="hm-btn hm-btn--primary" href="{{ section.settings.button_link_1 | default: '#' }}">
+            {{- section.settings.button_label_1 | escape -}}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.button_label_2 != blank -%}
+          <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link_2 | default: '#' }}">
+            {{- section.settings.button_label_2 | escape -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <nav class="hm-hero__card" aria-label="{{ section.settings.families_label | escape }}">
+        {%- for block in section.blocks -%}
+          <a class="hm-swatch" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+            <span class="hm-swatch__dot" style="background: {{ block.settings.color }};" aria-hidden="true"></span>
+            <span class="hm-swatch__label">{{ block.settings.name | escape }}</span>
+          </a>
+        {%- endfor -%}
+        {%- if section.settings.card_link_label != blank -%}
+          <a class="hm-hero__card-note" href="{{ section.settings.card_link | default: '#' }}">
+            {{- section.settings.card_link_label | escape -}}
+          </a>
+        {%- endif -%}
+      </nav>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: hero",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Тониране на място" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Изберете цвят онлайн. Вземете го тониран от магазина." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "1320 цвята Vitex, точното количество боя и съвет от хора, които го правят от години. Във Велико Търново." },
+    { "type": "text", "id": "button_label_1", "label": "Primary button label", "default": "Изберете цвят" },
+    { "type": "url", "id": "button_link_1", "label": "Primary button link" },
+    { "type": "text", "id": "button_label_2", "label": "Secondary button label", "default": "Колко боя ми трябва?" },
+    { "type": "url", "id": "button_link_2", "label": "Secondary button link" },
+    { "type": "text", "id": "families_label", "label": "Swatch card label (for screen readers)", "default": "Цветови групи" },
+    { "type": "text", "id": "card_link_label", "label": "Link under the swatches", "default": "Всички 1320 цвята" },
+    { "type": "url", "id": "card_link", "label": "Link under the swatches: URL" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 64 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "family",
+      "name": "Colour family",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Бели" },
+        { "type": "color", "id": "color", "label": "Swatch colour", "default": "#E4E2D9" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: hero",
+      "blocks": [
+        { "type": "family", "settings": { "name": "Бели", "color": "#E4E2D9" } },
+        { "type": "family", "settings": { "name": "Бежови", "color": "#BCA180" } },
+        { "type": "family", "settings": { "name": "Жълти", "color": "#F0E3C7" } },
+        { "type": "family", "settings": { "name": "Оранжеви", "color": "#EFD5AB" } },
+        { "type": "family", "settings": { "name": "Червени", "color": "#D9B9BF" } },
+        { "type": "family", "settings": { "name": "Виолетови", "color": "#8E90C8" } },
+        { "type": "family", "settings": { "name": "Сини", "color": "#527C9F" } },
+        { "type": "family", "settings": { "name": "Зелени", "color": "#3E8145" } },
+        { "type": "family", "settings": { "name": "Кафяви", "color": "#AD8D6D" } },
+        { "type": "family", "settings": { "name": "Сиви", "color": "#9D9E9E" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

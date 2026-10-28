@@ -1,0 +1,142 @@
+{%- comment -%}
+  Хамелеон: category tiles under the hero (paint, plaster, tools, garden, fasteners).
+  Each "category" block is one tile with an icon and a link.
+{%- endcomment -%}
+{%- style -%}
+  .hm-cats {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  .hm-cats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-tile {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.4rem 0.6rem;
+    border: 1px solid var(--hm-border);
+    border-radius: var(--hm-radius-md);
+    box-sizing: border-box;
+    background: var(--hm-surface);
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .hm-tile:hover {
+    border-color: var(--hm-primary);
+  }
+
+  .hm-tile svg {
+    width: 2.8rem;
+    height: 2.8rem;
+    color: var(--hm-primary);
+  }
+
+  .hm-tile__label {
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--hm-text-strong);
+    hyphens: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-cats {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+
+    .hm-cats__grid {
+      grid-template-columns: repeat({{ section.blocks.size | at_least: 1 | at_most: 6 }}, minmax(0, 1fr));
+      gap: 1.6rem;
+    }
+
+    .hm-tile {
+      padding: 2rem 1.2rem;
+      gap: 1rem;
+    }
+
+    .hm-tile svg {
+      width: 3.2rem;
+      height: 3.2rem;
+    }
+
+    .hm-tile__label {
+      font-size: 1.5rem;
+    }
+  }
+{%- endstyle -%}
+
+<nav class="hm-section hm-cats color-{{ section.settings.color_scheme }} gradient" aria-label="{{ section.settings.label | escape }}">
+  <ul class="page-width hm-cats__grid" lang="bg">
+    {%- for block in section.blocks -%}
+      <li {{ block.shopify_attributes }}>
+        <a class="hm-tile" href="{{ block.settings.link | default: '#' }}">
+          {%- render 'hameleon-icon', icon: block.settings.icon -%}
+          <span class="hm-tile__label">{{ block.settings.title | escape }}</span>
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>
+
+{% schema %}
+{
+  "name": "Хамелеон: categories",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label (for screen readers)", "default": "Категории" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Бои и тониране" },
+        { "type": "url", "id": "link", "label": "Link" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "paint",
+          "options": [
+            { "value": "paint", "label": "Paint roller" },
+            { "value": "plaster", "label": "Trowel" },
+            { "value": "power", "label": "Power tool" },
+            { "value": "hand", "label": "Wrench" },
+            { "value": "garden", "label": "Leaf" },
+            { "value": "fasteners", "label": "Screw" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: categories",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Бои и тониране", "icon": "paint" } },
+        { "type": "category", "settings": { "title": "Мазилки", "icon": "plaster" } },
+        { "type": "category", "settings": { "title": "Електроинструменти", "icon": "power" } },
+        { "type": "category", "settings": { "title": "Ръчни инструменти", "icon": "hand" } },
+        { "type": "category", "settings": { "title": "Градина", "icon": "garden" } },
+        { "type": "category", "settings": { "title": "Крепежи и консумативи", "icon": "fasteners" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

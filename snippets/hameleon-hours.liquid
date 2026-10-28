@@ -1,0 +1,50 @@
+{%- comment -%}
+  Хамелеон: opening hours from theme settings, with an "Отворено сега / Затворено" badge
+  worked out in the browser on Sofia time.
+  Accepts:
+  - heading: {String} optional heading shown above the hours
+{%- endcomment -%}
+<div class="hm-hours" data-hm-hours data-weekdays="{{ settings.hm_hours_weekdays | escape }}" data-weekend="{{ settings.hm_hours_weekend | escape }}">
+  <div class="hm-hours__head">
+    {%- if heading != blank -%}
+      <h2 class="hm-heading hm-hours__title">{{ heading | escape }}</h2>
+    {%- endif -%}
+    <span class="hm-tag hm-hours__badge" data-hm-hours-badge hidden></span>
+  </div>
+  <dl class="hm-hours__list">
+    <div class="hm-hours__row">
+      <dt>{{ settings.hm_hours_weekdays_label | escape }}</dt>
+      <dd>{{ settings.hm_hours_weekdays | escape }}</dd>
+    </div>
+    <div class="hm-hours__row">
+      <dt>{{ settings.hm_hours_weekend_label | escape }}</dt>
+      <dd>{{ settings.hm_hours_weekend | default: 'Почивен ден' | escape }}</dd>
+    </div>
+  </dl>
+</div>
+<script>
+  (function () {
+    document.querySelectorAll('[data-hm-hours]:not([data-ready])').forEach(function (el) {
+      el.setAttribute('data-ready', '');
+      var parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Sofia',
+        weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23',
+      }).formatToParts(new Date());
+      var get = function (type) {
+        var p = parts.find(function (x) { return x.type === type; });
+        return p ? p.value : '';
+      };
+      var weekend = get('weekday') === 'Sat' || get('weekday') === 'Sun';
+      var now = parseInt(get('hour'), 10) * 60 + parseInt(get('minute'), 10);
+      var range = (weekend ? el.dataset.weekend : el.dataset.weekdays).match(/(\d{1,2}):(\d{2})\D+(\d{1,2}):(\d{2})/);
+      var open = !!range && now >= range[1] * 60 + +range[2] && now < range[3] * 60 + +range[4];
+      var badge = el.querySelector('[data-hm-hours-badge]');
+      badge.textContent = open ? 'Отворено сега' : 'Затворено сега';
+      badge.classList.toggle('hm-tag--closed', !open);
+      badge.hidden = false;
+    });
+  })();
+</script>

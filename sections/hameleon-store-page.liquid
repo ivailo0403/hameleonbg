@@ -1,0 +1,307 @@
+{%- comment -%}
+  Хамелеон: the store page (template page.store). Intro, map image, contact, hours,
+  how pickup works ("step" blocks), what you'll find ("offer" blocks), a photo and Google reviews.
+  Address, phone and hours come from Theme settings → Хамелеон: магазин.
+{%- endcomment -%}
+{%- style -%}
+  .hm-store {
+    padding: 2.8rem 0 4.8rem;
+  }
+
+  .hm-store__inner {
+    display: grid;
+    gap: 3.2rem;
+  }
+
+  .hm-store__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .hm-store__title {
+    font-size: 2.6rem;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .hm-store__intro-text > :first-child {
+    margin-top: 0;
+  }
+
+  .hm-store__intro-text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .hm-store__media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--hm-radius-lg);
+  }
+
+  .hm-store__media .hm-placeholder {
+    min-height: 22rem;
+  }
+
+  .hm-store__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .hm-store__buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+
+  .hm-store__hours {
+    padding: 1.6rem;
+    border: 1px solid var(--hm-border);
+    border-radius: var(--hm-radius-md);
+  }
+
+  .hm-store__block {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .hm-store__h2 {
+    font-size: 2.4rem;
+  }
+
+  .hm-store__steps {
+    margin: 0;
+    padding-left: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .hm-store__offers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-store__offer {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 1.4rem;
+    border-radius: var(--hm-radius-md);
+    background: var(--hm-surface-sunken);
+  }
+
+  .hm-store__offer strong {
+    display: block;
+    font-family: var(--hm-font-display);
+    color: var(--hm-text-strong);
+  }
+
+  .hm-store__offer span {
+    font-size: 1.4rem;
+  }
+
+  .hm-store__rating {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .hm-store__rating-value {
+    font-family: var(--hm-font-display);
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-store__stars {
+    color: var(--hm-low-stock);
+    letter-spacing: 0.2rem;
+  }
+
+  .hm-store__reviews .hm-btn {
+    align-self: flex-start;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-store {
+      padding: 4.8rem 0 6.4rem;
+    }
+
+    .hm-store__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4.8rem 6.4rem;
+      align-items: start;
+    }
+
+    .hm-store__intro,
+    .hm-store__wide {
+      grid-column: 1 / -1;
+    }
+
+    .hm-store__title {
+      font-size: 4rem;
+    }
+
+    .hm-store__offers {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .hm-store__buttons {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign steps = section.blocks | where: 'type', 'step'
+  assign offers = section.blocks | where: 'type', 'offer'
+-%}
+
+<div class="hm-section hm-store color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width hm-store__inner">
+    <div class="hm-store__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hm-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="hm-heading hm-store__title">{{ page.title | default: settings.hm_store_name | escape }}</h1>
+      {%- if page.content != blank -%}
+        <div class="hm-store__intro-text rte hm-lead">{{ page.content }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="hm-store__media">
+      {%- if section.settings.map_image != blank -%}
+        <a href="{{ settings.hm_store_maps_link | default: '#' }}"{% if settings.hm_store_maps_link != blank %} target="_blank" rel="noopener"{% endif %}>
+          {{
+            section.settings.map_image
+            | image_url: width: 1200
+            | image_tag: widths: '400, 600, 800, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: section.settings.map_image.alt | default: 'Карта до магазина'
+          }}
+        </a>
+      {%- else -%}
+        <div class="hm-placeholder">Карта: {{ settings.hm_store_address | escape }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="hm-store__contact">
+      <div class="hm-contact">
+        {%- render 'hameleon-icon', icon: 'pin' -%}
+        <span><strong>Адрес</strong>{{ settings.hm_store_address | escape }}</span>
+      </div>
+      <div class="hm-contact">
+        {%- render 'hameleon-icon', icon: 'phone' -%}
+        <span><strong>Телефон</strong><a href="tel:{{ settings.hm_store_phone_link | escape }}">{{ settings.hm_store_phone | escape }}</a></span>
+      </div>
+      <div class="hm-store__buttons">
+        <a class="hm-btn hm-btn--primary" href="{{ settings.hm_store_maps_link | default: '#' }}"{% if settings.hm_store_maps_link != blank %} target="_blank" rel="noopener"{% endif %}>Упътване</a>
+        <a class="hm-btn hm-btn--secondary" href="tel:{{ settings.hm_store_phone_link | escape }}">Обадете се</a>
+      </div>
+      <div class="hm-store__hours">
+        {%- render 'hameleon-hours', heading: 'Работно време' -%}
+      </div>
+    </div>
+
+    {%- if steps.size > 0 -%}
+      <div class="hm-store__block">
+        <h2 class="hm-heading hm-store__h2">{{ section.settings.steps_heading | escape }}</h2>
+        <ol class="hm-store__steps">
+          {%- for block in steps -%}
+            <li {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+          {%- endfor -%}
+        </ol>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.photo != blank -%}
+      <div class="hm-store__media">
+        {{
+          section.settings.photo
+          | image_url: width: 1200
+          | image_tag: widths: '400, 600, 800, 1200', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy'
+        }}
+      </div>
+    {%- endif -%}
+
+    {%- if offers.size > 0 -%}
+      <div class="hm-store__block hm-store__wide">
+        <h2 class="hm-heading hm-store__h2">{{ section.settings.offers_heading | escape }}</h2>
+        <ul class="hm-store__offers">
+          {%- for block in offers -%}
+            <li {{ block.shopify_attributes }}>
+              <div class="hm-store__offer">
+                <strong>{{ block.settings.title | escape }}</strong>
+                <span>{{ block.settings.text | escape }}</span>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.rating != blank -%}
+      <div class="hm-store__block hm-store__reviews">
+        <h2 class="hm-heading hm-store__h2">Отзиви</h2>
+        <div class="hm-store__rating">
+          <span class="hm-store__rating-value">{{ section.settings.rating | escape }}</span>
+          <span>
+            <span class="hm-store__stars" role="img" aria-label="{{ section.settings.rating | escape }} от 5 звезди">★★★★★</span><br>
+            {%- if section.settings.review_count != blank -%}
+              <span style="font-size: 1.4rem; color: var(--hm-text-muted);">{{ section.settings.review_count | escape }} отзива в Google</span>
+            {%- endif -%}
+          </span>
+        </div>
+        {%- if section.settings.reviews_link != blank -%}
+          <a class="hm-btn hm-btn--secondary" href="{{ section.settings.reviews_link }}" target="_blank" rel="noopener">Оставете отзив в Google</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Хамелеон: store page",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "paragraph", "content": "The title and intro come from the page itself. Address, phone and hours are in Theme settings → Хамелеон: магазин." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Магазинът" },
+    { "type": "image_picker", "id": "map_image", "label": "Map image (links to Google Maps)" },
+    { "type": "text", "id": "steps_heading", "label": "Pickup steps heading", "default": "Как се взима поръчка" },
+    { "type": "image_picker", "id": "photo", "label": "Photo (tinting machine or the counter)" },
+    { "type": "text", "id": "offers_heading", "label": "Offers heading", "default": "Какво ще намерите" },
+    { "type": "header", "content": "Google reviews" },
+    { "type": "paragraph", "content": "Leave the rating empty to hide this part." },
+    { "type": "text", "id": "rating", "label": "Rating, e.g. 4,7" },
+    { "type": "text", "id": "review_count", "label": "Number of reviews" },
+    { "type": "url", "id": "reviews_link", "label": "Link to write a Google review" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Pickup step",
+      "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Запазвате онлайн. Плащане не се иска." }]
+    },
+    {
+      "type": "offer",
+      "name": "What you'll find",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Тониране" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Машината смесва всеки цвят на място." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Хамелеон: store page" }]
+}
+{% endschema %}

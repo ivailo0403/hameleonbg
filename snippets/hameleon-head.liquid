@@ -1,0 +1,9 @@
+{%- comment -%}
+  Хамелеон: self-hosted brand fonts and design tokens.
+  Rendered in layout/theme.liquid right after base.css.
+{%- endcomment -%}
+{% comment %}theme-check-disable AssetPreload{% endcomment %}
+<link rel="preload" as="font" href="{{ 'hameleon-manrope-cyrillic.woff2' | asset_url }}" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="{{ 'hameleon-montserrat-cyrillic.woff2' | asset_url }}" type="font/woff2" crossorigin>
+{% comment %}theme-check-enable AssetPreload{% endcomment %}
+{{ 'hameleon-tokens.css' | asset_url | stylesheet_tag }}

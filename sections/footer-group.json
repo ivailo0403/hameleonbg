@@ -4,16 +4,42 @@
   "sections": {
     "footer": {
       "type": "footer",
-      "blocks": {},
-      "block_order": [],
+      "blocks": {
+        "store": {
+          "type": "text",
+          "settings": {
+            "heading": "Хамелеон Железария",
+            "subtext": "<p>бул. „България“ 21, Велико Търново<br/>Пон–Пет 08:00–19:00<br/>Съб–Нед 09:00–17:00<br/><a href=\"tel:+359895001044\">089 500 10 44</a></p>"
+          }
+        },
+        "menu": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Информация",
+            "menu": "footer"
+          }
+        },
+        "company": {
+          "type": "text",
+          "settings": {
+            "heading": "Фирмени данни",
+            "subtext": "<p>„Магазин Хамелеон“ ЕООД<br/>ЕИК 204550634<br/>ДДС BG204550634</p>"
+          }
+        }
+      },
+      "block_order": [
+        "store",
+        "menu",
+        "company"
+      ],
       "settings": {
-        "color_scheme": "scheme-1",
-        "newsletter_enable": true,
+        "color_scheme": "scheme-3",
+        "newsletter_enable": false,
         "newsletter_heading": "Subscribe to our emails",
-        "enable_follow_on_shop": true,
+        "enable_follow_on_shop": false,
         "show_social": true,
-        "enable_country_selector": true,
-        "enable_language_selector": true,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
         "payment_enable": true,
         "show_policy": true,
         "margin_top": 0,
