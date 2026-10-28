@@ -1,3 +1,6 @@
+/*
+ * Хамелеон: paint product page. Assign it to paint products (product → Theme template → paint).
+ */
 {
   "sections": {
     "main": {
