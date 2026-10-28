@@ -38,8 +38,9 @@
   .hm-calc__card,
   .hm-calc__result {
     border: 1px solid var(--hm-border);
-    border-radius: var(--hm-radius-lg);
+    border-radius: 2rem;
     background: var(--hm-surface);
+    box-shadow: var(--hm-shadow-md);
   }
 
   .hm-calc__card {
@@ -271,9 +272,64 @@
   }
 
   .hm-calc__r-head {
-    padding: 1.6rem;
-    background: var(--hm-in-stock-bg);
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #e7f5ec, #e3f4f6);
     border-bottom: 1px solid var(--hm-border);
+  }
+
+  .hm-can {
+    flex: 0 0 6.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hm-can__lid {
+    width: 6.4rem;
+    height: 1rem;
+    border-radius: 0.6rem 0.6rem 0.2rem 0.2rem;
+    background: #8a9297;
+  }
+
+  .hm-can__body {
+    position: relative;
+    width: 5.6rem;
+    height: 7.2rem;
+    border-radius: 0 0 1rem 1rem;
+    background: #ffffff;
+    box-shadow: inset 0 0 0 2px #c9cfcc, var(--hm-shadow-sm);
+    overflow: hidden;
+  }
+
+  .hm-can__fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0;
+    background: var(--hm-gradient);
+    transition: height 0.9s var(--hm-ease);
+  }
+
+  .hm-can__fill::before {
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    top: -0.4rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  .hm-calc__r-use {
+    margin: 0.4rem 0 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--hm-in-stock);
   }
 
   .hm-calc__r-name {
@@ -327,6 +383,7 @@
 
   .hm-calc__stat dd {
     margin: 0;
+    transition: transform 0.3s var(--hm-ease);
     font-family: var(--hm-font-display);
     font-size: 2.4rem;
     font-weight: 800;
@@ -447,19 +504,19 @@
   assign default_coats = section.settings.default_coats | plus: 0
 -%}
 
-<section id="kalkulator" class="hm-section hm-calc-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
+<section id="kalkulator" class="hm-section hm-calc-{{ section.id }} color-{{ section.settings.color_scheme }} gradient" style="background: radial-gradient(60rem 40rem at 100% 0%, rgba(0, 170, 193, 0.1), transparent 60%), radial-gradient(50rem 40rem at 0% 100%, rgba(25, 165, 74, 0.1), transparent 60%), var(--hm-surface-sunken);">
   <div class="page-width">
     <div class="hm-calc__head">
       {%- if section.settings.eyebrow != blank -%}
-        <p class="hm-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
       {%- endif -%}
-      <h2 class="hm-heading hm-calc__title">{{ section.settings.heading | escape }}</h2>
+      <h2 class="hm-h2" data-reveal style="--d: 1">{{ section.settings.heading | escape }}</h2>
       {%- if section.settings.text != blank -%}
-        <p class="hm-lead" style="font-size: 1.6rem;">{{ section.settings.text | escape }}</p>
+        <p class="hm-sub" data-reveal style="--d: 2">{{ section.settings.text | escape }}</p>
       {%- endif -%}
     </div>
 
-    <hameleon-paint-calc class="hm-calc__layout">
+    <hameleon-paint-calc class="hm-calc__layout" data-reveal style="--d: 2">
       <div class="hm-calc__card">
         <fieldset class="hm-calc__step">
           <legend class="hm-calc__step-label"><span class="hm-calc__step-num">1</span>Изберете категория</legend>
@@ -550,9 +607,16 @@
       </div>
 
       <div class="hm-calc__result">
-        <div class="hm-calc__r-head" aria-live="polite">
-          <p class="hm-calc__r-name" data-r-name>Вашият резултат</p>
-          <p class="hm-calc__r-detail" data-r-detail>Изберете продукт и въведете площта.</p>
+        <div class="hm-calc__r-head">
+          <div class="hm-can" aria-hidden="true">
+            <span class="hm-can__lid"></span>
+            <span class="hm-can__body"><span class="hm-can__fill" data-r-fill></span></span>
+          </div>
+          <div aria-live="polite">
+            <p class="hm-calc__r-name" data-r-name>Вашият резултат</p>
+            <p class="hm-calc__r-detail" data-r-detail>Изберете продукт и въведете площта.</p>
+            <p class="hm-calc__r-use" data-r-use hidden></p>
+          </div>
         </div>
         <div class="hm-calc__r-body">
           <dl class="hm-calc__stats" data-r-content hidden>

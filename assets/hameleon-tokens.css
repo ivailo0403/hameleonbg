@@ -66,6 +66,8 @@
   --hm-radius-pill: 999px;
 
   --hm-gradient: linear-gradient(225deg, #00aac1, #19a54a);
+  /* Darker version for white text on top (contrast ≥ 4.5:1) */
+  --hm-gradient-deep: linear-gradient(225deg, #007a8a, #0f6e33);
 
   --hm-font-display: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
   --hm-font-body: 'Manrope', 'Segoe UI', system-ui, sans-serif;
@@ -288,4 +290,212 @@ a.hm-btn--secondary:hover {
 .hm-contact strong {
   display: block;
   color: var(--hm-text-strong);
+}
+
+/* ---------- Depth, motion and shared premium pieces ---------- */
+
+:root {
+  --hm-shadow-sm: 0 1px 2px rgba(26, 28, 30, 0.06), 0 2px 8px rgba(26, 28, 30, 0.05);
+  --hm-shadow-md: 0 4px 12px rgba(26, 28, 30, 0.06), 0 12px 32px rgba(26, 28, 30, 0.08);
+  --hm-shadow-lg: 0 10px 30px rgba(26, 28, 30, 0.08), 0 30px 60px rgba(26, 28, 30, 0.12);
+  --hm-shadow-green: 0 8px 24px rgba(18, 128, 58, 0.28);
+  --hm-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hm-btn {
+  gap: 0.8rem;
+  transition: transform 0.25s var(--hm-ease), box-shadow 0.25s var(--hm-ease), background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.hm-btn--primary,
+a.hm-btn--primary {
+  box-shadow: var(--hm-shadow-green);
+}
+
+.hm-btn:hover {
+  transform: translateY(-2px);
+}
+
+.hm-btn__arrow {
+  display: inline-block;
+  transition: transform 0.25s var(--hm-ease);
+}
+
+.hm-btn:hover .hm-btn__arrow {
+  transform: translateX(4px);
+}
+
+.hm-btn--light,
+a.hm-btn--light {
+  background: #ffffff;
+  color: var(--hm-text-strong);
+}
+
+.hm-btn--light:hover,
+a.hm-btn--light:hover {
+  color: var(--hm-primary);
+}
+
+.hm-btn--ghost-light,
+a.hm-btn--ghost-light {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+}
+
+.hm-btn--ghost-light:hover,
+a.hm-btn--ghost-light:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.hm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--hm-radius-pill);
+  background: #ffffff;
+  box-shadow: var(--hm-shadow-sm);
+  color: var(--hm-text-strong);
+  font-family: var(--hm-font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.hm-pill__dot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--hm-brand-green);
+  box-shadow: 0 0 0 0 rgba(25, 165, 74, 0.5);
+  animation: hm-pulse 2s infinite;
+}
+
+.hm-gradient-text {
+  background: var(--hm-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hm-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 72rem;
+  margin-bottom: 3.2rem;
+}
+
+.hm-section-head--center {
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+  text-align: center;
+}
+
+.hm-h2 {
+  margin: 0;
+  font-family: var(--hm-font-display);
+  font-size: clamp(2.8rem, 4.2vw, 4.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--hm-text-strong);
+}
+
+.hm-sub {
+  margin: 0;
+  font-size: 1.7rem;
+  line-height: 1.6;
+  color: var(--hm-text-muted);
+}
+
+.hm-card {
+  border: 1px solid var(--hm-border);
+  border-radius: var(--hm-radius-lg);
+  background: #ffffff;
+  box-shadow: var(--hm-shadow-sm);
+  transition: transform 0.35s var(--hm-ease), box-shadow 0.35s var(--hm-ease), border-color 0.35s;
+}
+
+a.hm-card:hover,
+.hm-card--hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--hm-shadow-lg);
+  border-color: transparent;
+}
+
+.hm-space {
+  padding: 6.4rem 0;
+}
+
+@media screen and (min-width: 990px) {
+  .hm-space {
+    padding: 10.4rem 0;
+  }
+}
+
+/* Reveal on scroll (assets/hameleon-motion.js adds .is-in) */
+.hm-motion [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s var(--hm-ease), transform 0.8s var(--hm-ease);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+
+.hm-motion [data-reveal='scale'] {
+  transform: scale(0.94);
+}
+
+.hm-motion [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes hm-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(25, 165, 74, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(25, 165, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(25, 165, 74, 0); }
+}
+
+@keyframes hm-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes hm-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-motion [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hm-section *,
+  .hm-section *::before,
+  .hm-section *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dawn product cards: softer, rounder, with lift */
+.card-wrapper .card {
+  transition: transform 0.35s var(--hm-ease), box-shadow 0.35s var(--hm-ease);
+}
+
+.card-wrapper:hover .card--card,
+.card-wrapper:hover .card--standard .card__inner {
+  transform: translateY(-4px);
+  box-shadow: var(--hm-shadow-lg);
+}
+
+.card__heading {
+  font-family: var(--hm-font-display);
+  font-weight: 700;
 }

@@ -1,0 +1,114 @@
+{%- comment -%}
+  Хамелеон: big numbers that count up when they scroll into view. Each "stat" block is one number.
+{%- endcomment -%}
+{%- style -%}
+  .hm-stats {
+    padding: 5.6rem 0;
+    background: var(--hm-text-strong);
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hm-stats::before {
+    content: '';
+    position: absolute;
+    inset: -40% -10% auto auto;
+    width: 60rem;
+    height: 60rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(25, 165, 74, 0.35), transparent 65%);
+  }
+
+  .hm-stats__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.2rem 2rem;
+    margin: 0;
+  }
+
+  .hm-stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.6rem;
+  }
+
+  .hm-stat dd {
+    margin: 0;
+    font-family: var(--hm-font-display);
+    font-size: clamp(4rem, 6vw, 6.4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hm-stat dd small {
+    font-size: 0.45em;
+    font-weight: 700;
+    letter-spacing: 0;
+    margin-left: 0.4rem;
+    color: #8ee0ab;
+  }
+
+  .hm-stat dt {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: #c9cfcc;
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-stats {
+      padding: 8rem 0;
+    }
+
+    .hm-stats__grid {
+      grid-template-columns: repeat({{ section.blocks.size | at_least: 1 | at_most: 4 }}, minmax(0, 1fr));
+    }
+  }
+{%- endstyle -%}
+
+<section class="hm-section hm-stats">
+  <div class="page-width">
+    <dl class="hm-stats__grid">
+      {%- for block in section.blocks -%}
+        <div class="hm-stat" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <dt>{{ block.settings.label | escape }}</dt>
+          <dd><span data-count="{{ block.settings.number }}">{{ block.settings.number }}</span>{% if block.settings.unit != blank %}<small>{{ block.settings.unit | escape }}</small>{% endif %}</dd>
+        </div>
+      {%- endfor -%}
+    </dl>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: numbers",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Number",
+      "settings": [
+        { "type": "number", "id": "number", "label": "Number", "default": 1320 },
+        { "type": "text", "id": "unit", "label": "Unit after the number", "default": "цвята" },
+        { "type": "text", "id": "label", "label": "Label", "default": "в каталога Vitex, тонирани на място" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: numbers",
+      "blocks": [
+        { "type": "stat", "settings": { "number": 1320, "unit": "цвята", "label": "в каталога Vitex, тонирани на място" } },
+        { "type": "stat", "settings": { "number": 3, "unit": "дни", "label": "най-много, докато поръчката е готова" } },
+        { "type": "stat", "settings": { "number": 7, "unit": "дни", "label": "пазим готовата поръчка за Вас" } },
+        { "type": "stat", "settings": { "number": 0, "unit": "€", "label": "предплащане. Плащате при взимане" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

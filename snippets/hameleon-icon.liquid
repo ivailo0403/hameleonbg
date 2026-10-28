@@ -1,7 +1,7 @@
 {%- comment -%}
   Хамелеон: line icons (24×24, 1.75 stroke, currentColor).
   Accepts:
-  - icon: {String} paint, plaster, power, hand, garden, fasteners, pin, phone, clock, warning, check
+  - icon: {String} paint, plaster, power, hand, garden, fasteners, pin, phone, clock, warning, check, screwdriver, grinder, hammerdrill, saw, battery, kit
 {%- endcomment -%}
 {%- liquid
   case icon
@@ -21,6 +21,18 @@
       assign path = 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z'
     when 'phone'
       assign path = 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z'
+    when 'screwdriver'
+      assign path = 'M14 3l7 7-3 1-4-4zM14 7l-9 9 3 3 9-9M4 20l2-2'
+    when 'grinder'
+      assign path = 'M8 4a6 6 0 1 1 0 12A6 6 0 0 1 8 4zM8 8.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM14 10h7v3h-7'
+    when 'hammerdrill'
+      assign path = 'M2 8h13v5H2zM15 9.5h7M6 13l-1 7h4l1-7M18.5 7v5'
+    when 'saw'
+      assign path = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 3v2.5M21 12h-2.5M12 21v-2.5M3 12h2.5'
+    when 'battery'
+      assign path = 'M4 7h14v10H4zM18 10h2v4h-2M11.5 9l-2 3.5h3l-2 3.5'
+    when 'kit'
+      assign path = 'M3 8h18v12H3zM8 8V5h8v3M3 13h18M11 12v2h2v-2'
     when 'warning'
       assign path = 'M12 3l10 18H2zM12 10v5M12 18h.01'
     when 'clock'

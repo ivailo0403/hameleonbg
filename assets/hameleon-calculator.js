@@ -51,8 +51,13 @@ if (!customElements.get('hameleon-paint-calc')) {
         const name = this.querySelector('[data-r-name]');
         const detail = this.querySelector('[data-r-detail]');
 
+        const fill = this.querySelector('[data-r-fill]');
+        const use = this.querySelector('[data-r-use]');
+
         if (!product || area <= 0) {
           contents.forEach((el) => (el.hidden = true));
+          fill.style.height = '0%';
+          use.hidden = true;
           link.hidden = true;
           name.textContent = product ? product.dataset.name : 'Вашият резултат';
           detail.textContent = product ? 'Въведете площта в м².' : 'Изберете продукт и въведете площта.';
@@ -76,10 +81,14 @@ if (!customElements.get('hameleon-paint-calc')) {
 
         name.textContent = product.dataset.name;
         detail.textContent = `${this.format(area)} м² · ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л`;
-        this.querySelector('[data-r-litres]').textContent = this.format(total);
-        this.querySelector('[data-r-packs]').textContent = count;
+        this.animate(this.querySelector('[data-r-litres]'), total);
+        this.animate(this.querySelector('[data-r-packs]'), count);
         this.querySelector('[data-r-packs-label]').textContent = count === 1 ? 'опаковка' : 'опаковки';
-        this.querySelector('[data-r-area]').textContent = this.format(totalArea);
+        this.animate(this.querySelector('[data-r-area]'), totalArea);
+        const ratio = Math.min(litres / total, 1);
+        fill.style.height = `${Math.max(ratio * 100, 6)}%`;
+        use.textContent = `Използвате ${Math.round(ratio * 100)}% от купената боя`;
+        use.hidden = false;
 
         const list = this.querySelector('[data-r-pack-list]');
         list.replaceChildren(
@@ -126,6 +135,25 @@ if (!customElements.get('hameleon-paint-calc')) {
         search(0, 0);
         if (!best) return [{ size: sizes[0], count: 1 }];
         return sizes.map((size, i) => ({ size, count: best.counts[i] })).filter((p) => p.count > 0);
+      }
+
+      /* Counts a stat from its current value to the new one. */
+      animate(el, to) {
+        const from = this.num(el.dataset.value);
+        el.dataset.value = to;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || from === to) {
+          el.textContent = this.format(to);
+          return;
+        }
+        const start = performance.now();
+        const step = (now) => {
+          const p = Math.min((now - start) / 600, 1);
+          const v = from + (to - from) * (1 - Math.pow(1 - p, 3));
+          el.textContent = this.format(p < 1 && Number.isInteger(to) ? Math.round(v) : v);
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = this.format(to);
+        };
+        requestAnimationFrame(step);
       }
 
       size(litres) {

@@ -1,0 +1,212 @@
+{%- comment -%}
+  Хамелеон: decorative plasters. Text on one side; on the other, finish samples drawn in CSS
+  (Gold, Silver, Titanium, Motivo) with a light sheen that moves across on hover.
+  Each "finish" block is one sample tile; upload a real photo to replace the drawn texture.
+{%- endcomment -%}
+{%- style -%}
+  .hm-plaster {
+    display: grid;
+    gap: 3.2rem;
+    align-items: center;
+  }
+
+  .hm-plaster__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.6rem;
+  }
+
+  .hm-plaster__list {
+    display: grid;
+    gap: 1rem;
+    margin: 0.4rem 0 0.8rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-plaster__list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-plaster__list svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--hm-brand-green);
+  }
+
+  .hm-finishes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
+  }
+
+  .hm-finish {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--hm-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--hm-shadow-md);
+    background: var(--tex);
+    background-size: cover;
+    transition: transform 0.4s var(--hm-ease), box-shadow 0.4s var(--hm-ease);
+  }
+
+  .hm-finish:nth-child(even) {
+    transform: translateY(2.4rem);
+  }
+
+  .hm-finish:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hm-shadow-lg);
+  }
+
+  .hm-finish:nth-child(even):hover {
+    transform: translateY(2rem);
+  }
+
+  .hm-finish::after {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+    transform: translateX(-60%);
+    transition: transform 1.1s var(--hm-ease);
+  }
+
+  .hm-finish:hover::after {
+    transform: translateX(60%);
+  }
+
+  .hm-finish img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hm-finish__name {
+    position: absolute;
+    left: 1.2rem;
+    bottom: 1.2rem;
+    z-index: 1;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.92);
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-finish--gold { --tex: radial-gradient(120% 80% at 30% 20%, #f6e3a1, transparent 50%), repeating-linear-gradient(35deg, #c9a24a 0 6px, #d9b65e 6px 11px, #b98f37 11px 15px), #c9a24a; }
+  .hm-finish--silver { --tex: radial-gradient(120% 80% at 70% 15%, #ffffff, transparent 50%), repeating-linear-gradient(-30deg, #b9bec3 0 5px, #d6dade 5px 11px, #a7adb3 11px 14px), #c4c8cc; }
+  .hm-finish--titanium { --tex: radial-gradient(100% 70% at 20% 10%, #8f969c, transparent 55%), repeating-linear-gradient(60deg, #4b5258 0 7px, #5d646a 7px 12px, #3e4449 12px 16px), #50575d; }
+  .hm-finish--motivo { --tex: radial-gradient(90% 60% at 60% 30%, #f3e6d8, transparent 60%), repeating-radial-gradient(circle at 30% 40%, #d8c2ad 0 4px, #e6d5c4 4px 9px, #cdb59e 9px 12px), #dcc7b3; }
+
+  @media screen and (min-width: 990px) {
+    .hm-plaster {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 8rem;
+    }
+
+    .hm-finishes {
+      gap: 2rem;
+    }
+  }
+{%- endstyle -%}
+
+<section class="hm-section hm-space">
+  <div class="page-width hm-plaster">
+    <div class="hm-plaster__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="hm-h2" data-reveal style="--d: 1">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}
+        <p class="hm-sub" data-reveal style="--d: 2">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+      <ul class="hm-plaster__list" data-reveal style="--d: 3">
+        {%- for i in (1..3) -%}
+          {%- assign key = 'point_' | append: i -%}
+          {%- if section.settings[key] != blank -%}
+            <li>{%- render 'hameleon-icon', icon: 'check' -%}{{ section.settings[key] | escape }}</li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+      {%- if section.settings.button_label != blank -%}
+        <a class="hm-btn hm-btn--primary" data-reveal style="--d: 4" href="{% if section.settings.button_link != blank %}{{ section.settings.button_link }}{% else %}{{ routes.search_url }}?type=product&amp;q=Motivo{% endif %}">
+          {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="hm-finishes">
+      {%- for block in section.blocks -%}
+        <div class="hm-finish hm-finish--{{ block.settings.texture }}" data-reveal="scale" style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '300, 500, 800', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.name }}
+          {%- endif -%}
+          <span class="hm-finish__name">{{ block.settings.name | escape }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: plasters",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Декоративни мазилки" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Стена, която спира погледа" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Motivo Gold, Silver и Titanium дават метален блясък и дълбочина, които боята не може. Вижте мострите на живо в магазина." },
+    { "type": "text", "id": "point_1", "label": "Point 1", "default": "Мостри на живо на щанда" },
+    { "type": "text", "id": "point_2", "label": "Point 2", "default": "Тониране във всеки цвят" },
+    { "type": "text", "id": "point_3", "label": "Point 3", "default": "Съвет как се полага" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Разгледайте мазилките" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "finish",
+      "name": "Finish",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Motivo Gold" },
+        {
+          "type": "select",
+          "id": "texture",
+          "label": "Drawn texture (used when there is no photo)",
+          "default": "gold",
+          "options": [
+            { "value": "gold", "label": "Gold" },
+            { "value": "silver", "label": "Silver" },
+            { "value": "titanium", "label": "Titanium" },
+            { "value": "motivo", "label": "Sand / Motivo" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "Photo of the finish (optional)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: plasters",
+      "blocks": [
+        { "type": "finish", "settings": { "name": "Motivo Gold", "texture": "gold" } },
+        { "type": "finish", "settings": { "name": "Motivo Silver", "texture": "silver" } },
+        { "type": "finish", "settings": { "name": "Motivo Titanium", "texture": "titanium" } },
+        { "type": "finish", "settings": { "name": "Motivo", "texture": "motivo" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

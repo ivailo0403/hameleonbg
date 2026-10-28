@@ -7,3 +7,5 @@
 <link rel="preload" as="font" href="{{ 'hameleon-montserrat-cyrillic.woff2' | asset_url }}" type="font/woff2" crossorigin>
 {% comment %}theme-check-enable AssetPreload{% endcomment %}
 {{ 'hameleon-tokens.css' | asset_url | stylesheet_tag }}
+<script>document.documentElement.classList.add('hm-motion');</script>
+<script src="{{ 'hameleon-motion.js' | asset_url }}" defer="defer"></script>

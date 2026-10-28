@@ -1,0 +1,157 @@
+{%- comment -%}
+  Хамелеон: endless strip of real Vitex colours (two rows moving in opposite directions).
+  Colours are one per line, "Name|#HEX".
+{%- endcomment -%}
+{%- style -%}
+  .hm-marquee {
+    padding: 4.8rem 0;
+    overflow: hidden;
+    background: var(--hm-surface-sunken);
+  }
+
+  .hm-marquee__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 2.8rem;
+  }
+
+  .hm-marquee__row {
+    display: flex;
+    width: max-content;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+    animation: hm-marquee var(--speed, 60s) linear infinite;
+  }
+
+  .hm-marquee__row--rev {
+    animation-direction: reverse;
+  }
+
+  .hm-marquee:hover .hm-marquee__row {
+    animation-play-state: paused;
+  }
+
+  .hm-chipcard {
+    flex: 0 0 auto;
+    width: 15rem;
+    border-radius: 1.4rem;
+    background: #ffffff;
+    box-shadow: var(--hm-shadow-sm);
+    overflow: hidden;
+  }
+
+  .hm-chipcard__color {
+    display: block;
+    height: 9rem;
+  }
+
+  .hm-chipcard__meta {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.2rem 1.2rem;
+  }
+
+  .hm-chipcard__name {
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--hm-text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hm-chipcard__hex {
+    font-size: 1.2rem;
+    color: var(--hm-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-marquee {
+      padding: 7.2rem 0;
+    }
+
+    .hm-marquee__head {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 3.2rem;
+    }
+
+    .hm-chipcard {
+      width: 18rem;
+    }
+
+    .hm-chipcard__color {
+      height: 11rem;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign half = lines.size | divided_by: 2
+-%}
+
+<section class="hm-section hm-marquee">
+  <div class="page-width hm-marquee__head">
+    <div class="hm-section-head" style="margin: 0;">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="hm-h2" data-reveal style="--d: 1">{{ section.settings.heading | escape }}</h2>
+    </div>
+    {%- if section.settings.button_label != blank -%}
+      <a class="hm-btn hm-btn--secondary" data-reveal style="--d: 2" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+        {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div aria-hidden="true">
+    {%- for row in (1..2) -%}
+      <div class="hm-marquee__row{% if row == 2 %} hm-marquee__row--rev{% endif %}" style="--speed: {% if row == 1 %}70s{% else %}85s{% endif %};">
+        {%- for copy in (1..2) -%}
+          {%- for line in lines -%}
+            {%- liquid
+              assign odd = forloop.index | modulo: 2
+              if row == 1 and odd == 0
+                continue
+              endif
+              if row == 2 and odd == 1
+                continue
+              endif
+              assign parts = line | strip | split: '|'
+            -%}
+            {%- if parts.size == 2 -%}
+              <div class="hm-chipcard">
+                <span class="hm-chipcard__color" style="background: {{ parts[1] | strip }};"></span>
+                <div class="hm-chipcard__meta">
+                  <span class="hm-chipcard__name">{{ parts[0] | strip | escape }}</span>
+                  <span class="hm-chipcard__hex">{{ parts[1] | strip }}</span>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: colour strip",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Каталог Vitex" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "1320 цвята. Всеки тониран на място." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Разгледайте цветовете" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "textarea", "id": "colors", "label": "Colours (one per line: Name|#HEX)", "default": "Blue Bliss|#0095AB\nKingdom's Keys|#E7CEB7\nZambia|#FE9A28\nReseda|#CFC6B0\nPurple Hollyhock|#D771AF\nSpiced Rum|#AD8D6D\nHappy Face|#FED426\nJob's Tears|#00627E\nGlass Bottle|#96BC5E\nPink Heath|#EEBADC\nAquadazzle|#217553\nClassic Terra|#E3CEAF\nCherished One|#F89495\nPleasant Stream|#00A2A2\nLemon Whisper|#FEB425\nCourtyard|#C6BDA4\nBlossoms in Spring|#E59CCB\nVacation Island|#D0D993\nTan Hide|#AF9570\nWildflower Bouquet|#FEB0AF" }
+  ],
+  "presets": [{ "name": "Хамелеон: colour strip" }]
+}
+{% endschema %}

@@ -1,122 +1,197 @@
 {%- comment -%}
-  Хамелеон: "Инструменти за ремонта". Heading, quick links to tool categories (chip blocks),
-  products from a collection, the brands line and a button to all tools.
+  Хамелеон: "Инструменти за ремонта" on a dark band. Tool category tiles (chip blocks),
+  products from a collection when one is chosen, a moving brands strip and a button to all tools.
 {%- endcomment -%}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {%- style -%}
-  .hm-tools-{{ section.id }} {
-    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  .hm-tools {
+    position: relative;
+    overflow: hidden;
+    background: #141618;
+    color: #e6e9e7;
   }
 
-  @media screen and (min-width: 750px) {
-    .hm-tools-{{ section.id }} {
-      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
-    }
+  .hm-tools::before {
+    content: '';
+    position: absolute;
+    left: -20rem;
+    top: -20rem;
+    width: 70rem;
+    height: 70rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 170, 193, 0.18), transparent 65%);
+    pointer-events: none;
   }
-{%- endstyle -%}
-{%- style -%}
-  .hm-tools__inner {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+
+  .hm-tools .page-width {
+    position: relative;
+  }
+
+  .hm-tools .hm-eyebrow {
+    color: #6fd3e0;
+  }
+
+  .hm-tools .hm-h2 {
+    color: #ffffff;
+  }
+
+  .hm-tools .hm-sub {
+    color: #b9c0bd;
   }
 
   .hm-tools__head {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 2rem;
+    margin-bottom: 3.2rem;
   }
 
-  .hm-tools__title {
-    font-size: 2.4rem;
+  .hm-tools__head .hm-section-head {
+    margin: 0;
   }
 
-  .hm-tools__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+  .hm-tools__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .hm-chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 4rem;
-    padding: 0 1.6rem;
-    border: 1px solid var(--hm-border);
-    border-radius: var(--hm-radius-pill);
+  .hm-tool {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    height: 100%;
     box-sizing: border-box;
-    background: var(--hm-surface);
-    color: var(--hm-text-strong);
-    font-size: 1.5rem;
-    font-weight: 600;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--hm-radius-lg);
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
     text-decoration: none;
+    transition: transform 0.35s var(--hm-ease), background-color 0.35s, border-color 0.35s;
   }
 
-  .hm-chip:hover {
-    border-color: var(--hm-primary);
+  .hm-tool:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(111, 211, 224, 0.5);
+  }
+
+  .hm-tool__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 1.2rem;
+    background: var(--hm-gradient);
+    color: #ffffff;
+    transition: transform 0.35s var(--hm-ease);
+  }
+
+  .hm-tool:hover .hm-tool__icon {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .hm-tool__icon svg {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+
+  .hm-tool__title {
+    font-family: var(--hm-font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .hm-tool__go {
+    margin-top: auto;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #6fd3e0;
   }
 
   .hm-tools .product-grid {
-    margin: 0;
+    margin: 3.2rem 0 0;
   }
 
-  .hm-tools__brands {
+  .hm-brands {
+    margin-top: 4.8rem;
+    padding: 2.4rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+
+  .hm-brands__row {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.8rem 2.4rem;
-    margin: 0;
+    width: max-content;
+    gap: 6.4rem;
+    animation: hm-marquee 30s linear infinite;
   }
 
-  .hm-tools__brands-label {
-    font-size: 1.4rem;
-    font-weight: 600;
-  }
-
-  .hm-tools__brand {
+  .hm-brands__item {
     font-family: var(--hm-font-display);
-    font-size: 1.8rem;
+    font-size: 3.2rem;
     font-weight: 800;
-    color: var(--hm-text-muted);
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.55);
     text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.25s;
   }
 
-  .hm-tools__brand img {
+  .hm-brands__item:hover {
+    color: #ffffff;
+  }
+
+  .hm-brands__item img {
     display: block;
-    height: 3.2rem;
+    height: 3.6rem;
     width: auto;
+    filter: brightness(0) invert(1);
+    opacity: 0.6;
   }
 
-  .hm-tools__footer .hm-btn {
-    width: 100%;
+  .hm-tools__footer {
+    margin-top: 3.2rem;
   }
 
   @media screen and (min-width: 750px) {
+    .hm-tools__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.6rem;
+    }
+
     .hm-tools__head {
       flex-direction: row;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 2.4rem;
-    }
-
-    .hm-tools__head-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
     }
 
     .hm-tools__footer {
       display: none;
+    }
+
+    .hm-tool {
+      padding: 2.4rem;
     }
   }
 
   @media screen and (max-width: 749px) {
     .hm-tools__head > .hm-btn {
       display: none;
+    }
+
+    .hm-tools__footer .hm-btn {
+      width: 100%;
     }
   }
 {%- endstyle -%}
@@ -125,82 +200,82 @@
   assign chips = section.blocks | where: 'type', 'chip'
   assign brands = section.blocks | where: 'type', 'brand'
   assign collection = section.settings.collection
+  assign tools_url = section.settings.button_link | default: collection.url | default: routes.all_products_collection_url
 -%}
 
-<section class="hm-section hm-tools hm-tools-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
-  <div class="page-width hm-tools__inner">
+<section class="hm-section hm-space hm-tools">
+  <div class="page-width">
     <div class="hm-tools__head">
-      <div class="hm-tools__head-text">
+      <div class="hm-section-head">
         {%- if section.settings.eyebrow != blank -%}
-          <p class="hm-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+          <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
         {%- endif -%}
-        <h2 class="hm-heading hm-tools__title">{{ section.settings.heading | escape }}</h2>
+        <h2 class="hm-h2" data-reveal style="--d: 1">{{ section.settings.heading | escape }}</h2>
         {%- if section.settings.text != blank -%}
-          <p style="margin: 0;">{{ section.settings.text | escape }}</p>
+          <p class="hm-sub" data-reveal style="--d: 2">{{ section.settings.text | escape }}</p>
         {%- endif -%}
       </div>
       {%- if section.settings.button_label != blank -%}
-        <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link | default: collection.url | default: routes.all_products_collection_url }}">
-          {{- section.settings.button_label | escape -}}
+        <a class="hm-btn hm-btn--light" data-reveal style="--d: 2" href="{{ tools_url }}">
+          {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
         </a>
       {%- endif -%}
     </div>
 
     {%- if chips.size > 0 -%}
-      <ul class="hm-tools__chips" aria-label="{{ section.settings.heading | escape }}">
+      <ul class="hm-tools__grid" aria-label="{{ section.settings.heading | escape }}">
         {%- for block in chips -%}
-          <li {{ block.shopify_attributes }}>
-            <a class="hm-chip" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.title | url_encode }}{% endif %}">{{ block.settings.title | escape }}</a>
+          <li data-reveal style="--d: {{ forloop.index0 | at_most: 7 }}" {{ block.shopify_attributes }}>
+            <a class="hm-tool" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.title | url_encode }}{% endif %}">
+              <span class="hm-tool__icon">{%- render 'hameleon-icon', icon: block.settings.icon -%}</span>
+              <span class="hm-tool__title">{{ block.settings.title | escape }}</span>
+              <span class="hm-tool__go">Разгледайте →</span>
+            </a>
           </li>
         {%- endfor -%}
       </ul>
     {%- endif -%}
 
-    {%- if section.settings.products_to_show > 0 -%}
+    {%- if collection != blank and collection.products_count > 0 and section.settings.products_to_show > 0 -%}
       <ul class="grid product-grid grid--2-col-tablet-down grid--4-col-desktop" role="list">
-        {%- if collection != blank and collection.products_count > 0 -%}
-          {%- for product in collection.products limit: section.settings.products_to_show -%}
-            <li class="grid__item">
-              {% render 'card-product',
-                card_product: product,
-                media_aspect_ratio: 'square',
-                show_vendor: true,
-                lazy_load: true,
-                skip_styles: true,
-                section_id: section.id,
-                quick_add: 'none'
-              %}
-            </li>
-          {%- endfor -%}
-        {%- else -%}
-          {%- for i in (1..section.settings.products_to_show) -%}
-            <li class="grid__item">
-              {% render 'card-product', show_vendor: true, media_aspect_ratio: 'square', lazy_load: false, skip_styles: true, placeholder_image: 'product-apparel-1' %}
-            </li>
-          {%- endfor -%}
-        {%- endif -%}
+        {%- for product in collection.products limit: section.settings.products_to_show -%}
+          <li class="grid__item" data-reveal style="--d: {{ forloop.index0 }}">
+            {% render 'card-product',
+              card_product: product,
+              media_aspect_ratio: 'square',
+              show_vendor: true,
+              lazy_load: true,
+              skip_styles: true,
+              section_id: section.id,
+              quick_add: 'none'
+            %}
+          </li>
+        {%- endfor -%}
       </ul>
     {%- endif -%}
 
     {%- if brands.size > 0 -%}
-      <div class="hm-tools__brands">
-        <span class="hm-tools__brands-label">{{ section.settings.brands_label | escape }}</span>
-        {%- for block in brands -%}
-          <a class="hm-tools__brand" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.name | url_encode }}{% endif %}" {{ block.shopify_attributes }}>
-            {%- if block.settings.logo != blank -%}
-              {{ block.settings.logo | image_url: height: 64 | image_tag: alt: block.settings.name, loading: 'lazy' }}
-            {%- else -%}
-              {{ block.settings.name | escape }}
-            {%- endif -%}
-          </a>
-        {%- endfor -%}
+      <div class="hm-brands" aria-label="{{ section.settings.brands_label | escape }}">
+        <div class="hm-brands__row">
+          {%- for copy in (1..4) -%}
+            {%- for block in brands -%}
+              <a class="hm-brands__item" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.name | url_encode }}{% endif %}"{% if copy > 1 %} aria-hidden="true" tabindex="-1"{% endif %} {{ block.shopify_attributes }}>
+                {%- if block.settings.logo != blank -%}
+                  {{ block.settings.logo | image_url: height: 72 | image_tag: alt: block.settings.name, loading: 'lazy' }}
+                {%- else -%}
+                  {{ block.settings.name | escape }}
+                {%- endif -%}
+              </a>
+            {%- endfor -%}
+          {%- endfor -%}
+        </div>
       </div>
     {%- endif -%}
 
     {%- if section.settings.button_label != blank -%}
       <div class="hm-tools__footer">
-        <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link | default: collection.url | default: routes.all_products_collection_url }}">
-          {{- section.settings.button_label | escape -}}
+        <a class="hm-btn hm-btn--light" href="{{ tools_url }}">
+          {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
         </a>
       </div>
     {%- endif -%}
@@ -214,34 +289,150 @@
   "class": "section",
   "max_blocks": 16,
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Железария" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Инструменти за ремонта" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Електро и ръчни инструменти, градина, крепежи и консумативи. Всичко за ремонта на едно място." },
-    { "type": "collection", "id": "collection", "label": "Products from collection" },
-    { "type": "range", "id": "products_to_show", "min": 0, "max": 8, "step": 1, "label": "Number of products", "default": 4 },
-    { "type": "text", "id": "brands_label", "label": "Brands label", "default": "Марки:" },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Всички инструменти" },
-    { "type": "url", "id": "button_link", "label": "Button link (defaults to the collection)" },
-    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-2" },
-    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 48 },
-    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 48 }
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Железария"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Инструменти за ремонта"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Електро и ръчни инструменти, градина, крепежи и консумативи. Всичко за ремонта на едно място."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Products from collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "label": "Number of products",
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "brands_label",
+      "label": "Brands label",
+      "default": "Марки:"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Всички инструменти"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link (defaults to the collection)"
+    }
   ],
   "blocks": [
     {
       "type": "chip",
       "name": "Category link",
       "settings": [
-        { "type": "text", "id": "title", "label": "Title", "default": "Бормашини" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Бормашини"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "power",
+          "options": [
+            {
+              "value": "power",
+              "label": "Drill"
+            },
+            {
+              "value": "screwdriver",
+              "label": "Screwdriver"
+            },
+            {
+              "value": "grinder",
+              "label": "Angle grinder"
+            },
+            {
+              "value": "hammerdrill",
+              "label": "Hammer drill"
+            },
+            {
+              "value": "saw",
+              "label": "Circular saw"
+            },
+            {
+              "value": "battery",
+              "label": "Battery"
+            },
+            {
+              "value": "kit",
+              "label": "Tool case"
+            },
+            {
+              "value": "hand",
+              "label": "Wrench"
+            },
+            {
+              "value": "garden",
+              "label": "Leaf"
+            },
+            {
+              "value": "fasteners",
+              "label": "Screw"
+            },
+            {
+              "value": "plaster",
+              "label": "Trowel"
+            },
+            {
+              "value": "paint",
+              "label": "Paint roller"
+            }
+          ]
+        }
       ]
     },
     {
       "type": "brand",
       "name": "Brand",
       "settings": [
-        { "type": "text", "id": "name", "label": "Name", "default": "TOTAL" },
-        { "type": "image_picker", "id": "logo", "label": "Logo (optional, shown instead of the name)" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "TOTAL"
+        },
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo (optional, shown instead of the name)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
       ]
     }
   ],
@@ -249,17 +440,80 @@
     {
       "name": "Хамелеон: tools",
       "blocks": [
-        { "type": "chip", "settings": { "title": "Бормашини" } },
-        { "type": "chip", "settings": { "title": "Винтоверти" } },
-        { "type": "chip", "settings": { "title": "Ъглошлайфи" } },
-        { "type": "chip", "settings": { "title": "Перфоратори" } },
-        { "type": "chip", "settings": { "title": "Циркуляри" } },
-        { "type": "chip", "settings": { "title": "Батерии и зарядни" } },
-        { "type": "chip", "settings": { "title": "Комплекти машини" } },
-        { "type": "chip", "settings": { "title": "Ръчни инструменти" } },
-        { "type": "brand", "settings": { "name": "TOTAL" } },
-        { "type": "brand", "settings": { "name": "RAIDER" } },
-        { "type": "brand", "settings": { "name": "DeWALT" } }
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Бормашини",
+            "icon": "power"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Винтоверти",
+            "icon": "screwdriver"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Ъглошлайфи",
+            "icon": "grinder"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Перфоратори",
+            "icon": "hammerdrill"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Циркуляри",
+            "icon": "saw"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Батерии и зарядни",
+            "icon": "battery"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Комплекти машини",
+            "icon": "kit"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "title": "Ръчни инструменти",
+            "icon": "hand"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "name": "TOTAL"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "name": "RAIDER"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "name": "DeWALT"
+          }
+        }
       ]
     }
   ]

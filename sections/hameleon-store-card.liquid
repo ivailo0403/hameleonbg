@@ -17,8 +17,10 @@
   .hm-store-card__box {
     display: grid;
     border: 1px solid var(--hm-border);
-    border-radius: var(--hm-radius-lg);
+    border-radius: 2.4rem;
     overflow: hidden;
+    background: #ffffff;
+    box-shadow: var(--hm-shadow-md);
   }
 
   .hm-store-card__media {
@@ -39,6 +41,75 @@
     border-radius: 0;
   }
 
+  .hm-map {
+    position: relative;
+    height: 100%;
+    min-height: 26rem;
+    background:
+      linear-gradient(90deg, rgba(26, 28, 30, 0.04) 1px, transparent 1px) 0 0 / 3.2rem 3.2rem,
+      linear-gradient(0deg, rgba(26, 28, 30, 0.04) 1px, transparent 1px) 0 0 / 3.2rem 3.2rem,
+      #eef2ef;
+    overflow: hidden;
+  }
+
+  .hm-map__road {
+    position: absolute;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px #dde2e0;
+  }
+
+  .hm-map__road--a { left: -10%; right: -10%; top: 55%; height: 2.2rem; transform: rotate(-8deg); }
+  .hm-map__road--b { top: -10%; bottom: -10%; left: 38%; width: 1.6rem; transform: rotate(12deg); }
+  .hm-map__road--c { left: -10%; right: -10%; top: 22%; height: 1.2rem; transform: rotate(4deg); }
+
+  .hm-map__park {
+    position: absolute;
+    right: 8%;
+    bottom: 8%;
+    width: 30%;
+    height: 24%;
+    border-radius: 1.6rem;
+    background: #d6ecd9;
+  }
+
+  .hm-map__pin {
+    position: absolute;
+    left: 46%;
+    top: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.2rem;
+    height: 5.2rem;
+    margin: -2.6rem 0 0 -2.6rem;
+    border-radius: 50%;
+    background: var(--hm-primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 0 rgba(18, 128, 58, 0.5), var(--hm-shadow-md);
+    animation: hm-pulse 2.2s infinite;
+  }
+
+  .hm-map__pin svg {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+
+  .hm-map__label {
+    position: absolute;
+    left: 46%;
+    top: calc(40% + 3.6rem);
+    transform: translateX(-50%);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--hm-radius-pill);
+    background: #ffffff;
+    box-shadow: var(--hm-shadow-md);
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--hm-text-strong);
+  }
+
   .hm-store-card__body {
     display: flex;
     flex-direction: column;
@@ -52,8 +123,13 @@
 
   .hm-store-card__buttons {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.8rem;
+  }
+
+  @media screen and (min-width: 1200px) {
+    .hm-store-card__buttons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media screen and (min-width: 750px) {
@@ -69,7 +145,7 @@
 
 <section class="hm-section hm-store-card-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
   <div class="page-width">
-    <div class="hm-store-card__box">
+    <div class="hm-store-card__box" data-reveal>
       <div class="hm-store-card__media">
         {%- if section.settings.image != blank -%}
           {{
@@ -78,14 +154,21 @@
             | image_tag: widths: '400, 600, 800, 1200', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy'
           }}
         {%- else -%}
-          <div class="hm-placeholder">Снимка на магазина</div>
+          <div class="hm-map" aria-hidden="true">
+            <span class="hm-map__road hm-map__road--a"></span>
+            <span class="hm-map__road hm-map__road--b"></span>
+            <span class="hm-map__road hm-map__road--c"></span>
+            <span class="hm-map__park"></span>
+            <span class="hm-map__pin">{%- render 'hameleon-icon', icon: 'pin' -%}</span>
+            <span class="hm-map__label">бул. „България“ 21</span>
+          </div>
         {%- endif -%}
       </div>
       <div class="hm-store-card__body">
         {%- if section.settings.eyebrow != blank -%}
           <p class="hm-eyebrow">{{ section.settings.eyebrow | escape }}</p>
         {%- endif -%}
-        <h2 class="hm-heading hm-store-card__title">{{ section.settings.heading | default: settings.hm_store_name | escape }}</h2>
+        <h2 class="hm-h2" style="font-size: clamp(2.6rem, 3.4vw, 3.6rem);">{{ section.settings.heading | default: settings.hm_store_name | escape }}</h2>
         <div class="hm-contact">
           {%- render 'hameleon-icon', icon: 'pin' -%}
           <span>{{ settings.hm_store_address | escape }}</span>
