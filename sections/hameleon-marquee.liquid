@@ -90,7 +90,7 @@
   }
 {%- endstyle -%}
 
-{%- liquid
+  assign lines = section.settings.colors | newline_to_br | split: '<br />'
   assign half = lines.size | divided_by: 2
 -%}
 
