@@ -93,7 +93,8 @@
             "tintable": false,
             "pack_litres": "3",
             "pack_sqm": "19",
-            "sizes": "3, 9, 15"
+            "sizes": "3, 9, 15",
+            "product": "vitex-vi-interiorna-boya"
           }
         },
         "product-2": {
@@ -106,7 +107,8 @@
             "tintable": false,
             "pack_litres": "1",
             "pack_sqm": "9",
-            "sizes": "3, 9, 15"
+            "sizes": "3, 9, 15",
+            "product": "vitex-vipol-interiorna-boya"
           }
         },
         "product-3": {
@@ -117,7 +119,8 @@
             "class": "Среден клас",
             "pack_litres": "1",
             "pack_sqm": "11",
-            "sizes": "1, 3, 9, 15"
+            "sizes": "1, 3, 9, 15",
+            "product": "vitex-vito-interiorna-boya"
           }
         },
         "product-4": {
@@ -128,7 +131,8 @@
             "class": "Средно-висок клас",
             "pack_litres": "1",
             "pack_sqm": "12",
-            "sizes": "1, 3, 10"
+            "sizes": "1, 3, 10",
+            "product": "vitex-aspire-interiorna-boya"
           }
         },
         "product-5": {
@@ -139,7 +143,8 @@
             "class": "Висок клас",
             "pack_litres": "1",
             "pack_sqm": "15",
-            "sizes": "1, 3, 10"
+            "sizes": "1, 3, 10",
+            "product": "vitex-classic-interiorna-boya"
           }
         },
         "product-6": {
@@ -151,7 +156,8 @@
             "note": "Кухня и баня",
             "pack_litres": "1",
             "pack_sqm": "14",
-            "sizes": "1, 3"
+            "sizes": "1, 3",
+            "product": "vitex-kitchen-bath-interiorna-boya"
           }
         },
         "product-7": {
@@ -162,7 +168,8 @@
             "class": "Среден клас",
             "pack_litres": "1",
             "pack_sqm": "11",
-            "sizes": "1, 5, 10, 15"
+            "sizes": "1, 5, 10, 15",
+            "product": "vitex-vito-acrylic-fasadna-boya"
           }
         },
         "product-8": {
@@ -173,7 +180,8 @@
             "class": "Висок клас",
             "pack_litres": "1",
             "pack_sqm": "15",
-            "sizes": "1, 3, 10"
+            "sizes": "1, 3, 10",
+            "product": "vitex-acrylan-fasadna-boya"
           }
         },
         "product-9": {
@@ -184,7 +192,8 @@
             "class": "База",
             "pack_litres": "0.905",
             "pack_sqm": "12",
-            "sizes": "0.905, 2.715"
+            "sizes": "0.905, 2.715",
+            "product": "vitex-motivo-silver-dekorativna-mazilka"
           }
         },
         "product-10": {
@@ -195,7 +204,8 @@
             "class": "База",
             "pack_litres": "0.905",
             "pack_sqm": "12",
-            "sizes": "0.905, 2.715"
+            "sizes": "0.905, 2.715",
+            "product": "vitex-motivo-gold-dekorativna-mazilka"
           }
         },
         "product-11": {
@@ -206,7 +216,8 @@
             "class": "База",
             "pack_litres": "0.905",
             "pack_sqm": "12",
-            "sizes": "0.905, 2.715"
+            "sizes": "0.905, 2.715",
+            "product": "vitex-motivo-titanium-dekorativna-mazilka"
           }
         }
       },
