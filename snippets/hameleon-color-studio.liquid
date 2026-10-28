@@ -1,0 +1,46 @@
+{%- comment -%}
+  Хамелеон: the colour studio (a room whose wall takes the chosen colour, and the colour browser).
+  Used inside <hameleon-catalogue> on the catalogue page and on the paint product page.
+  Accepts:
+  - only: {String} 'vitex' or 'motivo' to show one catalogue without tabs (optional, both by default)
+  - go_label: {String} the button on the room card (optional)
+{%- endcomment -%}
+<div class="hm-cat__studio">
+  <div class="hm-cat__stage">
+    <div class="hm-cat__room" data-cat-room>
+      <div data-scene="living">{%- render 'hameleon-room', id: 'hm-cat-living' -%}</div>
+      <div data-scene="bedroom" hidden>{%- render 'hameleon-room', id: 'hm-cat-bedroom', scene: 'bedroom' -%}</div>
+      <div class="hm-cat__scenes" role="group" aria-label="Стая">
+        <button type="button" class="hm-cat__scene" aria-pressed="true" data-scene-btn="living">{%- render 'hameleon-icon', icon: 'sofa' -%}Хол</button>
+        <button type="button" class="hm-cat__scene" aria-pressed="false" data-scene-btn="bedroom">{%- render 'hameleon-icon', icon: 'bed' -%}Спалня</button>
+      </div>
+      <div class="hm-cat__now" aria-live="polite">
+        <span class="hm-cat__now-chip" data-now-chip></span>
+        <span class="hm-cat__now-text">
+          <span class="hm-cat__now-code" data-now-code>Изберете цвят</span>
+          <span class="hm-cat__now-name" data-now-name>—</span>
+        </span>
+        <a class="hm-btn hm-btn--primary" href="#kalkulator" data-now-go><span class="hm-cat__go-long">{{ go_label | default: 'Колко ми трябва?' }}</span><span class="hm-cat__go-short">Сметка</span> <span class="hm-btn__arrow" aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+    <div class="hm-cat__recent" data-recent hidden>Последно: </div>
+  </div>
+
+  <div class="hm-cat__browser" id="katalog">
+    {%- if only == blank -%}
+      <div class="hm-cat__tabs" role="tablist">
+        <button type="button" class="hm-cat__tab" role="tab" aria-selected="true" data-tab="vitex">Бои Vitex<small>1320 цвята</small></button>
+        <button type="button" class="hm-cat__tab" role="tab" aria-selected="false" data-tab="motivo">Мазилки Motivo<small>78 цвята</small></button>
+      </div>
+    {%- endif -%}
+    <div class="hm-cat__tools">
+      <label class="hm-cat__search">
+        {%- render 'hameleon-icon', icon: 'search' -%}
+        <input type="search" inputmode="search" placeholder="{% if only == 'motivo' %}Код, напр. 36{% else %}Код или име, напр. 675{% endif %}" aria-label="Търсене по код или име" data-search>
+      </label>
+      <ul class="hm-cat__families" data-families aria-label="Цветови групи"></ul>
+    </div>
+    <p class="hm-cat__count" data-count></p>
+    <div class="hm-cat__grid" data-grid></div>
+  </div>
+</div>

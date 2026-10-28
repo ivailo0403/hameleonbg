@@ -491,6 +491,12 @@
                     block: block,
                     product_form_id: product_form_id
                   %}
+                {%- when 'hameleon_color' -%}
+                  {%- render 'hameleon-product-color',
+                    product: product,
+                    block: block,
+                    product_form_id: product_form_id
+                  -%}
                 {%- when 'buy_buttons' -%}
                   {%- render 'buy-buttons',
                     block: block,
@@ -919,6 +925,34 @@
             }
           ],
           "default": "circle"
+        }
+      ]
+    },
+    {
+      "type": "hameleon_color",
+      "name": "Хамелеон: цвят за тониране",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Put this block above the buy buttons on paint products. The chosen colour code goes into the order. Paints tagged \"без тониране\" show no box."
+        },
+        {
+          "type": "select",
+          "id": "catalogue",
+          "label": "Catalogue",
+          "default": "auto",
+          "options": [
+            { "value": "auto", "label": "Automatic (Motivo for plasters, Vitex for paints)" },
+            { "value": "vitex", "label": "Vitex" },
+            { "value": "motivo", "label": "Motivo" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "required",
+          "label": "Ask for a colour before \"Add to cart\"",
+          "default": true
         }
       ]
     },

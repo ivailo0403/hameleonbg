@@ -1,0 +1,65 @@
+{%- comment -%}
+  Хамелеон: the colour box above "Add to cart" on a paint product page.
+  The chosen colour goes into the product form as line-item properties (Цвят, Каталог, _hex),
+  so the order shows the code. For tintable paint, "Add to cart" asks for a colour first.
+  The colour comes from the studio on the same page (a "hameleon:color" event), from ?color= or
+  from the code typed here. Paints tagged "без тониране" get no box.
+  Accepts:
+  - product: {Object} the product
+  - product_form_id: {String} the id of the product form
+  - block: {Object} the main-product block
+{%- endcomment -%}
+{%- liquid
+  assign title_down = product.title | downcase
+  assign type_down = product.type | downcase
+  assign catalogue = block.settings.catalogue
+  if catalogue == 'auto' or catalogue == blank
+    assign catalogue = 'vitex'
+    if title_down contains 'мазилк' or type_down contains 'мазилк'
+      assign catalogue = 'motivo'
+    endif
+  endif
+  assign catalogue_url = settings.hm_catalogue_page | default: '/pages/katalog-tsvetove'
+-%}
+{%- unless product.tags contains 'без тониране' -%}
+  <script src="{{ 'hameleon-colors.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'hameleon-product-color.js' | asset_url }}" defer="defer"></script>
+  <hameleon-product-color
+    class="hm-pcol"
+    data-form="{{ product_form_id }}"
+    data-catalogue="{{ catalogue }}"
+    data-catalogue-url="{{ catalogue_url }}"
+    data-motivo-base="{{ 'hm-motivo-01.jpg' | asset_url }}"
+    {% if block.settings.required %}data-required{% endif %}
+    {{ block.shopify_attributes }}
+  >
+    <input type="hidden" name="properties[Цвят]" value="" form="{{ product_form_id }}" data-prop="color" disabled>
+    <input type="hidden" name="properties[Каталог]" value="" form="{{ product_form_id }}" data-prop="catalogue" disabled>
+    <input type="hidden" name="properties[_hex]" value="" form="{{ product_form_id }}" data-prop="hex" disabled>
+
+    <div class="hm-pcol__card" data-card>
+      <span class="hm-pcol__chip" data-chip aria-hidden="true"></span>
+      <span class="hm-pcol__text">
+        <span class="hm-pcol__label">Цвят за тониране{% if catalogue == 'motivo' %} · Motivo{% else %} · Vitex{% endif %}</span>
+        <strong class="hm-pcol__name" data-name>Не е избран</strong>
+      </span>
+      <a class="hm-pcol__open" href="{{ catalogue_url }}{% if catalogue == 'motivo' %}?tab=motivo{% endif %}" data-open>
+        {%- render 'hameleon-icon', icon: 'swatch' -%}<span data-open-label>Изберете</span>
+      </a>
+    </div>
+
+    <form class="hm-pcol__code" data-code-form novalidate>
+      <label class="visually-hidden" for="HmPcolCode-{{ block.id }}">Код на цвета</label>
+      <input
+        id="HmPcolCode-{{ block.id }}"
+        type="text"
+        inputmode="{% if catalogue == 'motivo' %}numeric{% else %}text{% endif %}"
+        autocomplete="off"
+        placeholder="Код от мострата, напр. {% if catalogue == 'motivo' %}36{% else %}675{% endif %}"
+        data-code-input
+      >
+      <button type="submit" class="hm-pcol__apply">Приложи</button>
+    </form>
+    <p class="hm-pcol__msg" data-msg role="status" hidden></p>
+  </hameleon-product-color>
+{%- endunless -%}

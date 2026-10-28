@@ -617,3 +617,184 @@ a.hm-card:hover,
   background: var(--tin);
   opacity: 0.45;
 }
+
+/* Paint product page: the colour box above "Add to cart" (snippets/hameleon-product-color.liquid). */
+.hm-pcol {
+  display: block;
+  margin: 1.6rem 0 0.4rem;
+  padding: 1.2rem;
+  border-radius: var(--hm-radius-lg);
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    var(--hm-gradient) border-box;
+  border: 2px solid transparent;
+  box-shadow: var(--hm-shadow-sm);
+}
+
+.hm-pcol.has-color {
+  background: #ffffff;
+  border-color: var(--hm-border);
+}
+
+.hm-pcol.is-shaking {
+  animation: hm-pcol-shake 0.45s var(--hm-ease);
+}
+
+@keyframes hm-pcol-shake {
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.hm-pcol__card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.hm-pcol__chip {
+  flex: 0 0 5.6rem;
+  width: 5.6rem;
+  height: 5.6rem;
+  border-radius: 1.4rem;
+  background: conic-gradient(#fed426, #fe9a28, #f89495, #d771af, #0095ab, #217553, #fed426);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 6px 16px rgba(26, 28, 30, 0.12);
+  transition: background 0.4s;
+}
+
+.hm-pcol__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1 1 14rem;
+}
+
+.hm-pcol__label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hm-text-muted);
+}
+
+.hm-pcol__name {
+  font-family: var(--hm-font-display);
+  font-size: 1.7rem;
+  line-height: 1.25;
+  color: var(--hm-text-strong);
+  overflow-wrap: anywhere;
+}
+
+.hm-pcol__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 0 0 auto;
+  min-height: 4.4rem;
+  padding: 0 1.4rem;
+  border-radius: var(--hm-radius-pill);
+  background: var(--hm-primary);
+  color: #ffffff;
+  font-family: var(--hm-font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--hm-shadow-green);
+  transition: transform 0.25s var(--hm-ease), background-color 0.2s;
+}
+
+.hm-pcol__open:hover {
+  background: var(--hm-primary-hover);
+  transform: translateY(-1px);
+}
+
+.hm-pcol__open svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.hm-pcol.has-color .hm-pcol__open {
+  background: var(--hm-surface-sunken);
+  color: var(--hm-text-strong);
+  box-shadow: none;
+}
+
+.hm-pcol__code {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.hm-pcol__code input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 4.4rem;
+  padding: 0 1.4rem;
+  border: 1px solid var(--hm-border-strong);
+  border-radius: var(--hm-radius-md);
+  font: inherit;
+  font-size: 1.5rem;
+  background: #ffffff;
+}
+
+.hm-pcol__code input:focus-visible {
+  outline: 2px solid var(--hm-primary);
+  outline-offset: 1px;
+}
+
+.hm-pcol__apply {
+  flex: 0 0 auto;
+  min-height: 4.4rem;
+  padding: 0 1.6rem;
+  border: 0;
+  border-radius: var(--hm-radius-md);
+  background: var(--hm-text-strong);
+  color: #ffffff;
+  font-family: var(--hm-font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hm-pcol__msg {
+  margin: 1rem 0 0;
+  font-size: 1.4rem;
+  line-height: 1.45;
+  color: var(--hm-text-muted);
+}
+
+.hm-pcol__msg.is-error {
+  color: var(--hm-sale);
+  font-weight: 600;
+}
+
+/* Cart page and cart drawer: the colour of a tinted paint line. */
+.hm-line-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.6rem 0 0.2rem;
+  padding: 0.4rem 1.2rem 0.4rem 0.4rem;
+  border-radius: var(--hm-radius-pill);
+  background: var(--hm-surface-sunken);
+  font-size: 1.4rem;
+  line-height: 1.3;
+  color: var(--hm-text-strong);
+}
+
+.hm-line-color__chip {
+  flex: 0 0 2.8rem;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.hm-line-color small {
+  display: block;
+  font-size: 1.15rem;
+  color: var(--hm-text-muted);
+}

@@ -1,0 +1,32 @@
+{%- comment -%}
+  Хамелеон: the colour of a paint line in the cart (cart page and cart drawer).
+  Shows the swatch, code and catalogue from the line properties Цвят, Каталог, _hex, _image
+  (set by the calculator and the colour box on the paint product page).
+  Accepts:
+  - item: {Object} the cart line item
+{%- endcomment -%}
+{%- assign hm_color = item.properties['Цвят'] -%}
+{%- if hm_color != blank -%}
+  {%- liquid
+    assign hm_catalogue = item.properties['Каталог']
+    assign hm_bg = item.properties['_hex'] | default: '#F4F4F0'
+    if item.properties['_image'] != blank
+      assign hm_bg = 'center / cover url(' | append: item.properties['_image'] | append: ') ' | append: hm_bg
+    endif
+    assign hm_white = false
+    if hm_catalogue == blank or hm_catalogue == '—'
+      assign hm_white = true
+    endif
+  -%}
+  <p class="hm-line-color">
+    <span class="hm-line-color__chip" style="background: {{ hm_bg | escape }};" aria-hidden="true"></span>
+    <span>
+      {%- if hm_white -%}
+        {{ hm_color | escape }}
+      {%- else -%}
+        <strong>{% unless hm_catalogue == 'Motivo' %}№ {% endunless %}{{ hm_color | escape }}</strong>
+        <small>{{ hm_catalogue | escape }} · тониране в магазина</small>
+      {%- endif -%}
+    </span>
+  </p>
+{%- endif -%}

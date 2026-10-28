@@ -43,16 +43,25 @@ if (!customElements.get('hameleon-catalogue')) {
           this.querySelector('#kalkulator').scrollIntoView({ behavior: 'smooth' });
         });
         document.addEventListener('hameleon:open-catalogue', (event) => {
-          this.setTab(event.detail && event.detail.catalogue === 'Motivo' ? 'motivo' : 'vitex');
+          if (!this.dataset.only) this.setTab(event.detail && event.detail.catalogue === 'Motivo' ? 'motivo' : 'vitex');
           this.querySelector('#katalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         document.addEventListener('hameleon:cart-updated', () => this.loadOrder());
+        /* A code typed elsewhere on the page (the colour box next to "Add to cart"). */
+        document.addEventListener('hameleon:pick-code', (event) => {
+          const color = this.colorFromCode(event.detail && event.detail.code);
+          if (color) this.select(color, true);
+        });
 
         const params = new URLSearchParams(window.location.search);
         if (params.get('tab') === 'motivo') this.tab = 'motivo';
+        /* The paint product page shows only the catalogue that fits the product. */
+        if (this.dataset.only) this.tab = this.dataset.only;
         this.renderFamilies();
         this.setTab(this.tab);
-        const first = this.colorFromCode(params.get('color')) || this.colorFromCode(this.tab === 'motivo' ? 'M1' : '675');
+        /* On the product page nothing is chosen until the visitor picks, so the order never gets a colour they did not choose. */
+        const fallback = this.hasAttribute('data-no-default') ? null : this.colorFromCode(this.tab === 'motivo' ? 'M1' : '675');
+        const first = this.colorFromCode(params.get('color')) || fallback;
         /* Wait a tick so the calculator (defined in another deferred script) hears the first colour. */
         setTimeout(() => this.select(first, false), 0);
         this.loadOrder();
@@ -200,6 +209,7 @@ if (!customElements.get('hameleon-catalogue')) {
       /* Lists the paint lines in the cart, with the colour code each one carries. */
       async loadOrder() {
         const box = this.querySelector('[data-order]');
+        if (!box) return;
         try {
           const response = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
           if (!response.ok) return;

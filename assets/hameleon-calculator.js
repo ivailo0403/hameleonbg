@@ -50,10 +50,26 @@ if (!customElements.get('hameleon-paint-calc')) {
         this.combo = [];
 
         this.querySelectorAll('[data-product]').forEach((input) => {
-          const label = input.closest('label').querySelector('[data-coverage-label]');
+          const holder = input.closest('label');
+          const label = holder ? holder.querySelector('[data-coverage-label]') : this.querySelector('[data-this-coverage]');
           const packL = this.num(input.dataset.packL);
           const packSqm = this.num(input.dataset.packSqm);
-          if (label && packL && packSqm) label.textContent = `${this.format(packSqm / packL)} м²/л`;
+          if (label && packL && packSqm) label.textContent = `${this.format(packSqm / packL)} м²/л${holder ? '' : ' с една ръка'}`;
+          /* On a product page without a matching calculator block, the sizes come from the variant names. */
+          if (!String(input.dataset.sizes || '').trim()) {
+            const sizes = this.variantsOf(input)
+              .map((v) => this.litresIn(v.title))
+              .filter((n) => n > 0);
+            input.dataset.sizes = [...new Set(sizes)].join(',');
+          } else if (!holder) {
+            /* On a product page, offer only the sizes this product is sold in. */
+            const variants = this.variantsOf(input);
+            const sold = String(input.dataset.sizes)
+              .split(',')
+              .map((s) => this.num(s))
+              .filter((n) => n > 0 && this.variantFor(variants, n));
+            if (sold.length) input.dataset.sizes = sold.join(',');
+          }
         });
 
         this.addEventListener('change', (event) => {
@@ -178,14 +194,20 @@ if (!customElements.get('hameleon-paint-calc')) {
         }
       }
 
-      /* Matches a pack size (litres) to a variant whose title holds that size, e.g. "9 л", "0,905 L". */
+      /* The pack size in litres written in a variant title, e.g. "9 л", "0,905 L", "905 мл". */
+      litresIn(title) {
+        const m = String(title).replace(',', '.').match(/(\d+(?:\.\d+)?)\s*(мл|ml|л|l|кг|kg)?/i);
+        if (!m) return 0;
+        let value = parseFloat(m[1]);
+        if (m[2] && /^(мл|ml)$/i.test(m[2])) value /= 1000;
+        return value;
+      }
+
+      /* Matches a pack size (litres) to a variant whose title holds that size. */
       variantFor(variants, size) {
         return variants.find((v) => {
-          const m = String(v.title).replace(',', '.').match(/(\d+(?:\.\d+)?)\s*(мл|ml|л|l|кг|kg)?/i);
-          if (!m) return false;
-          let value = parseFloat(m[1]);
-          if (m[2] && /^(мл|ml)$/i.test(m[2])) value /= 1000;
-          return Math.abs(value - size) < 0.01;
+          const value = this.litresIn(v.title);
+          return value > 0 && Math.abs(value - size) < 0.01;
         });
       }
 
@@ -326,6 +348,11 @@ if (!customElements.get('hameleon-paint-calc')) {
           'Каталог': tintable && color ? color.catalogue : '—',
           'Сметка': `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
         };
+        /* Hidden (underscore) properties let the cart draw the colour swatch. */
+        if (tintable && color) {
+          properties._hex = color.hex;
+          if (color.image) properties._image = color.image;
+        }
         const items = this.combo.map((p) => ({ id: this.variantFor(variants, p.size).id, quantity: p.count, properties }));
         const button = this.querySelector('[data-r-add]');
         const note = this.querySelector('[data-r-added]');

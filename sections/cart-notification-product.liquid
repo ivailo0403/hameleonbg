@@ -23,6 +23,7 @@
           {% assign modal_id = 'CartDisclosureModal-notification-' | append: item.key | replace: ':', '-' %}
           {%- render 'cart-disclosure-indicator', product: item.product, modal_id: modal_id -%}
         </div>
+        {%- render 'hameleon-line-color', item: item -%}
         <dl>
           {%- unless item.product.has_only_default_variant -%}
             {%- for option in item.options_with_values -%}
@@ -34,7 +35,7 @@
           {%- endunless -%}
           {%- for property in item.properties -%}
             {%- assign property_first_char = property.first | slice: 0 -%}
-            {%- if property.last != blank and property_first_char != '_' -%}
+            {%- if property.last != blank and property_first_char != '_' and property.first != 'Цвят' and property.first != 'Каталог' -%}
               <div class="product-option">
                 <dt>{{ property.first }}:</dt>
                 <dd>
