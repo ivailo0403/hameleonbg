@@ -140,7 +140,7 @@
         {%- endif -%}
       </div>
       {%- if section.settings.button_label != blank -%}
-        <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link | default: collection.url | default: '#' }}">
+        <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link | default: collection.url | default: routes.all_products_collection_url }}">
           {{- section.settings.button_label | escape -}}
         </a>
       {%- endif -%}
@@ -150,7 +150,7 @@
       <ul class="hm-tools__chips" aria-label="{{ section.settings.heading | escape }}">
         {%- for block in chips -%}
           <li {{ block.shopify_attributes }}>
-            <a class="hm-chip" href="{{ block.settings.link | default: '#' }}">{{ block.settings.title | escape }}</a>
+            <a class="hm-chip" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.title | url_encode }}{% endif %}">{{ block.settings.title | escape }}</a>
           </li>
         {%- endfor -%}
       </ul>
@@ -186,7 +186,7 @@
       <div class="hm-tools__brands">
         <span class="hm-tools__brands-label">{{ section.settings.brands_label | escape }}</span>
         {%- for block in brands -%}
-          <a class="hm-tools__brand" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+          <a class="hm-tools__brand" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.name | url_encode }}{% endif %}" {{ block.shopify_attributes }}>
             {%- if block.settings.logo != blank -%}
               {{ block.settings.logo | image_url: height: 64 | image_tag: alt: block.settings.name, loading: 'lazy' }}
             {%- else -%}
@@ -199,7 +199,7 @@
 
     {%- if section.settings.button_label != blank -%}
       <div class="hm-tools__footer">
-        <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link | default: collection.url | default: '#' }}">
+        <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link | default: collection.url | default: routes.all_products_collection_url }}">
           {{- section.settings.button_label | escape -}}
         </a>
       </div>

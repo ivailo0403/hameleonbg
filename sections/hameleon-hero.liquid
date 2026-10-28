@@ -130,7 +130,7 @@
       {%- endif -%}
       <div class="hm-hero__buttons">
         {%- if section.settings.button_label_1 != blank -%}
-          <a class="hm-btn hm-btn--primary" href="{{ section.settings.button_link_1 | default: '#' }}">
+          <a class="hm-btn hm-btn--primary" href="{{ section.settings.button_link_1 | default: '#cvetove' }}">
             {{- section.settings.button_label_1 | escape -}}
           </a>
         {%- endif -%}
@@ -143,15 +143,15 @@
     </div>
 
     {%- if section.blocks.size > 0 -%}
-      <nav class="hm-hero__card" aria-label="{{ section.settings.families_label | escape }}">
+      <nav id="cvetove" class="hm-hero__card" aria-label="{{ section.settings.families_label | escape }}">
         {%- for block in section.blocks -%}
-          <a class="hm-swatch" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+          <a class="hm-swatch" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.name | url_encode }}{% endif %}" {{ block.shopify_attributes }}>
             <span class="hm-swatch__dot" style="background: {{ block.settings.color }};" aria-hidden="true"></span>
             <span class="hm-swatch__label">{{ block.settings.name | escape }}</span>
           </a>
         {%- endfor -%}
         {%- if section.settings.card_link_label != blank -%}
-          <a class="hm-hero__card-note" href="{{ section.settings.card_link | default: '#' }}">
+          <a class="hm-hero__card-note" href="{{ section.settings.card_link | default: routes.all_products_collection_url }}">
             {{- section.settings.card_link_label | escape -}}
           </a>
         {%- endif -%}

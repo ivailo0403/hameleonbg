@@ -81,7 +81,7 @@
   <ul class="hm-cats__grid">
     {%- for block in section.blocks -%}
       <li {{ block.shopify_attributes }}>
-        <a class="hm-tile" href="{{ block.settings.link | default: '#' }}">
+        <a class="hm-tile" href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.title | url_encode }}{% endif %}">
           {%- render 'hameleon-icon', icon: block.settings.icon -%}
           <span class="hm-tile__label">{{ block.settings.title | escape }}</span>
         </a>
