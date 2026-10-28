@@ -47,7 +47,7 @@
     font-weight: 700;
     line-height: 1.25;
     color: var(--hm-text-strong);
-    hyphens: auto;
+    hyphens: manual;
   }
 
   @media screen and (min-width: 750px) {
@@ -77,7 +77,8 @@
 {%- endstyle -%}
 
 <nav class="hm-section hm-cats color-{{ section.settings.color_scheme }} gradient" aria-label="{{ section.settings.label | escape }}">
-  <ul class="page-width hm-cats__grid" lang="bg">
+  <div class="page-width">
+  <ul class="hm-cats__grid">
     {%- for block in section.blocks -%}
       <li {{ block.shopify_attributes }}>
         <a class="hm-tile" href="{{ block.settings.link | default: '#' }}">
@@ -87,6 +88,7 @@
       </li>
     {%- endfor -%}
   </ul>
+  </div>
 </nav>
 
 {% schema %}
@@ -131,7 +133,7 @@
       "blocks": [
         { "type": "category", "settings": { "title": "Бои и тониране", "icon": "paint" } },
         { "type": "category", "settings": { "title": "Мазилки", "icon": "plaster" } },
-        { "type": "category", "settings": { "title": "Електроинструменти", "icon": "power" } },
+        { "type": "category", "settings": { "title": "Електро­инструменти", "icon": "power" } },
         { "type": "category", "settings": { "title": "Ръчни инструменти", "icon": "hand" } },
         { "type": "category", "settings": { "title": "Градина", "icon": "garden" } },
         { "type": "category", "settings": { "title": "Крепежи и консумативи", "icon": "fasteners" } }
