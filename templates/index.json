@@ -607,7 +607,7 @@
             "title": "Мострите са безплатни с боята",
             "text": "Вземете каталога с 1320 цвята за 20 €. Връщаме ги от първата Ви боя.",
             "button_label": "Вижте как",
-            "link": "/#katalog-mostri",
+            "link": "/pages/katalog-tsvetove",
             "badge": "−20 €",
             "badge_note": "от боята",
             "style": "green",
@@ -682,7 +682,7 @@
             "title": "Декоративни мазилки",
             "icon": "plaster",
             "image": "shopify://shop_images/photo-1768839725085-829e6ac7ac26.jpg",
-            "link": "/#mazilki",
+            "link": "/pages/katalog-tsvetove?tab=motivo",
             "subs": "Motivo Silver, Motivo Gold, Motivo Titanium"
           }
         },
