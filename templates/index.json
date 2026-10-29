@@ -520,7 +520,7 @@
       ],
       "settings": {
         "padding_top": 16,
-        "padding_bottom": 48
+        "padding_bottom": 16
       }
     },
     "promo_duo": {
@@ -623,6 +623,36 @@
         "padding_top": 0,
         "padding_bottom": 64
       }
+    },
+    "brand_banners": {
+      "type": "hameleon-brand-banners",
+      "blocks": {
+        "brand-dewalt": {
+          "type": "brand",
+          "settings": {
+            "brand": "DeWALT",
+            "asset": "hm-brand-dewalt.jpg",
+            "button_label": "Вижте DeWALT",
+            "position": "left"
+          }
+        },
+        "brand-total": {
+          "type": "brand",
+          "settings": {
+            "brand": "TOTAL",
+            "asset": "hm-brand-total.jpg",
+            "button_label": "Вижте TOTAL"
+          }
+        }
+      },
+      "block_order": [
+        "brand-dewalt",
+        "brand-total"
+      ],
+      "settings": {
+        "padding_top": 0,
+        "padding_bottom": 16
+      }
     }
   },
   "order": [
@@ -630,6 +660,7 @@
     "categories",
     "tools",
     "promo_power",
+    "brand_banners",
     "promo_duo",
     "promo_more",
     "how_it_works",

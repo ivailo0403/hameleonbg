@@ -1,0 +1,183 @@
+{%- comment -%}
+  Хамелеон: ready-made brand banners (finished artwork with its own text, e.g. DeWALT, TOTAL).
+  Shown as clickable images, side by side on desktop. Each block uses its photo, or a theme asset
+  file name when no photo is picked (the two starter banners ship as theme assets).
+{%- endcomment -%}
+{%- style -%}
+  .hm-brandban-{{ section.id }} {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-brandban-{{ section.id }} {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- style -%}
+  .hm-brandbans {
+    display: grid;
+    gap: 1.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-brandban {
+    position: relative;
+    display: block;
+    aspect-ratio: 1.85;
+    border-radius: 2.4rem;
+    overflow: hidden;
+    background: #141618;
+    box-shadow: var(--hm-shadow-md);
+    transition: transform 0.4s var(--hm-ease), box-shadow 0.4s var(--hm-ease);
+  }
+
+  .hm-brandban img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--hm-ease);
+  }
+
+  .hm-brandban:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hm-shadow-lg);
+  }
+
+  .hm-brandban:hover img {
+    transform: scale(1.03);
+  }
+
+  .hm-brandban__go {
+    position: absolute;
+    right: 1.6rem;
+    bottom: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.6rem;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.95);
+    font-family: var(--hm-font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #141618;
+    box-shadow: var(--hm-shadow-sm);
+  }
+
+  .hm-brandban__go span {
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-brandban:hover .hm-brandban__go span {
+    transform: translateX(4px);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-brandbans--2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .hm-brandban {
+      border-radius: 1.6rem;
+    }
+
+    .hm-brandban__go {
+      right: 1rem;
+      bottom: 1rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm-brandban,
+    .hm-brandban img {
+      transition: none;
+    }
+
+    .hm-brandban:hover,
+    .hm-brandban:hover img {
+      transform: none;
+    }
+  }
+{%- endstyle -%}
+
+{%- assign count = section.blocks.size | at_most: 2 -%}
+<section class="hm-section hm-brandban-{{ section.id }}">
+  <div class="page-width">
+    <ul class="hm-brandbans hm-brandbans--{{ count }}">
+      {%- for block in section.blocks limit: 2 -%}
+        {%- liquid
+          assign href = block.settings.link
+          if href == blank
+            assign q = block.settings.brand | url_encode
+            assign href = routes.search_url | append: '?type=product&q=' | append: q
+          endif
+          assign alt = block.settings.brand | append: ' – електроинструменти в Хамелеон'
+          assign pos = 'object-position: ' | append: block.settings.position | append: ' center'
+        -%}
+        <li data-reveal="scale" style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <a class="hm-brandban" href="{{ href }}">
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '500, 800, 1200, 1600', sizes: '(min-width: 750px) 50vw, 100vw', alt: alt, style: pos }}
+            {%- elsif block.settings.asset != blank -%}
+              <img src="{{ block.settings.asset | asset_url }}" alt="{{ alt | escape }}" loading="lazy" width="1600" height="864" style="object-position: {{ block.settings.position }} center;">
+            {%- endif -%}
+            {%- if block.settings.button_label != blank -%}
+              <span class="hm-brandban__go">{{ block.settings.button_label | escape }} <span aria-hidden="true">→</span></span>
+            {%- endif -%}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: brand banners",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 2,
+  "settings": [
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand banner",
+      "settings": [
+        { "type": "text", "id": "brand", "label": "Brand", "default": "DeWALT" },
+        { "type": "image_picker", "id": "image", "label": "Banner image", "info": "Finished artwork, about 1.85:1. The edges may be cropped slightly." },
+        { "type": "text", "id": "asset", "label": "Or a theme asset file", "info": "Used when no image is picked, e.g. hm-brand-dewalt.jpg" },
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Keep this side when cropping",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Centre" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        { "type": "text", "id": "button_label", "label": "Button label", "default": "Вижте марката" },
+        { "type": "url", "id": "link", "label": "Link (defaults to a search for the brand)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: brand banners",
+      "blocks": [{ "type": "brand" }]
+    }
+  ]
+}
+{% endschema %}
