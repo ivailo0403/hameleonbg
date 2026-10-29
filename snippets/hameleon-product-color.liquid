@@ -108,6 +108,12 @@
       <button type="submit" class="hm-pcol__apply">Приложи</button>
     </form>
     <p class="hm-pcol__msg" data-msg role="status" hidden></p>
+    {%- unless catalogue == 'motivo' -%}
+      <button type="button" class="hm-pcol__white" data-white-pick>
+        <span class="hm-pcol__white-dot" aria-hidden="true"></span>
+        <span>Без тониране? <strong>Купете я бяла</strong></span>
+      </button>
+    {%- endunless -%}
     <a class="hm-pcol__deck" href="#katalog-mostri">{%- render 'hameleon-icon', icon: 'swatch' -%}<span>Не сте сигурни за цвета? <strong>Каталог с мостри</strong>, а парите се връщат с боята.</span></a>
 
     {%- comment -%} Shown after a colour is picked further down the page: takes the visitor back to "Add to cart". {%- endcomment -%}

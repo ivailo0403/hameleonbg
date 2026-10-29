@@ -11,6 +11,10 @@ window.Hameleon.customColor =
   window.Hameleon.customColor ||
   ((code) => ({ code: String(code).trim(), name: 'друг каталог', hex: '', catalogue: 'Друг каталог', custom: true }));
 
+/* Any paint can be bought white, without tinting. */
+window.Hameleon.whiteColor =
+  window.Hameleon.whiteColor || { code: 'Бяла', name: 'без тониране', hex: '#FFFFFF', catalogue: 'Без тониране', white: true };
+
 /* The stripes shown for a colour we cannot draw on screen. */
 window.Hameleon.customSwatch = 'repeating-linear-gradient(135deg, #f4f4f0 0 8px, #e2e5e3 8px 16px)';
 
@@ -36,6 +40,13 @@ if (!customElements.get('hameleon-product-color')) {
           event.preventDefault();
           studio.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+
+        const whiteButton = this.querySelector('[data-white-pick]');
+        if (whiteButton) {
+          whiteButton.addEventListener('click', () =>
+            document.dispatchEvent(new CustomEvent('hameleon:color', { detail: window.Hameleon.whiteColor }))
+          );
+        }
 
         this.querySelector('[data-code-form]').addEventListener('submit', (event) => {
           event.preventDefault();
@@ -167,20 +178,31 @@ if (!customElements.get('hameleon-product-color')) {
       }
 
       set(color) {
-        if (!color || (color.catalogue !== this.catalogue && !color.custom)) return;
+        if (!color || (color.catalogue !== this.catalogue && !color.custom && !(color.white && this.catalogue === 'Vitex'))) return;
         if (color.base && this.dataset.base && color.base !== this.dataset.base) return;
         this.color = color;
         /* A white-only size keeps its "white" line; the colour waits for a tintable size. */
         if (this.isWhite) return;
-        this.props.color.value = color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ');
-        /* Staff need the fan deck: "Vitex Global Collection" or "Vitex Colourful Collection". */
-        this.props.catalogue.value = color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue;
-        this.props.hex.value = color.hex || '';
+        if (color.white) {
+          this.props.color.value = 'Бяла (без тониране)';
+          this.props.catalogue.value = '—';
+          this.props.hex.value = '';
+        } else {
+          this.props.color.value = color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ');
+          /* Staff need the fan deck: "Vitex Global Collection" or "Vitex Colourful Collection". */
+          this.props.catalogue.value = color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue;
+          this.props.hex.value = color.hex || '';
+        }
         Object.values(this.props).forEach((input) => (input.disabled = !input.value));
 
         const chip = this.querySelector('[data-chip]');
         const name = this.querySelector('[data-name]');
-        if (color.custom) {
+        this.classList.toggle('is-plain-white', Boolean(color.white));
+        if (color.white) {
+          chip.style.background = '#FFFFFF';
+          name.textContent = 'Бяла, без тониране';
+          this.message('Добре, без тониране. Ако решите за цвят, въведете кода му или изберете от каталога.', false);
+        } else if (color.custom) {
           chip.style.background = window.Hameleon.customSwatch;
           name.textContent = `Код ${color.code} · друг каталог`;
           this.message('Тонираме по Вашия код. Този цвят не можем да покажем на екрана, затова стаята остава неутрална.', false);
