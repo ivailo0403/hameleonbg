@@ -59,6 +59,7 @@
     assign p_pack_l = '1'
     assign p_pack_sqm = '10'
     assign p_sizes = ''
+    assign p_white_sizes = ''
     assign type_down = product.type | downcase
     if title_down contains 'мазилк' or type_down contains 'мазилк'
       assign p_cat = 'plaster'
@@ -73,6 +74,7 @@
       assign p_pack_l = match.settings.pack_litres
       assign p_pack_sqm = match.settings.pack_sqm
       assign p_sizes = match.settings.sizes
+      assign p_white_sizes = match.settings.white_sizes
       if match.settings.tintable == false
         assign p_tintable = false
       endif
@@ -105,6 +107,7 @@
         data-pack-l="{{ p_pack_l | escape }}"
         data-pack-sqm="{{ p_pack_sqm | escape }}"
         data-sizes="{{ p_sizes | escape }}"
+        data-white-sizes="{{ p_white_sizes | escape }}"
         data-tintable="{{ p_tintable }}"
         data-variants="[{%- for v in product.variants -%}{&quot;id&quot;:{{ v.id }},&quot;title&quot;:{{ v.title | json | escape }},&quot;available&quot;:{{ v.available }},&quot;price&quot;:{{ v.price }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]"
       >
@@ -172,6 +175,7 @@
               data-pack-l="{{ block.settings.pack_litres | escape }}"
               data-pack-sqm="{{ block.settings.pack_sqm | escape }}"
               data-sizes="{{ block.settings.sizes | escape }}"
+              data-white-sizes="{{ block.settings.white_sizes | escape }}"
               data-tintable="{{ tintable }}"
               data-url="{{ url }}"
               {%- if p != blank %}

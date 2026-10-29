@@ -70,6 +70,18 @@ if (!customElements.get('hameleon-paint-calc')) {
               .filter((n) => n > 0 && this.variantFor(variants, n));
             if (sold.length) input.dataset.sizes = sold.join(',');
           }
+          /* Sizes sold only in white (e.g. Vito 15 л) are never tinted, so a tintable paint leaves them out. */
+          const white = String(input.dataset.whiteSizes || '')
+            .split(',')
+            .map((s) => this.num(s))
+            .filter((n) => n > 0);
+          if (white.length && input.dataset.tintable !== 'false') {
+            const tinted = String(input.dataset.sizes)
+              .split(',')
+              .map((s) => this.num(s))
+              .filter((n) => n > 0 && !white.includes(n));
+            if (tinted.length) input.dataset.sizes = tinted.join(',');
+          }
         });
 
         this.addEventListener('change', (event) => {

@@ -148,6 +148,7 @@
             "pack_litres": "1",
             "pack_sqm": "11",
             "sizes": "1, 3, 9, 15",
+            "white_sizes": "15",
             "product": "vitex-vito-interiorna-boya"
           }
         },
