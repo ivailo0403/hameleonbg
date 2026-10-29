@@ -720,6 +720,17 @@ a.hm-card:hover,
   box-shadow: none;
 }
 
+/* A size sold only in white: no colour to choose. */
+.hm-pcol.is-white .hm-pcol__code,
+.hm-pcol.is-white .hm-pcol__open,
+.hm-pcol.is-white .hm-pcol__deck {
+  display: none;
+}
+
+.hm-pcol.is-white .hm-pcol__chip {
+  box-shadow: inset 0 0 0 1px var(--hm-border);
+}
+
 .hm-pcol__code {
   display: flex;
   gap: 0.6rem;

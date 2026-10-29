@@ -49,7 +49,8 @@
           "type": "hameleon_color",
           "settings": {
             "catalogue": "auto",
-            "required": true
+            "required": true,
+            "white_only": "vitex-vito-interiorna-boya: 15"
           }
         }
       },

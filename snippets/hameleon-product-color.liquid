@@ -20,6 +20,33 @@
     endif
   endif
   assign catalogue_url = settings.hm_catalogue_page | default: '/pages/katalog-tsvetove'
+
+  comment
+    Sizes this product is sold in only white (e.g. Vito 15 л): their variant ids go to the box,
+    which then sends the line as white instead of asking for a colour.
+  endcomment
+  assign white_sizes = ''
+  assign white_lines = block.settings.white_only | newline_to_br | split: '<br />'
+  for line in white_lines
+    assign parts = line | split: ':'
+    assign line_handle = parts[0] | strip
+    if line_handle == product.handle and parts[1] != blank
+      assign white_sizes = parts[1] | strip
+    endif
+  endfor
+  assign white_ids = ''
+  if white_sizes != blank
+    assign sizes = white_sizes | split: ','
+    for v in product.variants
+      assign v_litres = v.title | downcase | remove: 'л' | remove: 'l' | replace: ',', '.' | strip
+      for size in sizes
+        assign size_clean = size | strip
+        if v_litres == size_clean
+          assign white_ids = white_ids | append: v.id | append: ','
+        endif
+      endfor
+    endfor
+  endif
 -%}
 {%- unless product.tags contains 'без тониране' -%}
   <script src="{{ 'hameleon-colors.js' | asset_url }}" defer="defer"></script>
@@ -31,6 +58,7 @@
     data-catalogue-url="{{ catalogue_url }}"
     data-motivo-base="{{ 'hm-motivo-01.jpg' | asset_url }}"
     {% if block.settings.required %}data-required{% endif %}
+    {% if white_ids != blank %}data-white-variants="{{ white_ids }}" data-variant="{{ product.selected_or_first_available_variant.id }}"{% endif %}
     {{ block.shopify_attributes }}
   >
     <input type="hidden" name="properties[Цвят]" value="" form="{{ product_form_id }}" data-prop="color" disabled>
