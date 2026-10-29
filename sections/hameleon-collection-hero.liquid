@@ -1,0 +1,244 @@
+{%- comment -%}
+  Хамелеон: collection header.
+  A dark banner with the collection photo (or brand glow and a big category icon when there is no
+  photo), breadcrumbs, title, short description, product and brand counts, the brands in this
+  collection as filter links, and the pickup / courier promise.
+  The icon is picked from the collection handle (elektro → power, ruchni → hand, …).
+{%- endcomment -%}
+{%- liquid
+  assign handle = collection.handle | default: ''
+  assign icon = section.settings.icon
+  if icon == 'auto'
+    assign icon = 'kit'
+    if handle contains 'elektro' or handle contains 'mashin'
+      assign icon = 'power'
+    endif
+    if handle contains 'bormash' or handle contains 'perforat' or handle contains 'udarn'
+      assign icon = 'hammerdrill'
+    endif
+    if handle contains 'vintovert' or handle contains 'gaikovert' or handle contains 'otvert'
+      assign icon = 'screwdriver'
+    endif
+    if handle contains 'shlaif' or handle contains 'shliaf' or handle contains 'rezhe'
+      assign icon = 'grinder'
+    endif
+    if handle contains 'tsirkul' or handle contains 'trion'
+      assign icon = 'saw'
+    endif
+    if handle contains 'bater' or handle contains 'zaryad'
+      assign icon = 'battery'
+    endif
+    if handle contains 'ruchni' or handle contains 'klyuch' or handle contains 'kleshti' or handle contains 'izmerv'
+      assign icon = 'hand'
+    endif
+    if handle contains 'gradin' or handle contains 'kosach' or handle contains 'trimer'
+      assign icon = 'garden'
+    endif
+    if handle contains 'konsum' or handle contains 'krepezh' or handle contains 'diskove' or handle contains 'svredl'
+      assign icon = 'fasteners'
+    endif
+    if handle contains 'boi' or handle contains 'boya' or handle contains 'boyadzh'
+      assign icon = 'paint'
+    endif
+  endif
+
+  assign image = section.settings.image
+  if collection.image != blank and section.settings.use_collection_image
+    assign image = collection.image
+  endif
+
+  assign title = collection.title | default: section.settings.fallback_title
+  assign count = collection.all_products_count | default: 0
+  assign vendors = collection.all_vendors
+-%}
+{%- style -%}
+  .hm-chero-{{ section.id }} {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-chero-{{ section.id }} {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{{ 'hameleon-collection.css' | asset_url | stylesheet_tag }}
+
+<section class="hm-section hm-chero-{{ section.id }}">
+  <div class="page-width">
+    <div class="hm-chero{% if image != blank %} hm-chero--photo{% endif %}" data-reveal="scale">
+      {%- if image != blank -%}
+        {%- assign focal = 'object-position: ' | append: image.presentation.focal_point -%}
+        <div class="hm-chero__media" aria-hidden="true">
+          {{
+            image
+            | image_url: width: 1600
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              widths: '600, 900, 1200, 1600',
+              sizes: '(min-width: 1200px) 1200px, 100vw',
+              alt: '',
+              style: focal
+          }}
+        </div>
+      {%- else -%}
+        <span class="hm-chero__art" aria-hidden="true">{%- render 'hameleon-icon', icon: icon -%}</span>
+      {%- endif -%}
+
+      <div class="hm-chero__copy">
+        <nav class="hm-chero__crumbs" aria-label="Навигация">
+          <a href="{{ routes.root_url }}">Начало</a>
+          {%- if section.settings.parent_label != blank and section.settings.parent_link != blank -%}
+            <span aria-hidden="true">/</span>
+            <a href="{{ section.settings.parent_link }}">{{ section.settings.parent_label | escape }}</a>
+          {%- endif -%}
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{{ title | escape }}</span>
+        </nav>
+
+        <h1 class="hm-chero__title">{{ title | escape }}</h1>
+
+        {%- if section.settings.show_description and collection.description != blank -%}
+          <p class="hm-chero__text">{{ collection.description | strip_html | truncatewords: 32 }}</p>
+        {%- elsif section.settings.fallback_text != blank -%}
+          <p class="hm-chero__text">{{ section.settings.fallback_text | escape }}</p>
+        {%- endif -%}
+
+        <ul class="hm-chero__stats">
+          {%- if count > 0 -%}
+            <li><strong>{{ count }}</strong> {% if count == 1 %}продукт{% else %}продукта{% endif %}</li>
+          {%- endif -%}
+          {%- if vendors.size > 1 -%}
+            <li><strong>{{ vendors.size }}</strong> марки</li>
+          {%- endif -%}
+          <li>{%- render 'hameleon-icon', icon: 'clock' -%}{{ section.settings.trust_1 | escape }}</li>
+          <li>{%- render 'hameleon-icon', icon: 'truck' -%}{{ section.settings.trust_2 | escape }}</li>
+        </ul>
+      </div>
+
+      {%- if section.settings.show_brands and vendors.size > 0 -%}
+        <div class="hm-chero__brands">
+          <p class="hm-chero__brands-label">{{ section.settings.brands_label | escape }}</p>
+          <ul>
+            {%- for vendor in vendors limit: 8 -%}
+              <li>
+                <a href="{{ collection.url }}?filter.p.vendor={{ vendor | url_encode }}">{{ vendor | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: collection top",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_collection_image",
+      "label": "Use the collection's image",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Fallback photo",
+      "info": "Used when the collection has no image. Without any photo the banner shows the category icon."
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon when there is no photo",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "From the collection handle" },
+        { "value": "power", "label": "Power tools" },
+        { "value": "hand", "label": "Hand tools" },
+        { "value": "garden", "label": "Garden" },
+        { "value": "fasteners", "label": "Consumables" },
+        { "value": "kit", "label": "Kit" },
+        { "value": "paint", "label": "Paint" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "fallback_title",
+      "label": "Title when there is no collection",
+      "default": "Всички продукти"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show the collection description",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "fallback_text",
+      "label": "Text when there is no description",
+      "default": "Подбрани от хора, които ги ползват. Питайте ни на щанда или по телефона."
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "label": "Breadcrumb parent label",
+      "default": "Инструменти"
+    },
+    {
+      "type": "url",
+      "id": "parent_link",
+      "label": "Breadcrumb parent link"
+    },
+    {
+      "type": "text",
+      "id": "trust_1",
+      "label": "Promise 1",
+      "default": "Взимане от магазина до 30 минути"
+    },
+    {
+      "type": "text",
+      "id": "trust_2",
+      "label": "Promise 2",
+      "default": "С куриер до 3 работни дни"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_brands",
+      "label": "Show brands as filter links",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "brands_label",
+      "label": "Brands label",
+      "default": "Марки в тази категория"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 16
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,94 @@
+{%- comment -%}
+  Хамелеон: product card for collection grids.
+  Photo on a light tile, sale badge, brand, title, stock line, price and an add-to-cart button
+  (one-variant products go straight to the cart through Dawn's product-form; products with
+  options link to the product page).
+  Accepts:
+  - card_product: {Object} the product
+  - section_id: {String} the section id, for unique form ids
+  - lazy_load: {Boolean} lazy-load the image (default true)
+{%- endcomment -%}
+{%- liquid
+  assign variant = card_product.selected_or_first_available_variant
+  assign form_id = 'hm-card-' | append: section_id | append: '-' | append: card_product.id
+  assign on_sale = false
+  if card_product.compare_at_price > card_product.price and card_product.available
+    assign on_sale = true
+    assign saved = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price | floor
+  endif
+  assign loading = 'lazy'
+  if lazy_load == false
+    assign loading = 'eager'
+  endif
+-%}
+<article class="hm-card{% unless card_product.available %} is-sold-out{% endunless %}">
+  <a class="hm-card__media" href="{{ card_product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if card_product.featured_media -%}
+      {{
+        card_product.featured_media
+        | image_url: width: 600
+        | image_tag:
+          loading: loading,
+          widths: '240, 360, 480, 600',
+          sizes: '(min-width: 990px) 280px, (min-width: 750px) 33vw, 50vw',
+          alt: ''
+      }}
+    {%- else -%}
+      <span class="hm-card__placeholder">{%- render 'hameleon-icon', icon: 'kit' -%}</span>
+    {%- endif -%}
+    {%- if on_sale -%}
+      <span class="hm-card__badge">−{{ saved }}%</span>
+    {%- endif -%}
+  </a>
+
+  <div class="hm-card__body">
+    {%- if card_product.vendor != blank -%}
+      <p class="hm-card__brand">{{ card_product.vendor | escape }}</p>
+    {%- endif -%}
+    <h3 class="hm-card__title" id="title-{{ section_id }}-{{ card_product.id }}">
+      <a href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
+    </h3>
+
+    <p class="hm-card__stock{% unless card_product.available %} is-out{% endunless %}">
+      {%- if card_product.available -%}
+        <span class="hm-card__dot" aria-hidden="true"></span>В наличност
+      {%- else -%}
+        Изчерпан, питайте ни за срок
+      {%- endif -%}
+    </p>
+
+    <div class="hm-card__buy">
+      <p class="hm-card__price">
+        {%- if card_product.price_varies -%}<small>от</small> {% endif -%}
+        <strong>{{ card_product.price | money }}</strong>
+        {%- if on_sale -%}<s>{{ card_product.compare_at_price | money }}</s>{%- endif -%}
+      </p>
+
+      {%- if card_product.available and card_product.variants_count == 1 -%}
+        <product-form class="hm-card__form" data-section-id="{{ section_id }}">
+          {%- form 'product', card_product, id: form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+            <input type="hidden" name="id" value="{{ variant.id }}" class="product-variant-id">
+            <button
+              type="submit"
+              name="add"
+              class="hm-card__add"
+              aria-labelledby="{{ form_id }}-label title-{{ section_id }}-{{ card_product.id }}"
+            >
+              <span id="{{ form_id }}-label">Добави</span>
+              {%- render 'hameleon-icon', icon: 'cart' -%}
+              {%- render 'loading-spinner' -%}
+            </button>
+            <div class="product-form__error-message-wrapper hm-card__error" role="alert" hidden>
+              <span class="product-form__error-message"></span>
+            </div>
+          {%- endform -%}
+        </product-form>
+      {%- else -%}
+        <a class="hm-card__add hm-card__add--link" href="{{ card_product.url }}">
+          <span>{% if card_product.available %}Изберете{% else %}Виж{% endif %}</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</article>

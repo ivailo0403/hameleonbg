@@ -15,6 +15,13 @@
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
+{%- if section.settings.hm_cards -%}
+  {{ 'hameleon-collection.css' | asset_url | stylesheet_tag }}
+  {%- unless section.settings.quick_add == 'standard' -%}
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  {%- endunless -%}
+{%- endif -%}
+
 {%- if section.settings.quick_add == 'bulk' -%}
   <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
@@ -40,7 +47,7 @@
   view-event-payload="{{ collection | standard_event_data: 'view' | escape }}"
   data-collection-id="{{ collection.id }}"
 >
-  <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
+  <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}{% if section.settings.hm_cards %} hm-grid{% endif %}">
     {%- paginate collection.products by section.settings.products_per_page -%}
       {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
       {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
@@ -169,6 +176,9 @@
                       style="--animation-order: {{ forloop.index }};"
                     {% endif %}
                   >
+                    {%- if section.settings.hm_cards -%}
+                      {% render 'hameleon-product-card', card_product: product, section_id: section.id, lazy_load: lazy_load %}
+                    {%- else -%}
                     {% render 'card-product',
                       card_product: product,
                       media_aspect_ratio: section.settings.image_ratio,
@@ -182,6 +192,7 @@
                       section_id: section.id,
                       product_view_context: 'collection'
                     %}
+                    {%- endif -%}
                   </li>
                   {%- assign skip_card_product_styles = true -%}
                 {%- endfor -%}
@@ -206,6 +217,12 @@
   "name": "t:sections.main-collection-product-grid.name",
   "class": "section",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "hm_cards",
+      "label": "Хамелеон product cards",
+      "default": false
+    },
     {
       "type": "range",
       "id": "products_per_page",

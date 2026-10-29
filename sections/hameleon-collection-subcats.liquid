@@ -1,0 +1,131 @@
+{%- comment -%}
+  Хамелеон: sub-category tiles under the collection header.
+  The tiles come from the menu whose handle matches the collection's handle
+  (Content → Menus, e.g. menu "elektroinstrumenti" with links to "Бормашини", "Винтоверти", …),
+  so one template serves every category. Each tile shows the linked collection's image or an icon,
+  its name and product count. Without a matching menu the section shows nothing.
+  On the "all tools" page, set a fixed menu in the section settings instead.
+{%- endcomment -%}
+{%- liquid
+  assign menu = section.settings.menu
+  if menu == blank and collection != blank
+    assign menu = linklists[collection.handle]
+  endif
+  assign links = menu.links
+-%}
+{%- if links.size > 0 -%}
+  {%- style -%}
+    .hm-subcats-{{ section.id }} {
+      padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+      .hm-subcats-{{ section.id }} {
+        padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+      }
+    }
+  {%- endstyle -%}
+  {{ 'hameleon-collection.css' | asset_url | stylesheet_tag }}
+
+  <section class="hm-section hm-subcats-{{ section.id }}">
+    <div class="page-width">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hm-subcats__title">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      <ul class="hm-subcats" role="list">
+        {%- for link in links -%}
+          {%- liquid
+            assign target = link.object
+            assign t_image = null
+            assign t_count = 0
+            if link.type == 'collection_link' and target != blank
+              assign t_image = target.image | default: target.products.first.featured_media.preview_image
+              assign t_count = target.all_products_count
+            endif
+            assign t_handle = link.url | split: '/' | last | downcase
+            assign t_icon = 'kit'
+            if t_handle contains 'bormash' or t_handle contains 'perforat' or t_handle contains 'kartach'
+              assign t_icon = 'hammerdrill'
+            elsif t_handle contains 'vintovert' or t_handle contains 'gaikovert' or t_handle contains 'otvert'
+              assign t_icon = 'screwdriver'
+            elsif t_handle contains 'shlaif' or t_handle contains 'rezhe'
+              assign t_icon = 'grinder'
+            elsif t_handle contains 'tsirkul' or t_handle contains 'trion'
+              assign t_icon = 'saw'
+            elsif t_handle contains 'bater' or t_handle contains 'zaryad'
+              assign t_icon = 'battery'
+            elsif t_handle contains 'izmerv' or t_handle contains 'rolet' or t_handle contains 'nivel'
+              assign t_icon = 'ruler'
+            elsif t_handle contains 'ruchni' or t_handle contains 'klyuch' or t_handle contains 'kleshti'
+              assign t_icon = 'hand'
+            elsif t_handle contains 'gradin' or t_handle contains 'kosach' or t_handle contains 'trimer'
+              assign t_icon = 'garden'
+            elsif t_handle contains 'konsum' or t_handle contains 'disk' or t_handle contains 'svredl' or t_handle contains 'krepezh'
+              assign t_icon = 'fasteners'
+            elsif t_handle contains 'elektro'
+              assign t_icon = 'power'
+            endif
+          -%}
+          <li data-reveal style="--d: {{ forloop.index0 | at_most: 6 }}">
+            <a class="hm-subcat{% if link.active %} is-active{% endif %}" href="{{ link.url }}">
+              <span class="hm-subcat__media">
+                {%- if t_image != blank -%}
+                  {{ t_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: '', widths: '120, 240' }}
+                {%- else -%}
+                  {%- render 'hameleon-icon', icon: t_icon -%}
+                {%- endif -%}
+              </span>
+              <span class="hm-subcat__text">
+                <strong>{{ link.title | escape }}</strong>
+                {%- if t_count > 0 -%}<small>{{ t_count }} {% if t_count == 1 %}продукт{% else %}продукта{% endif %}</small>{%- endif -%}
+              </span>
+              <span class="hm-subcat__arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Хамелеон: sub-categories",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Изберете вид"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Fixed menu",
+      "info": "Leave empty: each collection uses the menu with the same handle as the collection."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 8
+    }
+  ]
+}
+{% endschema %}
