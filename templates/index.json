@@ -328,70 +328,15 @@
     "tools": {
       "type": "hameleon-tools",
       "settings": {
-        "eyebrow": "Железария",
-        "heading": "Инструменти за ремонта",
-        "text": "Електро и ръчни инструменти, градина, крепежи и консумативи. Всичко за ремонта на едно място.",
+        "eyebrow": "Електроинструменти",
+        "heading": "Машини, които издържат",
+        "text": "Бормашини, винтоверти, ъглошлайфи и перфоратори от DeWALT, TOTAL и RAIDER. С куриер до 3 работни дни.",
         "products_to_show": 4,
         "brands_label": "Марки:",
-        "button_label": "Всички инструменти"
+        "button_label": "Всички електроинструменти",
+        "collection": "elektroinstrumenti"
       },
       "blocks": {
-        "chip-1": {
-          "type": "chip",
-          "settings": {
-            "title": "Бормашини",
-            "icon": "power"
-          }
-        },
-        "chip-2": {
-          "type": "chip",
-          "settings": {
-            "title": "Винтоверти",
-            "icon": "screwdriver"
-          }
-        },
-        "chip-3": {
-          "type": "chip",
-          "settings": {
-            "title": "Ъглошлайфи",
-            "icon": "grinder"
-          }
-        },
-        "chip-4": {
-          "type": "chip",
-          "settings": {
-            "title": "Перфоратори",
-            "icon": "hammerdrill"
-          }
-        },
-        "chip-5": {
-          "type": "chip",
-          "settings": {
-            "title": "Циркуляри",
-            "icon": "saw"
-          }
-        },
-        "chip-6": {
-          "type": "chip",
-          "settings": {
-            "title": "Батерии и зарядни",
-            "icon": "battery"
-          }
-        },
-        "chip-7": {
-          "type": "chip",
-          "settings": {
-            "title": "Комплекти машини",
-            "icon": "kit"
-          }
-        },
-        "chip-8": {
-          "type": "chip",
-          "settings": {
-            "title": "Ръчни инструменти",
-            "icon": "hand"
-          }
-        },
         "brand-9": {
           "type": "brand",
           "settings": {
@@ -412,14 +357,6 @@
         }
       },
       "block_order": [
-        "chip-1",
-        "chip-2",
-        "chip-3",
-        "chip-4",
-        "chip-5",
-        "chip-6",
-        "chip-7",
-        "chip-8",
         "brand-9",
         "brand-10",
         "brand-11"
@@ -653,16 +590,214 @@
         "padding_top": 0,
         "padding_bottom": 16
       }
+    },
+    "promo_slider": {
+      "type": "hameleon-slider",
+      "settings": {
+        "label": "Промоции",
+        "interval": 6,
+        "padding_top": 16,
+        "padding_bottom": 16
+      },
+      "blocks": {
+        "slide-fan": {
+          "type": "offer",
+          "settings": {
+            "eyebrow": "Каталог с мостри",
+            "title": "Мострите са безплатни с боята",
+            "text": "Вземете каталога с 1320 цвята за 20 €. Връщаме ги от първата Ви боя.",
+            "button_label": "Вижте как",
+            "link": "#katalog-mostri",
+            "badge": "−20 €",
+            "badge_note": "от боята",
+            "style": "green",
+            "art": "fan"
+          }
+        },
+        "slide-dewalt": {
+          "type": "image",
+          "settings": {
+            "asset": "hm-brand-dewalt.jpg",
+            "position": "left",
+            "alt": "DeWALT електроинструменти",
+            "link": "/collections/elektroinstrumenti"
+          }
+        },
+        "slide-tint": {
+          "type": "offer",
+          "settings": {
+            "eyebrow": "Тониране на място",
+            "title": "Поръчайте онлайн. Боята е готова до 30 минути.",
+            "text": "Изберете цвят от 1320 нюанса Vitex. Ние я тонираме и я държим 7 дни в магазина.",
+            "button_label": "Изберете цвят",
+            "link": "/pages/katalog-tsvetove",
+            "badge": "30 мин",
+            "badge_note": "и е готова",
+            "style": "dark",
+            "art": "tins"
+          }
+        },
+        "slide-total": {
+          "type": "image",
+          "settings": {
+            "asset": "hm-brand-total.jpg",
+            "position": "center",
+            "alt": "TOTAL инструменти",
+            "link": "/collections/elektroinstrumenti"
+          }
+        }
+      },
+      "block_order": [
+        "slide-fan",
+        "slide-dewalt",
+        "slide-tint",
+        "slide-total"
+      ]
+    },
+    "all_categories": {
+      "type": "hameleon-all-categories",
+      "settings": {
+        "eyebrow": "Каталог",
+        "heading": "Всичко за ремонта, в 12 категории",
+        "all_label": "Целият каталог",
+        "subs_to_show": 3,
+        "go_label": "Разгледайте",
+        "padding_top": 48,
+        "padding_bottom": 32
+      },
+      "blocks": {
+        "cat-1": {
+          "type": "category",
+          "settings": {
+            "title": "Бои и тониране",
+            "icon": "paint",
+            "image": "shopify://shop_images/photo-1562259949-e8e7689d7828.jpg",
+            "link": "/pages/katalog-tsvetove",
+            "subs": "Интериорни бои, Фасадни бои, Грундове"
+          }
+        },
+        "cat-2": {
+          "type": "category",
+          "settings": {
+            "title": "Декоративни мазилки",
+            "icon": "plaster",
+            "image": "shopify://shop_images/photo-1768839725085-829e6ac7ac26.jpg",
+            "link": "/#mazilki",
+            "subs": "Motivo Silver, Motivo Gold, Motivo Titanium"
+          }
+        },
+        "cat-3": {
+          "type": "category",
+          "settings": {
+            "title": "Електро­инструменти",
+            "icon": "power",
+            "image": "shopify://shop_images/photo-1572981779307-38b8cabb2407.jpg",
+            "collection": "elektroinstrumenti"
+          }
+        },
+        "cat-4": {
+          "type": "category",
+          "settings": {
+            "title": "Ръчни инструменти",
+            "icon": "hand",
+            "image": "shopify://shop_images/photo-1503789146722-cf137a3c0fea.jpg",
+            "collection": "ruchni-instrumenti"
+          }
+        },
+        "cat-5": {
+          "type": "category",
+          "settings": {
+            "title": "Градина",
+            "icon": "garden",
+            "image": "shopify://shop_images/photo-1526381805515-3fec2d69e7cc.jpg",
+            "collection": "gradina"
+          }
+        },
+        "cat-6": {
+          "type": "category",
+          "settings": {
+            "title": "Пневматика и компресори",
+            "icon": "kit",
+            "image": "shopify://shop_images/photo-1787939060968-2a385b670fa1.jpg",
+            "collection": "pnevmatika"
+          }
+        },
+        "cat-7": {
+          "type": "category",
+          "settings": {
+            "title": "Генератори",
+            "icon": "battery",
+            "image": "shopify://shop_images/photo-1700318092011-6e4666e94ab5.jpg",
+            "collection": "generatori"
+          }
+        },
+        "cat-8": {
+          "type": "category",
+          "settings": {
+            "title": "Консумативи и предпазни",
+            "icon": "grinder",
+            "image": "shopify://shop_images/photo-1598302936625-6075fbd98dd7.jpg",
+            "collection": "konsumativi"
+          }
+        },
+        "cat-9": {
+          "type": "category",
+          "settings": {
+            "title": "Автосервиз",
+            "icon": "truck",
+            "image": "shopify://shop_images/photo-1619642751034-765dfdf7c58e.jpg",
+            "collection": "avtoservis"
+          }
+        },
+        "cat-10": {
+          "type": "category",
+          "settings": {
+            "title": "Железария и електро",
+            "icon": "fasteners",
+            "image": "shopify://shop_images/photo-1564226591723-659ff3852b2a.jpg",
+            "collection": "zhelezariya"
+          }
+        },
+        "cat-11": {
+          "type": "category",
+          "settings": {
+            "title": "Баня и ВиК",
+            "icon": "house",
+            "image": "shopify://shop_images/photo-1585704032915-c3400ca199e7.jpg",
+            "collection": "banya-vik"
+          }
+        },
+        "cat-12": {
+          "type": "category",
+          "settings": {
+            "title": "Бояджийски инструменти",
+            "icon": "swatch",
+            "image": "shopify://shop_images/photo-1513364776144-60967b0f800f.jpg",
+            "collection": "boyadzhiyski-instrumenti"
+          }
+        }
+      },
+      "block_order": [
+        "cat-1",
+        "cat-2",
+        "cat-3",
+        "cat-4",
+        "cat-5",
+        "cat-6",
+        "cat-7",
+        "cat-8",
+        "cat-9",
+        "cat-10",
+        "cat-11",
+        "cat-12"
+      ]
     }
   },
   "order": [
     "hero",
-    "categories",
+    "promo_slider",
+    "all_categories",
     "tools",
-    "promo_power",
-    "brand_banners",
-    "promo_duo",
-    "promo_more",
     "how_it_works",
     "calculator",
     "sample_offer",

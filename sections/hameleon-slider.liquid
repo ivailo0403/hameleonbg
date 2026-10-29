@@ -1,0 +1,610 @@
+{%- comment -%}
+  Хамелеон: rotating promo banner. Two kinds of slide:
+  - "image": finished artwork (e.g. a brand banner) shown as is, the whole slide is a link;
+  - "offer": a banner drawn in our style (eyebrow, title, text, button, a big price badge and art).
+  Swipe or arrows on any screen, dots below, autoplay that pauses on hover, focus and with reduced motion.
+{%- endcomment -%}
+{%- style -%}
+  .hm-slider-{{ section.id }} {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-slider-{{ section.id }} {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- style -%}
+  .hm-slider {
+    position: relative;
+  }
+
+  .hm-slider__track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    border-radius: 2.4rem;
+    box-shadow: var(--hm-shadow-lg);
+  }
+
+  .hm-slider__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hm-slide {
+    position: relative;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    aspect-ratio: 2;
+    overflow: hidden;
+    background: #141618;
+  }
+
+  .hm-slide > a {
+    position: absolute;
+    inset: 0;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .hm-slide__img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Blurred copy behind the banner: fills the slide when the banner is shown whole on a phone. */
+  .hm-slide__blur {
+    position: absolute;
+    inset: -10%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(24px) brightness(0.7);
+  }
+
+  /* Offer slides */
+  .hm-slide--offer {
+    --sl-bg: var(--hm-gradient-deep);
+    background: var(--sl-bg);
+    color: #ffffff;
+  }
+
+  .hm-slide--dark {
+    --sl-bg: radial-gradient(60rem 40rem at 85% 30%, rgba(0, 170, 193, 0.35), transparent 60%), #141618;
+  }
+
+  .hm-slide--sun {
+    --sl-bg: radial-gradient(50rem 40rem at 90% 10%, rgba(255, 255, 255, 0.35), transparent 60%), linear-gradient(135deg, #fed426, #fe9a28);
+    color: #1a1c1e;
+  }
+
+  .hm-slide__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.2rem;
+    height: 100%;
+    box-sizing: border-box;
+    max-width: 58%;
+    padding: 2.4rem 2.8rem;
+  }
+
+  .hm-slide__eyebrow {
+    align-self: flex-start;
+    margin: 0;
+    padding: 0.4rem 1.1rem;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.95);
+    color: #141618;
+    font-family: var(--hm-font-display);
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .hm-slide__title {
+    margin: 0;
+    font-family: var(--hm-font-display);
+    font-size: clamp(2.2rem, 3.6vw, 4.8rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .hm-slide__text {
+    margin: 0;
+    max-width: 46rem;
+    font-size: clamp(1.4rem, 1.4vw, 1.7rem);
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .hm-slide__go {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.4rem;
+    padding: 1.2rem 2rem;
+    border-radius: var(--hm-radius-pill);
+    background: #ffffff;
+    color: #141618;
+    font-family: var(--hm-font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: var(--hm-shadow-md);
+  }
+
+  .hm-slide--sun .hm-slide__go {
+    background: #141618;
+    color: #ffffff;
+  }
+
+  .hm-slide__go span {
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-slide > a:hover .hm-slide__go span {
+    transform: translateX(4px);
+  }
+
+  .hm-slide__art {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48%;
+  }
+
+  .hm-slide__art img {
+    position: absolute;
+    inset: 8% 6% 8% 0;
+    width: 94%;
+    height: 84%;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.35));
+  }
+
+  /* Drawn art: a fanned colour deck */
+  .hm-slide__fan {
+    position: absolute;
+    right: 14%;
+    bottom: -8%;
+    width: 60%;
+    height: 90%;
+  }
+
+  .hm-slide__fan span {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 17%;
+    height: 92%;
+    margin-left: -8.5%;
+    border: 3px solid #ffffff;
+    border-radius: 1.2rem;
+    box-shadow: var(--hm-shadow-md);
+    transform-origin: 50% 100%;
+    transform: rotate(calc(var(--i) * 11deg - 33deg));
+  }
+
+  /* Drawn art: three tins, the paint colour on the lid and the label */
+  .hm-slide__tins {
+    position: absolute;
+    right: 12%;
+    bottom: 12%;
+    display: flex;
+    align-items: flex-end;
+    gap: 6%;
+    width: 64%;
+    height: 70%;
+  }
+
+  .hm-slide__tin {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 62%;
+    border-radius: 0.8rem 0.8rem 1.4rem 1.4rem;
+    background: linear-gradient(90deg, #c9cdd0, #f4f5f6 40%, #b5babd);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .hm-slide__tin--2 {
+    flex: 1.3;
+    height: 100%;
+  }
+
+  .hm-slide__tin::before {
+    content: '';
+    position: absolute;
+    left: -4%;
+    right: -4%;
+    top: -0.8rem;
+    height: 1.6rem;
+    border-radius: 0.8rem;
+    background: var(--c);
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  }
+
+  .hm-slide__tin b {
+    padding: 18% 8%;
+    width: 78%;
+    border-radius: 0.6rem;
+    background: var(--c);
+    font-family: var(--hm-font-display);
+    font-size: clamp(1.2rem, 1.6vw, 2rem);
+    font-weight: 800;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  .hm-slide__badge {
+    position: absolute;
+    top: 12%;
+    right: 8%;
+    display: grid;
+    place-items: center;
+    width: clamp(9rem, 12vw, 15rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--hm-sale);
+    color: #ffffff;
+    text-align: center;
+    box-shadow: var(--hm-shadow-lg);
+    transform: rotate(-8deg);
+  }
+
+  .hm-slide__badge strong {
+    display: block;
+    font-family: var(--hm-font-display);
+    font-size: clamp(2.4rem, 3.4vw, 4.4rem);
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .hm-slide__badge small {
+    display: block;
+    margin-top: 0.2rem;
+    padding: 0 1rem;
+    font-size: clamp(1rem, 1vw, 1.3rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* Controls */
+  .hm-slider__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 4.8rem;
+    height: 4.8rem;
+    margin-top: -2.4rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #141618;
+    font-size: 2rem;
+    box-shadow: var(--hm-shadow-md);
+    cursor: pointer;
+    transition: transform 0.2s var(--hm-ease), background-color 0.2s;
+  }
+
+  .hm-slider__arrow:hover {
+    transform: scale(1.08);
+    background: #ffffff;
+  }
+
+  .hm-slider__arrow--prev {
+    left: 1.6rem;
+  }
+
+  .hm-slider__arrow--next {
+    right: 1.6rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-slide__inner {
+      max-width: 52%;
+      padding: 3.2rem 2.8rem 3.2rem 9.2rem;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-slide {
+      aspect-ratio: 2.2;
+    }
+
+    .hm-slide__title {
+      font-size: clamp(3rem, 3.2vw, 4.4rem);
+    }
+  }
+
+  .hm-slider__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-slider__dot {
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--hm-radius-pill);
+    background: var(--hm-border);
+    cursor: pointer;
+    transition: width 0.3s var(--hm-ease), background-color 0.3s;
+  }
+
+  .hm-slider__dot[aria-current='true'] {
+    width: 3.2rem;
+    background: var(--hm-primary);
+  }
+
+  @media screen and (max-width: 749px) {
+    .hm-slider__track {
+      border-radius: 1.6rem;
+    }
+
+    .hm-slide--offer {
+      aspect-ratio: 1.15;
+    }
+
+    .hm-slide--image {
+      aspect-ratio: 2;
+    }
+
+    .hm-slide--image .hm-slide__img {
+      object-fit: contain;
+    }
+
+    .hm-slide__inner {
+      justify-content: flex-start;
+      max-width: none;
+      padding: 2rem;
+      gap: 0.8rem;
+    }
+
+    .hm-slide__art {
+      top: auto;
+      width: 100%;
+      height: 46%;
+    }
+
+    .hm-slide__art img {
+      inset: 0 4% 6% 40%;
+      width: 56%;
+      height: 94%;
+    }
+
+    .hm-slide__fan {
+      right: 6%;
+      width: 52%;
+      height: 100%;
+    }
+
+    .hm-slide__tins {
+      right: 5%;
+      bottom: 6%;
+      width: 56%;
+      height: 52%;
+    }
+
+    .hm-slide__tin::before {
+      top: -0.5rem;
+      height: 1rem;
+    }
+
+    .hm-slide__badge {
+      top: auto;
+      right: auto;
+      bottom: 1.6rem;
+      left: 2rem;
+      width: 8.4rem;
+    }
+
+    .hm-slide__go {
+      padding: 1rem 1.6rem;
+      font-size: 1.4rem;
+    }
+
+    .hm-slider__arrow {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm-slider__track {
+      scroll-behavior: auto;
+    }
+  }
+{%- endstyle -%}
+
+{%- assign count = section.blocks.size -%}
+<section class="hm-section hm-slider-{{ section.id }}">
+  <div class="page-width">
+    <hameleon-slider class="hm-slider" data-interval="{{ section.settings.interval }}" aria-roledescription="carousel" aria-label="{{ section.settings.label | escape }}">
+      <ul class="hm-slider__track" data-track>
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign href = block.settings.link | default: '#'
+            assign pos = block.settings.position | default: 'center'
+          -%}
+          <li
+            class="hm-slide hm-slide--{{ block.type }}{% if block.type == 'offer' %} hm-slide--{{ block.settings.style }}{% endif %}"
+            role="group"
+            aria-roledescription="slide"
+            aria-label="{{ forloop.index }} / {{ count }}"
+            data-slide
+            {{ block.shopify_attributes }}
+          >
+            {%- case block.type -%}
+              {%- when 'image' -%}
+                <a href="{{ href }}">
+                  {%- if block.settings.image != blank -%}
+                    <span class="hm-slide__blur" style="background-image: url('{{ block.settings.image | image_url: width: 400 }}');" aria-hidden="true"></span>
+                    {%- assign img_style = 'object-position: ' | append: pos | append: ' center' -%}
+                    {{ block.settings.image | image_url: width: 2400 | image_tag: class: 'hm-slide__img', widths: '600, 900, 1200, 1800, 2400', sizes: '(min-width: 1200px) 1200px, 100vw', alt: block.settings.alt, style: img_style, loading: 'eager' }}
+                  {%- elsif block.settings.asset != blank -%}
+                    <span class="hm-slide__blur" style="background-image: url('{{ block.settings.asset | asset_url }}');" aria-hidden="true"></span>
+                    <img class="hm-slide__img" src="{{ block.settings.asset | asset_url }}" alt="{{ block.settings.alt | escape }}" width="1600" height="800" style="object-position: {{ pos }} center;"{% unless forloop.first %} loading="lazy"{% endunless %}>
+                  {%- endif -%}
+                </a>
+              {%- when 'offer' -%}
+                <a href="{{ href }}">
+                  <div class="hm-slide__inner">
+                    {%- if block.settings.eyebrow != blank -%}
+                      <p class="hm-slide__eyebrow">{{ block.settings.eyebrow | escape }}</p>
+                    {%- endif -%}
+                    <h2 class="hm-slide__title">{{ block.settings.title | escape }}</h2>
+                    {%- if block.settings.text != blank -%}
+                      <p class="hm-slide__text">{{ block.settings.text | escape }}</p>
+                    {%- endif -%}
+                    {%- if block.settings.button_label != blank -%}
+                      <span class="hm-slide__go">{{ block.settings.button_label | escape }} <span aria-hidden="true">→</span></span>
+                    {%- endif -%}
+                  </div>
+                  <div class="hm-slide__art" aria-hidden="true">
+                    {%- if block.settings.image != blank -%}
+                      {{ block.settings.image | image_url: width: 1000 | image_tag: widths: '400, 700, 1000', sizes: '(min-width: 750px) 50vw, 60vw', alt: '', loading: 'lazy' }}
+                    {%- elsif block.settings.art == 'fan' -%}
+                      <span class="hm-slide__fan">
+                        {%- assign fan = 'FED426,FE9A28,F89495,D771AF,0095AB,217553,96BC5E' | split: ',' -%}
+                        {%- for c in fan -%}
+                          <span style="--i: {{ forloop.index0 }}; background: #{{ c }};"></span>
+                        {%- endfor -%}
+                      </span>
+                    {%- elsif block.settings.art == 'tins' -%}
+                      <span class="hm-slide__tins">
+                        {%- assign tins = '1 л:#FE9A28,9 л:#0095AB,3 л:#D771AF' | split: ',' -%}
+                        {%- for tin in tins -%}
+                          {%- assign t = tin | split: ':' -%}
+                          <span class="hm-slide__tin hm-slide__tin--{{ forloop.index }}" style="--c: {{ t[1] }};"><b>{{ t[0] }}</b></span>
+                        {%- endfor -%}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                  {%- if block.settings.badge != blank -%}
+                    <span class="hm-slide__badge" aria-hidden="true">
+                      <span><strong>{{ block.settings.badge | escape }}</strong><small>{{ block.settings.badge_note | escape }}</small></span>
+                    </span>
+                  {%- endif -%}
+                </a>
+            {%- endcase -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if count > 1 -%}
+        <button type="button" class="hm-slider__arrow hm-slider__arrow--prev" data-prev aria-label="Предишен банер">←</button>
+        <button type="button" class="hm-slider__arrow hm-slider__arrow--next" data-next aria-label="Следващ банер">→</button>
+        <ol class="hm-slider__dots">
+          {%- for block in section.blocks -%}
+            <li><button type="button" class="hm-slider__dot" data-dot="{{ forloop.index0 }}" aria-label="Банер {{ forloop.index }}"{% if forloop.first %} aria-current="true"{% endif %}></button></li>
+          {%- endfor -%}
+        </ol>
+      {%- endif -%}
+    </hameleon-slider>
+  </div>
+</section>
+
+<script src="{{ 'hameleon-slider.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Хамелеон: promo slider",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "label", "label": "Name for screen readers", "default": "Промоции" },
+    { "type": "range", "id": "interval", "min": 3, "max": 12, "step": 1, "unit": "s", "label": "Change every", "default": 6 },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image banner",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Banner image", "info": "Finished artwork, 2:1 (e.g. 2400 × 1200)." },
+        { "type": "text", "id": "asset", "label": "Or a theme asset file", "info": "Used when no image is picked, e.g. hm-brand-dewalt.jpg" },
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Keep this side when cropping",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Centre" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        { "type": "text", "id": "alt", "label": "Description (for screen readers)" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "offer",
+      "name": "Offer banner",
+      "settings": [
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Промоция" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Заглавие на промоцията" },
+        { "type": "textarea", "id": "text", "label": "Text" },
+        { "type": "text", "id": "button_label", "label": "Button label", "default": "Разгледайте" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "text", "id": "badge", "label": "Badge (e.g. −20 €)" },
+        { "type": "text", "id": "badge_note", "label": "Badge small text" },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "default": "green",
+          "options": [
+            { "value": "green", "label": "Brand green" },
+            { "value": "dark", "label": "Dark" },
+            { "value": "sun", "label": "Yellow" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "Product photo (transparent PNG works best)" },
+        {
+          "type": "select",
+          "id": "art",
+          "label": "Art without a photo",
+          "default": "fan",
+          "options": [
+            { "value": "fan", "label": "Colour fan deck" },
+            { "value": "tins", "label": "Paint tins (1, 3 and 9 л)" },
+            { "value": "none", "label": "None" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: promo slider",
+      "blocks": [{ "type": "offer" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,424 @@
+{%- comment -%}
+  Хамелеон: all main categories. One card per block: a photo, an icon badge, the title and the first
+  few subcategories. Subcategories come from the menu whose handle matches the collection handle
+  (Navigation, e.g. "elektroinstrumenti"), or from the block's own list when it is filled in.
+  Desktop: 4 per row. Phone: 2 per row, title and count only.
+{%- endcomment -%}
+{%- style -%}
+  .hm-allcats-{{ section.id }} {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-allcats-{{ section.id }} {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- style -%}
+  .hm-allcats__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.2rem 2.4rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .hm-allcats__head .hm-h2 {
+    margin: 0;
+  }
+
+  .hm-allcats__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--hm-font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--hm-primary);
+    text-decoration: none;
+  }
+
+  .hm-allcats__all span {
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-allcats__all:hover span {
+    transform: translateX(4px);
+  }
+
+  .hm-allcats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-allcats__grid > li {
+    display: flex;
+  }
+
+  .hm-acat {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-acat__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 1.45;
+    overflow: hidden;
+    background: var(--hm-in-stock-bg);
+  }
+
+  .hm-acat__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--hm-ease);
+  }
+
+  .hm-acat__media--art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--hm-primary);
+  }
+
+  .hm-acat__media--art svg {
+    width: 34%;
+    height: auto;
+    opacity: 0.55;
+  }
+
+  .hm-acat:hover .hm-acat__media img {
+    transform: scale(1.06);
+  }
+
+  .hm-acat__badge {
+    position: absolute;
+    left: 1.2rem;
+    bottom: -2.2rem;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 1.2rem;
+    border: 3px solid #ffffff;
+    background: var(--hm-primary);
+    color: #ffffff;
+    box-shadow: var(--hm-shadow-sm);
+    transition: transform 0.35s var(--hm-ease);
+  }
+
+  .hm-acat__badge svg {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .hm-acat:hover .hm-acat__badge {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .hm-acat__top {
+    position: relative;
+  }
+
+  .hm-acat__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 3rem 1.4rem 1.4rem;
+  }
+
+  .hm-acat__title {
+    margin: 0;
+    font-family: var(--hm-font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    hyphens: manual;
+  }
+
+  .hm-acat__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* The whole card is clickable through the title link; the sub links sit above it. */
+  .hm-acat__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .hm-acat__subs {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-acat__subs a {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: var(--hm-radius-pill);
+    background: var(--hm-surface-sunken);
+    font-size: 1.3rem;
+    line-height: 1.4;
+    color: var(--hm-text);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .hm-acat__subs a:hover {
+    background: var(--hm-primary);
+    color: #ffffff;
+  }
+
+  .hm-acat__more {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-acat__more > span[aria-hidden] {
+    color: var(--hm-primary);
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-acat__rest {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hm-acat__media {
+      aspect-ratio: 1.7;
+    }
+  }
+
+  .hm-acat:hover .hm-acat__more > span[aria-hidden] {
+    transform: translateX(4px);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-allcats__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.6rem;
+    }
+
+    .hm-allcats__head {
+      margin-bottom: 3.2rem;
+    }
+
+    .hm-acat__body {
+      gap: 1.2rem;
+      padding: 3.2rem 2rem 2rem;
+    }
+
+    .hm-acat__badge {
+      left: 2rem;
+      width: 5rem;
+      height: 5rem;
+      bottom: -2.5rem;
+    }
+
+    .hm-acat__badge svg {
+      width: 2.6rem;
+      height: 2.6rem;
+    }
+
+    .hm-acat__title {
+      font-size: 1.9rem;
+    }
+
+    .hm-acat__subs {
+      display: flex;
+    }
+
+    .hm-acat__n {
+      display: none;
+    }
+
+    .hm-acat__rest {
+      display: inline;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-allcats__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .hm-acat__title {
+      font-size: 1.8rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm-acat__media img,
+    .hm-acat:hover .hm-acat__media img,
+    .hm-acat:hover .hm-acat__badge {
+      transition: none;
+      transform: none;
+    }
+  }
+{%- endstyle -%}
+
+<section class="hm-section hm-allcats-{{ section.id }}" id="kategorii">
+  <div class="page-width">
+    <div class="hm-allcats__head">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 class="hm-h2" data-reveal style="--d: 1">{{ section.settings.heading | escape }}</h2>
+      </div>
+      {%- if section.settings.all_label != blank -%}
+        <a class="hm-allcats__all" href="{{ section.settings.all_link | default: routes.collections_url }}" data-reveal style="--d: 2">
+          {{- section.settings.all_label | escape }} <span aria-hidden="true">→</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <ul class="hm-allcats__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign c = block.settings.collection
+          assign title = block.settings.title | default: c.title
+          assign href = block.settings.link | default: c.url
+          assign photo = block.settings.image | default: c.featured_image
+          assign subs_count = 0
+          if block.settings.subs != blank
+            assign subs = block.settings.subs | split: ','
+            assign subs_count = subs.size
+          elsif c != blank and linklists[c.handle].links.size > 0
+            assign subs_count = linklists[c.handle].links.size
+          endif
+          assign shown = subs_count | at_most: section.settings.subs_to_show
+          assign rest = subs_count | minus: shown
+        -%}
+        <li data-reveal style="--d: {{ forloop.index0 | modulo: 4 }}" {{ block.shopify_attributes }}>
+          <article class="hm-acat hm-card">
+            <div class="hm-acat__top">
+              {%- if photo != blank -%}
+                <span class="hm-acat__media">
+                  {{- photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 900', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw', alt: '' -}}
+                </span>
+              {%- else -%}
+                <span class="hm-acat__media hm-acat__media--art">{% render 'hameleon-icon', icon: block.settings.icon %}</span>
+              {%- endif -%}
+              <span class="hm-acat__badge">{% render 'hameleon-icon', icon: block.settings.icon %}</span>
+            </div>
+            <div class="hm-acat__body">
+              <h3 class="hm-acat__title"><a href="{{ href }}">{{ title | escape }}</a></h3>
+              {%- if shown > 0 -%}
+                <ul class="hm-acat__subs">
+                  {%- if block.settings.subs != blank -%}
+                    {%- for name in subs limit: shown -%}
+                      {%- assign q = name | strip | url_encode -%}
+                      <li><a href="{{ routes.search_url }}?type=product&q={{ q }}">{{ name | strip | escape }}</a></li>
+                    {%- endfor -%}
+                  {%- else -%}
+                    {%- for link in linklists[c.handle].links limit: shown -%}
+                      <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+                    {%- endfor -%}
+                  {%- endif -%}
+                </ul>
+              {%- endif -%}
+              <span class="hm-acat__more">
+                {%- if rest > 0 -%}
+                  <span class="hm-acat__n">{{ subs_count }} подкатегории</span><span class="hm-acat__rest">+ още {{ rest }}</span>
+                {%- elsif subs_count > 0 -%}
+                  {{ subs_count }} подкатегории
+                {%- else -%}
+                  {{ section.settings.go_label | escape }}
+                {%- endif %}
+                <span aria-hidden="true">→</span>
+              </span>
+            </div>
+          </article>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Хамелеон: all categories",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 16,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Каталог" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Всички категории" },
+    { "type": "text", "id": "all_label", "label": "Link at the top right", "default": "Целият каталог" },
+    { "type": "url", "id": "all_link", "label": "Link target (defaults to all collections)" },
+    { "type": "range", "id": "subs_to_show", "min": 0, "max": 6, "step": 1, "label": "Subcategories shown per card", "default": 3 },
+    { "type": "text", "id": "go_label", "label": "Label when a card has no subcategories", "default": "Разгледайте" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 64 }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection", "info": "Its subcategories come from the menu with the same handle." },
+        { "type": "text", "id": "title", "label": "Title (defaults to the collection title)" },
+        { "type": "url", "id": "link", "label": "Link (defaults to the collection)" },
+        { "type": "image_picker", "id": "image", "label": "Photo (defaults to the collection image)" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "power",
+          "options": [
+            { "value": "paint", "label": "Paint" },
+            { "value": "plaster", "label": "Plaster" },
+            { "value": "power", "label": "Power tool" },
+            { "value": "hand", "label": "Hand tool" },
+            { "value": "garden", "label": "Garden" },
+            { "value": "fasteners", "label": "Fasteners" },
+            { "value": "grinder", "label": "Grinder" },
+            { "value": "battery", "label": "Battery / power" },
+            { "value": "kit", "label": "Case / kit" },
+            { "value": "truck", "label": "Vehicle" },
+            { "value": "house", "label": "House" },
+            { "value": "swatch", "label": "Swatch" },
+            { "value": "screwdriver", "label": "Screwdriver" },
+            { "value": "shield", "label": "Shield" }
+          ]
+        },
+        { "type": "textarea", "id": "subs", "label": "Subcategories (optional, comma separated)", "info": "Leave empty to use the menu. Each name links to a search." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: all categories",
+      "blocks": [{ "type": "category" }, { "type": "category" }, { "type": "category" }, { "type": "category" }]
+    }
+  ]
+}
+{% endschema %}
