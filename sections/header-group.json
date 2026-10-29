@@ -17,7 +17,7 @@
         "announcement-bar-0": {
           "type": "announcement",
           "settings": {
-            "text": "Готово до 30 минути в магазина · С куриер до 3 работни дни",
+            "text": "Боя: готова до 30 минути в магазина · Инструменти: с куриер до 3 работни дни",
             "text_alignment": "center",
             "color_scheme": "scheme-3",
             "link": ""
