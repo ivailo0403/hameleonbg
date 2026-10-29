@@ -4,6 +4,16 @@
   address and sends a "hameleon:color" event that the calculator listens to.
   Colours come from assets/hameleon-colors.js (window.HameleonColors, window.HameleonMotivo).
 */
+window.Hameleon = window.Hameleon || {};
+
+/* A colour code that is not in our catalogues (RAL, NCS, another brand's fan deck): we tint by the code in the store. */
+window.Hameleon.customColor =
+  window.Hameleon.customColor ||
+  ((code) => ({ code: String(code).trim(), name: 'друг каталог', hex: '', catalogue: 'Друг каталог', custom: true }));
+
+/* The stripes shown for a colour we cannot draw on screen. */
+window.Hameleon.customSwatch = 'repeating-linear-gradient(135deg, #f4f4f0 0 8px, #e2e5e3 8px 16px)';
+
 if (!customElements.get('hameleon-catalogue')) {
   customElements.define(
     'hameleon-catalogue',
@@ -26,6 +36,11 @@ if (!customElements.get('hameleon-catalogue')) {
           button.addEventListener('click', () => this.setScene(button.dataset.sceneBtn))
         );
         this.grid.addEventListener('click', (event) => {
+          if (event.target.closest('[data-custom-code]')) {
+            const code = this.querySelector('[data-search]').value.replace(/[<>"]/g, '').trim().slice(0, 40).toUpperCase();
+            if (code) this.select(window.Hameleon.customColor(code), true);
+            return;
+          }
           if (event.target.closest('[data-more]')) {
             this.limit += window.matchMedia('(min-width: 990px)').matches ? 240 : 60;
             this.render(true);
@@ -49,7 +64,8 @@ if (!customElements.get('hameleon-catalogue')) {
         document.addEventListener('hameleon:cart-updated', () => this.loadOrder());
         /* A code typed elsewhere on the page (the colour box next to "Add to cart"). */
         document.addEventListener('hameleon:pick-code', (event) => {
-          const color = this.colorFromCode(event.detail && event.detail.code);
+          const detail = event.detail || {};
+          const color = this.colorFromCode(detail.code) || detail.color;
           if (color) this.select(color, true);
         });
 
@@ -65,6 +81,10 @@ if (!customElements.get('hameleon-catalogue')) {
         /* Wait a tick so the calculator (defined in another deferred script) hears the first colour. */
         setTimeout(() => this.select(first, false), 0);
         this.loadOrder();
+      }
+
+      escape(text) {
+        return String(text).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
       }
 
       motivoImage(n) {
@@ -146,7 +166,8 @@ if (!customElements.get('hameleon-catalogue')) {
                   `<span class="hm-chip__meta"><span class="hm-chip__code">${i.label}</span><span class="hm-chip__name">${i.name}</span></span></button>`
               )
               .join('')
-          : '<p class="hm-cat__empty">Няма цвят с този код или име. Проверете кода от мострата.</p>';
+          : `<div class="hm-cat__empty"><p>Няма такъв цвят в каталога ${this.tab === 'motivo' ? 'Motivo' : 'Vitex'}. Ако кодът е от друг каталог (RAL, NCS, друга марка), пак можем да тонираме по него.</p>` +
+            `<button type="button" class="hm-btn hm-btn--primary" data-custom-code>Поръчайте с код „${this.escape(this.query.toUpperCase())}“</button></div>`;
         if (items.length > shown.length) {
           this.grid.insertAdjacentHTML(
             'beforeend',
@@ -158,7 +179,7 @@ if (!customElements.get('hameleon-catalogue')) {
       select(color, userAction) {
         if (!color) return;
         this.current = color;
-        this.style.setProperty('--wall', color.hex);
+        this.style.setProperty('--wall', color.hex || '#e8e2d6');
 
         this.querySelectorAll('[data-room-svg]').forEach((svg) => {
           const wall = svg.querySelector('[data-room-wall]');
@@ -173,15 +194,19 @@ if (!customElements.get('hameleon-catalogue')) {
         });
 
         const chip = this.querySelector('[data-now-chip]');
-        chip.style.backgroundImage = color.image ? `url('${color.image}')` : '';
-        this.querySelector('[data-now-code]').textContent = color.catalogue === 'Motivo' ? `Motivo · ${color.code}` : `Vitex · № ${color.code}`;
-        this.querySelector('[data-now-name]').textContent = color.name;
+        chip.style.backgroundImage = color.image ? `url('${color.image}')` : color.custom ? window.Hameleon.customSwatch : '';
+        this.querySelector('[data-now-code]').textContent = color.custom
+          ? 'Друг каталог'
+          : color.catalogue === 'Motivo'
+            ? `Motivo · ${color.code}`
+            : `Vitex · № ${color.code}`;
+        this.querySelector('[data-now-name]').textContent = color.custom ? `Код ${color.code}` : color.name;
 
         this.grid.querySelectorAll('[aria-pressed="true"]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
-        const inGrid = this.grid.querySelector(`[data-code="${color.code}"]`);
+        const inGrid = color.custom ? null : this.grid.querySelector(`[data-code="${color.code}"]`);
         if (inGrid) inGrid.setAttribute('aria-pressed', 'true');
 
-        if (userAction) {
+        if (userAction && !color.custom) {
           this.remember(color);
           const url = new URL(window.location.href);
           url.searchParams.set('color', color.code);

@@ -13,6 +13,9 @@
     if item.properties['_image'] != blank
       assign hm_bg = 'center / cover url(' | append: item.properties['_image'] | append: ') ' | append: hm_bg
     endif
+    if hm_catalogue == 'Друг каталог'
+      assign hm_bg = 'repeating-linear-gradient(135deg, #f4f4f0 0 6px, #e2e5e3 6px 12px)'
+    endif
     assign hm_white = false
     if hm_catalogue == blank or hm_catalogue == '—'
       assign hm_white = true
@@ -24,7 +27,7 @@
       {%- if hm_white -%}
         {{ hm_color | escape }}
       {%- else -%}
-        <strong>{% unless hm_catalogue == 'Motivo' %}№ {% endunless %}{{ hm_color | escape }}</strong>
+        <strong>{% if hm_catalogue == 'Друг каталог' %}Код {% elsif hm_catalogue != 'Motivo' %}№ {% endif %}{{ hm_color | escape }}</strong>
         <small>{{ hm_catalogue | escape }} · тониране в магазина</small>
       {%- endif -%}
     </span>

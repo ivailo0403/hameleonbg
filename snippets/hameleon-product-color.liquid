@@ -61,5 +61,13 @@
       <button type="submit" class="hm-pcol__apply">Приложи</button>
     </form>
     <p class="hm-pcol__msg" data-msg role="status" hidden></p>
+    <a class="hm-pcol__deck" href="#katalog-mostri">{%- render 'hameleon-icon', icon: 'swatch' -%}<span>Не сте сигурни за цвета? <strong>Каталог с мостри</strong>, а парите се връщат с боята.</span></a>
+
+    {%- comment -%} Shown after a colour is picked further down the page: takes the visitor back to "Add to cart". {%- endcomment -%}
+    <button type="button" class="hm-pcol-float" data-float hidden>
+      <span class="hm-pcol-float__chip" data-float-chip aria-hidden="true"></span>
+      <span class="hm-pcol-float__text"><small>Избран цвят</small><strong data-float-name></strong></span>
+      <span class="hm-pcol-float__go">Към поръчката <span aria-hidden="true">↑</span></span>
+    </button>
   </hameleon-product-color>
 {%- endunless -%}

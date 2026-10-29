@@ -4,6 +4,16 @@
   in step with the chosen colour, and stops "Add to cart" until a colour is chosen when required.
   Colours come from assets/hameleon-colors.js.
 */
+window.Hameleon = window.Hameleon || {};
+
+/* A colour code that is not in our catalogues (RAL, NCS, another brand's fan deck): we tint by the code in the store. */
+window.Hameleon.customColor =
+  window.Hameleon.customColor ||
+  ((code) => ({ code: String(code).trim(), name: 'друг каталог', hex: '', catalogue: 'Друг каталог', custom: true }));
+
+/* The stripes shown for a colour we cannot draw on screen. */
+window.Hameleon.customSwatch = 'repeating-linear-gradient(135deg, #f4f4f0 0 8px, #e2e5e3 8px 16px)';
+
 if (!customElements.get('hameleon-product-color')) {
   customElements.define(
     'hameleon-product-color',
@@ -46,6 +56,20 @@ if (!customElements.get('hameleon-product-color')) {
         };
         document.addEventListener('submit', this.onSubmit, true);
 
+        /* The floating button shows only while the colour box is off screen. */
+        this.float = this.querySelector('[data-float]');
+        this.float.addEventListener('click', () => {
+          this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const add = document.querySelector(`#${CSS.escape(this.dataset.form)} [name="add"]`);
+          if (add) setTimeout(() => add.focus({ preventScroll: true }), 600);
+        });
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver((entries) => {
+            this.offScreen = !entries[0].isIntersecting;
+            this.toggleFloat();
+          }).observe(this.querySelector('[data-card]'));
+        }
+
         const fromUrl = new URLSearchParams(window.location.search).get('color');
         if (fromUrl) this.set(this.find(fromUrl));
       }
@@ -76,35 +100,49 @@ if (!customElements.get('hameleon-product-color')) {
       }
 
       applyCode(code) {
-        if (!String(code || '').trim()) return;
-        const color = this.find(code);
-        if (!color) {
-          this.message(`Няма цвят „${String(code).trim()}“ в каталога ${this.catalogue}. Проверете кода от мострата.`, true);
-          return;
-        }
+        const value = String(code || '').replace(/[<>"]/g, '').trim().slice(0, 40);
+        if (!value) return;
+        /* A code from another brand's fan deck (RAL, NCS, …) is fine too: we tint by it in the store. */
+        const color = this.find(value) || window.Hameleon.customColor(value);
         this.querySelector('[data-code-input]').value = '';
         /* The studio paints the room and tells the calculator; without it, this box takes the colour itself. */
         if (document.querySelector('hameleon-catalogue')) {
-          document.dispatchEvent(new CustomEvent('hameleon:pick-code', { detail: { code: color.code } }));
+          document.dispatchEvent(new CustomEvent('hameleon:pick-code', { detail: { code: color.code, color } }));
         } else {
           document.dispatchEvent(new CustomEvent('hameleon:color', { detail: color }));
         }
       }
 
       set(color) {
-        if (!color || color.catalogue !== this.catalogue) return;
+        if (!color || (color.catalogue !== this.catalogue && !color.custom)) return;
         this.color = color;
-        this.props.color.value = `${color.code} ${color.name}`;
+        this.props.color.value = color.custom ? color.code : `${color.code} ${color.name}`;
         this.props.catalogue.value = color.catalogue;
-        this.props.hex.value = color.hex;
-        Object.values(this.props).forEach((input) => (input.disabled = false));
+        this.props.hex.value = color.hex || '';
+        Object.values(this.props).forEach((input) => (input.disabled = !input.value));
 
         const chip = this.querySelector('[data-chip]');
-        chip.style.background = color.image ? `center / cover url("${color.image}") ${color.hex}` : color.hex;
-        this.querySelector('[data-name]').textContent = color.catalogue === 'Motivo' ? `${color.code} · Motivo` : `№ ${color.code} · ${color.name}`;
+        const name = this.querySelector('[data-name]');
+        if (color.custom) {
+          chip.style.background = window.Hameleon.customSwatch;
+          name.textContent = `Код ${color.code} · друг каталог`;
+          this.message('Тонираме по Вашия код. Този цвят не можем да покажем на екрана, затова стаята остава неутрална.', false);
+        } else {
+          chip.style.background = color.image ? `center / cover url("${color.image}") ${color.hex}` : color.hex;
+          name.textContent = color.catalogue === 'Motivo' ? `${color.code} · Motivo` : `№ ${color.code} · ${color.name}`;
+          this.message('', false);
+        }
         this.querySelector('[data-open-label]').textContent = 'Смени';
         this.classList.add('has-color');
-        this.message('', false);
+        this.querySelector('[data-float-chip]').style.background = chip.style.background;
+        this.querySelector('[data-float-name]').textContent = name.textContent;
+        this.toggleFloat();
+      }
+
+      toggleFloat() {
+        const show = Boolean(this.color && this.offScreen);
+        this.float.hidden = !show;
+        this.float.classList.toggle('is-on', show);
       }
 
       message(text, isError) {

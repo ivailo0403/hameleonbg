@@ -441,6 +441,12 @@
   color: var(--hm-text-muted);
 }
 
+.hm-cat__empty p {
+  max-width: 44rem;
+  margin: 0 auto 1.6rem;
+  line-height: 1.5;
+}
+
 /* Calculator and cart summary */
 .hm-cat__calc {
   margin-top: 6.4rem;

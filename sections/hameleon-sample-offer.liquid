@@ -1,0 +1,340 @@
+{%- comment -%}
+  Хамелеон: physical colour fan deck offer.
+  "The screen never shows the exact colour": order the real Vitex fan deck, see the colours at home,
+  and get the deck's price back as a discount on a paint order. The discount itself is a Shopify
+  discount code (see the "code" setting); this section only explains it and links to the deck.
+{%- endcomment -%}
+{%- liquid
+  assign deck = section.settings.product
+  assign deck_url = section.settings.link
+  if deck != blank
+    assign deck_url = deck.url
+  endif
+  if deck_url == blank
+    assign deck_url = '/products/katalog-mostri-vitex'
+  endif
+  assign fan = 'FED426,FE9A28,F89495,D771AF,0095AB,217553,96BC5E,BCA180' | split: ','
+-%}
+{%- style -%}
+  .hm-sample-{{ section.id }} {
+    padding: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px 0 {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-sample-{{ section.id }} {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- style -%}
+  .hm-sample {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.4rem;
+    padding: 2.8rem 2.4rem;
+    border-radius: 2.4rem;
+    background:
+      radial-gradient(40rem 30rem at 100% 0%, rgba(254, 212, 38, 0.22), transparent 60%),
+      radial-gradient(40rem 30rem at 0% 100%, rgba(0, 149, 171, 0.14), transparent 60%),
+      #fbfaf6;
+    border: 1px solid var(--hm-border);
+    box-shadow: var(--hm-shadow-md);
+    overflow: hidden;
+  }
+
+  .hm-sample__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.4rem;
+  }
+
+  .hm-sample__title {
+    margin: 0;
+    font-family: var(--hm-font-display);
+    font-size: clamp(2.6rem, 3.2vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--hm-text-strong);
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  .hm-sample__text {
+    margin: 0;
+    max-width: 56rem;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-sample__steps {
+    display: grid;
+    gap: 1rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: hm-sample;
+  }
+
+  .hm-sample__steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 1.5rem;
+    line-height: 1.45;
+    color: var(--hm-text-strong);
+    counter-increment: hm-sample;
+  }
+
+  .hm-sample__steps li::before {
+    content: counter(hm-sample);
+    flex: 0 0 2.6rem;
+    height: 2.6rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--hm-primary);
+    color: #ffffff;
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .hm-sample__buy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem 2rem;
+    margin-top: 0.8rem;
+  }
+
+  .hm-sample__price {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .hm-sample__price strong {
+    font-family: var(--hm-font-display);
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-sample__price small {
+    font-size: 1.3rem;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-sample__note {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--hm-text-muted);
+  }
+
+  /* The fan deck, drawn from real Vitex colours */
+  .hm-sample__art {
+    position: relative;
+    min-height: 26rem;
+  }
+
+  .hm-sample__fan {
+    position: absolute;
+    left: 50%;
+    bottom: 1.2rem;
+    width: 0;
+    height: 0;
+  }
+
+  .hm-sample__card {
+    position: absolute;
+    left: -3.2rem;
+    bottom: 0;
+    width: 6.4rem;
+    height: 21rem;
+    border-radius: 1rem;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(26, 28, 30, 0.16);
+    transform-origin: 50% 92%;
+    transform: rotate(calc((var(--i) - 3.5) * 11deg));
+    overflow: hidden;
+    transition: transform 0.6s var(--hm-ease);
+  }
+
+  .hm-sample:hover .hm-sample__card {
+    transform: rotate(calc((var(--i) - 3.5) * 13deg));
+  }
+
+  .hm-sample__card::before {
+    content: '';
+    position: absolute;
+    inset: 0.5rem 0.5rem 3.4rem;
+    border-radius: 0.6rem;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--c) 35%, #ffffff) 0 25%,
+      color-mix(in srgb, var(--c) 65%, #ffffff) 25% 50%,
+      var(--c) 50% 75%,
+      color-mix(in srgb, var(--c) 75%, #000000) 75%
+    );
+  }
+
+  .hm-sample__card::after {
+    content: 'VITEX';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1rem;
+    font-family: var(--hm-font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-align: center;
+    color: #19a54a;
+  }
+
+  .hm-sample__pin {
+    position: absolute;
+    left: -0.9rem;
+    bottom: 0.4rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: #2f2a26;
+    box-shadow: 0 0 0 3px #ffffff;
+  }
+
+  .hm-sample__badge {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 11rem;
+    height: 11rem;
+    border-radius: 50%;
+    background: var(--hm-sale);
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 10px 24px rgba(180, 35, 24, 0.35);
+    transform: rotate(8deg);
+    animation: hm-float 5s ease-in-out infinite;
+  }
+
+  .hm-sample__badge strong {
+    font-family: var(--hm-font-display);
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .hm-sample__badge span {
+    margin-top: 0.4rem;
+    padding: 0 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-sample {
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 5.2rem 5.6rem;
+    }
+
+    .hm-sample__art {
+      min-height: 34rem;
+    }
+
+    .hm-sample__card {
+      left: -4rem;
+      width: 8rem;
+      height: 27rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm-sample__badge {
+      animation: none;
+    }
+  }
+{%- endstyle -%}
+
+{%- unless product != blank and product.tags contains 'без тониране' -%}
+<section class="hm-section hm-sample-{{ section.id }}" id="katalog-mostri">
+  <div class="page-width">
+    <div class="hm-sample" data-reveal>
+      <div class="hm-sample__copy">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="hm-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 class="hm-sample__title">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.text != blank -%}
+          <p class="hm-sample__text">{{ section.settings.text | escape }}</p>
+        {%- endif -%}
+        <ol class="hm-sample__steps">
+          <li>Поръчайте каталога с мостри за {{ section.settings.price | escape }} €.</li>
+          <li>Вижте цветовете на живо, на Вашата стена и на дневна светлина.</li>
+          <li>Поръчайте боята над {{ section.settings.min_order | escape }} € и {{ section.settings.discount | escape }} € се приспадат от сметката{% if section.settings.code != blank %} с кода от каталога{% endif %}.</li>
+        </ol>
+        <div class="hm-sample__buy">
+          <a class="hm-btn hm-btn--primary" href="{{ deck_url }}">
+            {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
+          </a>
+          <span class="hm-sample__price">
+            <strong>{{ section.settings.price | escape }} €</strong>
+            <small>връщаме ги с поръчката на боя</small>
+          </span>
+        </div>
+        {%- if section.settings.note != blank -%}
+          <p class="hm-sample__note">{{ section.settings.note | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="hm-sample__art" aria-hidden="true">
+        <div class="hm-sample__fan">
+          {%- for c in fan -%}
+            <span class="hm-sample__card" style="--i: {{ forloop.index0 }}; --c: #{{ c }};"></span>
+          {%- endfor -%}
+          <span class="hm-sample__pin"></span>
+        </div>
+        <div class="hm-sample__badge">
+          <strong>−{{ section.settings.discount | escape }} €</strong>
+          <span>от боя над {{ section.settings.min_order | escape }}&nbsp;€</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Хамелеон: fan deck offer",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Цветът на живо" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Екранът лъже. Мострата – не." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Всеки монитор показва цветовете различно. Поръчайте каталога с мостри Vitex, изберете цвета вкъщи и си върнете парите с поръчката на боя." },
+    { "type": "text", "id": "price", "label": "Fan deck price (€)", "default": "20" },
+    { "type": "text", "id": "discount", "label": "Discount on the paint order (€)", "default": "25" },
+    { "type": "text", "id": "min_order", "label": "Minimum paint order (€)", "default": "60" },
+    { "type": "text", "id": "code", "label": "Discount code (printed in the fan deck)", "default": "KATALOG25", "info": "Create the same code in Shopify: Discounts → Amount off order." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Поръчайте каталога" },
+    { "type": "product", "id": "product", "label": "Fan deck product" },
+    { "type": "url", "id": "link", "label": "Or a link (defaults to /products/katalog-mostri-vitex)" },
+    { "type": "text", "id": "note", "label": "Small print", "default": "Отстъпката важи веднъж за клиент, за поръчка на боя в рамките на 60 дни." },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
+  ],
+  "presets": [{ "name": "Хамелеон: fan deck offer" }]
+}
+{% endschema %}

@@ -798,3 +798,106 @@ a.hm-card:hover,
   font-size: 1.15rem;
   color: var(--hm-text-muted);
 }
+
+/* Paint product page: floating "back to the order" button after a colour is picked lower down. */
+.hm-pcol-float {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: max(1.6rem, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: calc(100vw - 3.2rem);
+  padding: 0.6rem 0.6rem 0.6rem 0.6rem;
+  border: 0;
+  border-radius: var(--hm-radius-pill);
+  background: #141618;
+  color: #ffffff;
+  font: inherit;
+  text-align: left;
+  box-shadow: 0 14px 40px rgba(20, 22, 24, 0.35);
+  cursor: pointer;
+  transform: translateX(-50%);
+  animation: hm-pcol-float-in 0.35s var(--hm-ease);
+}
+
+@keyframes hm-pcol-float-in {
+  from { opacity: 0; transform: translate(-50%, 1.6rem); }
+}
+
+.hm-pcol-float[hidden] {
+  display: none;
+}
+
+.hm-pcol-float__chip {
+  flex: 0 0 4rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+
+.hm-pcol-float__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.hm-pcol-float__text small {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.hm-pcol-float__text strong {
+  overflow: hidden;
+  font-family: var(--hm-font-display);
+  font-size: 1.4rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 18rem;
+}
+
+.hm-pcol-float__go {
+  flex: 0 0 auto;
+  padding: 1rem 1.6rem;
+  border-radius: var(--hm-radius-pill);
+  background: var(--hm-primary);
+  font-family: var(--hm-font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-pcol-float {
+    animation: none;
+  }
+}
+
+.hm-pcol__deck {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed var(--hm-border-strong);
+  font-size: 1.35rem;
+  line-height: 1.4;
+  color: var(--hm-text-muted);
+  text-decoration: none;
+}
+
+.hm-pcol__deck svg {
+  flex: 0 0 2rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--hm-primary);
+}
+
+.hm-pcol__deck strong {
+  color: var(--hm-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

@@ -15,113 +15,7 @@
         "wall_colors": "Blue Bliss|#0095AB\nAquadazzle|#217553\nZambia|#FE9A28\nPurple Hollyhock|#D771AF\nHappy Face|#FED426\nCherished One|#F89495\nJob's Tears|#00627E\nGlass Bottle|#96BC5E",
         "ready_title": "Поръчката е готова",
         "ready_text": "Тонирана и чака Ви на щанда",
-        "families_label": "Цветови групи",
-        "picker_title": "Пробвайте цвят на стената.",
-        "picker_hint": "Изберете група, после нюанс.",
         "card_link_label": "Всички 1320 цвята"
-      },
-      "blocks": {
-        "family-1": {
-          "type": "family",
-          "settings": {
-            "name": "Бели",
-            "color": "#E4E2D9",
-            "family": "white"
-          }
-        },
-        "family-2": {
-          "type": "family",
-          "settings": {
-            "name": "Бежови",
-            "color": "#BCA180",
-            "family": "beige"
-          }
-        },
-        "family-3": {
-          "type": "family",
-          "settings": {
-            "name": "Жълти",
-            "color": "#FED426",
-            "family": "yellow"
-          }
-        },
-        "family-4": {
-          "type": "family",
-          "settings": {
-            "name": "Оранжеви",
-            "color": "#FE9A28",
-            "family": "orange"
-          }
-        },
-        "family-5": {
-          "type": "family",
-          "settings": {
-            "name": "Червени",
-            "color": "#F89495",
-            "family": "red"
-          }
-        },
-        "family-6": {
-          "type": "family",
-          "settings": {
-            "name": "Виолетови",
-            "color": "#D771AF",
-            "family": "purple"
-          }
-        },
-        "family-7": {
-          "type": "family",
-          "settings": {
-            "name": "Сини",
-            "color": "#0095AB",
-            "family": "blue"
-          }
-        },
-        "family-8": {
-          "type": "family",
-          "settings": {
-            "name": "Зелени",
-            "color": "#217553",
-            "family": "green"
-          }
-        },
-        "family-9": {
-          "type": "family",
-          "settings": {
-            "name": "Кафяви",
-            "color": "#AD8D6D",
-            "family": "brown"
-          }
-        },
-        "family-10": {
-          "type": "family",
-          "settings": {
-            "name": "Сиви",
-            "color": "#B7B8BC",
-            "family": "gray"
-          }
-        }
-      },
-      "block_order": [
-        "family-1",
-        "family-2",
-        "family-3",
-        "family-4",
-        "family-5",
-        "family-6",
-        "family-7",
-        "family-8",
-        "family-9",
-        "family-10"
-      ]
-    },
-    "colours": {
-      "type": "hameleon-marquee",
-      "settings": {
-        "eyebrow": "Каталог Vitex",
-        "heading": "1320 цвята. Всеки тониран на място.",
-        "button_label": "Разгледайте цветовете",
-        "colors": "Blue Bliss|#0095AB\nKingdom's Keys|#E7CEB7\nZambia|#FE9A28\nReseda|#CFC6B0\nPurple Hollyhock|#D771AF\nSpiced Rum|#AD8D6D\nHappy Face|#FED426\nJob's Tears|#00627E\nGlass Bottle|#96BC5E\nPink Heath|#EEBADC\nAquadazzle|#217553\nClassic Terra|#E3CEAF\nCherished One|#F89495\nPleasant Stream|#00A2A2\nLemon Whisper|#FEB425\nCourtyard|#C6BDA4\nBlossoms in Spring|#E59CCB\nVacation Island|#D0D993\nTan Hide|#AF9570\nWildflower Bouquet|#FEB0AF"
       }
     },
     "categories": {
@@ -302,7 +196,7 @@
             "class": "Среден клас",
             "pack_litres": "1",
             "pack_sqm": "11",
-            "sizes": "1, 5, 10, 15",
+            "sizes": "1, 3, 10, 15",
             "product": "vitex-vito-acrylic-fasadna-boya"
           }
         },
@@ -578,8 +472,8 @@
     "cta": {
       "type": "hameleon-cta",
       "settings": {
-        "heading": "Изберете цвят днес. Вземете го до 3 дни.",
-        "text": "Поръчвате онлайн, ние тонираме и Ви се обаждаме, когато е готова.",
+        "heading": "Поръчайте днес. Вземете до 3 дни.",
+        "text": "Боя, тонирана по Вашия код, и инструменти от TOTAL, RAIDER и DeWALT. Обаждаме се, когато поръчката е готова.",
         "button_label_1": "Изберете цвят",
         "button_label_2": "Обадете се: 089 500 10 44"
       }
@@ -597,7 +491,8 @@
             "brands": "TOTAL, RAIDER, DeWALT",
             "button_label": "Разгледайте",
             "style": "dark",
-            "icon": "power"
+            "icon": "power",
+            "image": "shopify://shop_images/photo-1513467535987-fd81bc7d62f8.jpg"
           }
         }
       },
@@ -606,7 +501,7 @@
       ],
       "settings": {
         "padding_top": 16,
-        "padding_bottom": 16
+        "padding_bottom": 48
       }
     },
     "promo_duo": {
@@ -621,7 +516,8 @@
             "tags": "Ключове, Клещи, Ролетки",
             "button_label": "Към инструментите",
             "style": "mint",
-            "icon": "hand"
+            "icon": "hand",
+            "image": "shopify://shop_images/photo-1540103711724-ebf833bde8d1.jpg"
           }
         },
         "banner-garden": {
@@ -633,7 +529,8 @@
             "tags": "Тримери, Ножици, Маркучи",
             "button_label": "Към градината",
             "style": "sand",
-            "icon": "garden"
+            "icon": "garden",
+            "image": "shopify://shop_images/photo-1523301551780-cd17359a95d0.jpg"
           }
         }
       },
@@ -643,21 +540,25 @@
       ],
       "settings": {
         "padding_top": 16,
-        "padding_bottom": 16
+        "padding_bottom": 56
       }
+    },
+    "sample_offer": {
+      "type": "hameleon-sample-offer",
+      "settings": {}
     }
   },
   "order": [
     "hero",
     "categories",
     "promo_power",
-    "colours",
+    "tools",
     "promo_duo",
     "how_it_works",
     "calculator",
-    "numbers",
+    "sample_offer",
     "plasters",
-    "tools",
+    "numbers",
     "store",
     "cta"
   ]

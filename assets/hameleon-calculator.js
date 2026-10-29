@@ -220,15 +220,15 @@ if (!customElements.get('hameleon-paint-calc')) {
         const detail = this.querySelector('[data-r-detail]');
         const tintable = product && product.dataset.tintable !== 'false';
         const catalogue = this.catalogueFor(product);
-        const color = this.color && this.color.catalogue === catalogue ? this.color : null;
+        const color = this.color && (this.color.catalogue === catalogue || this.color.custom) ? this.color : null;
 
         this.renderColor(product, tintable, color, catalogue);
         this.querySelector('[data-r-tin]').innerHTML = window.Hameleon.tinHTML(
           product ? product.dataset.name : 'Vitex',
           '',
-          tintable ? (color ? color.hex : 'var(--hm-gradient)') : '#E4E8E6'
+          tintable ? (color && color.hex ? color.hex : 'var(--hm-gradient)') : '#E4E8E6'
         );
-        this.style.setProperty('--pc-glow', color ? `${color.hex}88` : '');
+        this.style.setProperty('--pc-glow', color && color.hex ? `${color.hex}88` : '');
 
         const sizes = product
           ? String(product.dataset.sizes || '')
@@ -262,7 +262,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         this.querySelector('[data-r-use-bar]').style.width = `${Math.round(ratio * 100)}%`;
         this.querySelector('[data-r-use]').textContent = `Използвате ${Math.round(ratio * 100)}% от купената боя`;
 
-        const tinColor = tintable ? (color ? color.hex : '#19A54A') : '#E4E8E6';
+        const tinColor = tintable ? (color && color.hex ? color.hex : '#19A54A') : '#E4E8E6';
         this.querySelector('[data-r-packs]').innerHTML = combo
           .map(
             (p, i) =>
@@ -288,7 +288,11 @@ if (!customElements.get('hameleon-paint-calc')) {
           return;
         }
         link.hidden = false;
-        if (color) {
+        if (color && color.custom) {
+          chip.style.background = window.Hameleon.customSwatch || '#F4F4F0';
+          name.textContent = `Код ${color.code} · друг каталог`;
+          link.textContent = 'Смени';
+        } else if (color) {
           chip.style.background = color.image ? `center / cover url("${color.image}")` : color.hex;
           name.textContent = `${color.code} · ${color.name}`;
           link.textContent = 'Смени';
@@ -344,12 +348,12 @@ if (!customElements.get('hameleon-paint-calc')) {
         const coatsInput = this.querySelector('[data-coats]:checked');
         const coats = coatsInput ? coatsInput.value : '2';
         const properties = {
-          'Цвят': tintable && color ? `${color.code} ${color.name}` : 'Бяла (без тониране)',
+          'Цвят': tintable && color ? (color.custom ? color.code : `${color.code} ${color.name}`) : 'Бяла (без тониране)',
           'Каталог': tintable && color ? color.catalogue : '—',
           'Сметка': `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
         };
         /* Hidden (underscore) properties let the cart draw the colour swatch. */
-        if (tintable && color) {
+        if (tintable && color && color.hex) {
           properties._hex = color.hex;
           if (color.image) properties._image = color.image;
         }

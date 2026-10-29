@@ -1,10 +1,8 @@
 {%- comment -%}
   Хамелеон: home hero.
   Left: badge, big headline, text, buttons and a trust row.
-  Right: a room whose wall takes the colour the visitor picks, either from the colour strip under
-  the hero (family tabs, then shades) or from the fan deck in the room's bottom left corner, which
-  opens a small catalogue with every Vitex colour. Until someone picks, the wall cycles through
-  the "wall colours". Each "family" block is one family tab. Logic: assets/hameleon-hero.js.
+  Right: a room whose wall cycles through the "wall colours" until the visitor picks one from the
+  colour rail on its right (a "+" leads to the full catalogue). Logic: assets/hameleon-hero.js.
 {%- endcomment -%}
 {%- style -%}
   .hm-hero {
@@ -166,231 +164,67 @@
     background: var(--hm-primary-hover);
   }
 
-  /* Fan deck: opens the mini catalogue */
-  .hm-deck {
+
+  /* Colour rail on the right of the room: a few colours to try; the full range is in the catalogue. */
+  .hm-rail {
     position: absolute;
-    left: 1.2rem;
-    bottom: 0;
-    z-index: 3;
-    width: 15rem;
-    height: 15rem;
+    left: 50%;
+    bottom: 5.6rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--hm-shadow-lg);
+    transform: translateX(-50%);
+  }
+
+  .hm-rail__label {
+    display: none;
+  }
+
+  .hm-rail__list {
+    display: flex;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-rail__swatch {
+    display: block;
+    width: 3.2rem;
+    height: 3.2rem;
     padding: 0;
     border: 0;
-    background: none;
-    cursor: pointer;
-  }
-
-  .hm-deck__card {
-    position: absolute;
-    left: 3rem;
-    bottom: 1.6rem;
-    width: 5.6rem;
-    height: 11rem;
-    border-radius: 1rem;
-    border: 3px solid #ffffff;
-    box-shadow: var(--hm-shadow-md);
-    transform-origin: 50% 100%;
-    transform: rotate(calc(var(--i) * 10deg - 20deg));
-    transition: transform 0.5s var(--hm-ease);
-  }
-
-  .hm-deck:hover .hm-deck__card,
-  .hm-deck[aria-expanded='true'] .hm-deck__card {
-    transform: rotate(calc(var(--i) * 16deg - 32deg));
-  }
-
-  .hm-deck__tag {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.7rem 1.2rem;
-    border-radius: var(--hm-radius-pill);
-    background: var(--hm-text-strong);
-    color: #ffffff;
-    font-family: var(--hm-font-display);
-    font-size: 1.3rem;
-    font-weight: 700;
-    white-space: nowrap;
-    box-shadow: var(--hm-shadow-md);
-  }
-
-  .hm-deck__tag svg {
-    width: 1.8rem;
-    height: 1.8rem;
-  }
-
-  .hm-deck:focus-visible {
-    outline: 3px solid var(--hm-link);
-    outline-offset: 4px;
-    border-radius: 1.2rem;
-  }
-
-  /* Mini catalogue */
-  .hm-mini {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 5.2rem;
-    z-index: 4;
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    max-height: calc(100% - 5.2rem);
-    padding: 1.6rem;
-    box-sizing: border-box;
-    border-radius: 2rem;
-    background: #ffffff;
-    box-shadow: var(--hm-shadow-lg);
-    transform-origin: 0 100%;
-    animation: hm-mini-in 0.35s var(--hm-ease);
-  }
-
-  .hm-mini[hidden] {
-    display: none;
-  }
-
-  @keyframes hm-mini-in {
-    from {
-      opacity: 0;
-      transform: translateY(1.2rem) scale(0.96);
-    }
-  }
-
-  .hm-mini__top {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .hm-mini__title {
-    margin: 0;
-    flex: 1;
-    font-family: var(--hm-font-display);
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--hm-text-strong);
-  }
-
-  .hm-mini__search {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    width: 14rem;
-    height: 3.8rem;
-    padding: 0 1rem;
-    box-sizing: border-box;
-    border: 1px solid var(--hm-border-strong);
-    border-radius: var(--hm-radius-pill);
-    color: var(--hm-text-muted);
-  }
-
-  .hm-mini__search svg {
-    flex: 0 0 1.6rem;
-    width: 1.6rem;
-    height: 1.6rem;
-  }
-
-  .hm-mini__search input {
-    width: 100%;
-    min-width: 0;
-    border: 0;
-    outline: none;
-    background: none;
-    font-size: 1.4rem;
-  }
-
-  .hm-mini__close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.8rem;
-    height: 3.8rem;
-    border: 0;
-    border-radius: 50%;
-    background: var(--hm-surface-sunken);
-    font-size: 2rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .hm-mini__tabs {
-    display: flex;
-    gap: 0.6rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .hm-mini__tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .hm-mini__tab {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem 1.1rem 0.5rem 0.5rem;
-    border: 1px solid var(--hm-border);
-    border-radius: var(--hm-radius-pill);
-    background: #ffffff;
-    font-family: var(--hm-font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--hm-text-strong);
-    cursor: pointer;
-  }
-
-  .hm-mini__tab[aria-pressed='true'] {
-    border-color: var(--hm-text-strong);
-    background: var(--hm-text-strong);
-    color: #ffffff;
-  }
-
-  .hm-mini__tab i {
-    width: 1.8rem;
-    height: 1.8rem;
     border-radius: 50%;
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-  }
-
-  .hm-mini__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(3.6rem, 1fr));
-    gap: 0.6rem;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 0.2rem;
-  }
-
-  /* Swatch button (mini catalogue and the strip under the hero) */
-  .hm-swatch {
-    position: relative;
-    aspect-ratio: 1;
-    padding: 0;
-    border: 0;
-    border-radius: 0.9rem;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
     cursor: pointer;
-    transition: transform 0.2s var(--hm-ease), box-shadow 0.2s;
+    transition: box-shadow 0.2s;
   }
 
-  .hm-swatch:hover {
-    transform: scale(1.12);
-    z-index: 1;
-    box-shadow: var(--hm-shadow-md);
+  .hm-rail__swatch:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 2px #ffffff, 0 0 0 4px rgba(26, 28, 30, 0.25);
   }
 
-  .hm-swatch[aria-pressed='true'] {
+  .hm-rail__swatch[aria-pressed='true'] {
     box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--hm-text-strong);
+  }
+
+  .hm-rail__swatch:focus-visible {
+    outline: 2px solid var(--hm-primary);
+    outline-offset: 3px;
+  }
+
+  .hm-rail__more {
+    display: none;
   }
 
   .hm-ready {
     position: absolute;
-    right: -0.8rem;
+    left: -0.8rem;
     bottom: 0;
     display: flex;
     align-items: center;
@@ -431,127 +265,15 @@
     color: var(--hm-text-muted);
   }
 
-  /* Colour picker under the hero */
-  .hm-picker {
-    margin-top: 4rem;
-    padding: 2rem;
-    border: 1px solid var(--hm-border);
-    border-radius: 2.4rem;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    box-shadow: var(--hm-shadow-md);
-  }
 
-  .hm-picker__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.4rem;
-  }
+  @media screen and (max-width: 749px) {
+    .hm-ready {
+      display: none;
+    }
 
-  .hm-picker__title {
-    margin: 0;
-    font-family: var(--hm-font-display);
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: var(--hm-text-strong);
-  }
-
-  .hm-picker__title span {
-    font-family: var(--hm-font-body);
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: var(--hm-text-muted);
-  }
-
-  .hm-families {
-    display: flex;
-    gap: 0.8rem;
-    margin: 0;
-    padding: 0 0 0.4rem;
-    list-style: none;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .hm-families::-webkit-scrollbar {
-    display: none;
-  }
-
-  .hm-family {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.5rem 1.4rem 0.5rem 0.5rem;
-    border: 1px solid var(--hm-border);
-    border-radius: var(--hm-radius-pill);
-    background: #ffffff;
-    color: var(--hm-text-strong);
-    font-family: var(--hm-font-display);
-    font-size: 1.4rem;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: transform 0.25s var(--hm-ease), box-shadow 0.25s var(--hm-ease), border-color 0.25s, background-color 0.25s;
-  }
-
-  .hm-family:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--hm-shadow-sm);
-  }
-
-  .hm-family[aria-pressed='true'] {
-    border-color: var(--hm-text-strong);
-    background: var(--hm-text-strong);
-    color: #ffffff;
-  }
-
-  .hm-family__dot {
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 0 0 2px #ffffff;
-  }
-
-  .hm-family--all {
-    background: var(--hm-gradient-deep);
-    border-color: transparent;
-    color: #ffffff;
-    padding-left: 1.6rem;
-  }
-
-  .hm-shades {
-    position: relative;
-    margin-top: 1.4rem;
-  }
-
-  .hm-shades__row {
-    display: flex;
-    gap: 0.6rem;
-    padding: 0.6rem 0.4rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-  }
-
-  .hm-shades__row .hm-swatch {
-    flex: 0 0 4.4rem;
-    height: 4.4rem;
-    border-radius: 1.2rem;
-  }
-
-  .hm-shades::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 4rem;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95));
-    pointer-events: none;
+    .hm-wall__label .hm-wall__code {
+      display: none;
+    }
   }
 
   @media screen and (min-width: 750px) {
@@ -564,37 +286,54 @@
     }
 
     .hm-wall {
-      inset: 0 0 3.2rem 3.2rem;
+      inset: 0 7.2rem 3.2rem 0;
     }
 
-    .hm-deck {
-      left: 0;
-      width: 18rem;
-      height: 18rem;
+    .hm-rail {
+      left: auto;
+      right: 0;
+      top: 50%;
+      bottom: auto;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.2rem 0.9rem;
+      border-radius: 2.4rem;
+      transform: translateY(-58%);
     }
 
-    .hm-deck__card {
-      width: 6.8rem;
-      height: 13.6rem;
+    .hm-rail__label {
+      display: block;
+      font-family: var(--hm-font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--hm-text-muted);
     }
 
-    .hm-mini {
-      left: 3.2rem;
-      right: 1.6rem;
+    .hm-rail__list {
+      flex-direction: column;
+      gap: 0.9rem;
     }
 
-    .hm-picker {
-      padding: 2.4rem 2.8rem;
-    }
-  }
-
-  @media screen and (max-width: 749px) {
-    .hm-ready {
-      display: none;
+    .hm-rail__swatch {
+      width: 3.8rem;
+      height: 3.8rem;
     }
 
-    .hm-wall__label .hm-wall__code {
-      display: none;
+    .hm-rail__more {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3.8rem;
+      height: 3.8rem;
+      border-radius: 50%;
+      background: conic-gradient(#fed426, #fe9a28, #f89495, #d771af, #0095ab, #217553, #fed426);
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-decoration: none;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
     }
   }
 
@@ -661,24 +400,21 @@
             <a class="hm-wall__order" href="{{ catalogue_url }}" data-hm-wall-order>Поръчайте <span aria-hidden="true">→</span></a>
           </div>
         </div>
-        <button type="button" class="hm-deck" aria-expanded="false" aria-controls="HmMini-{{ section.id }}" data-hm-deck>
-          {%- for c in colors limit: 5 -%}
-            {%- assign parts = c | strip | split: '|' -%}
-            <span class="hm-deck__card" style="--i: {{ forloop.index0 }}; background: {{ parts[1] | strip }};" aria-hidden="true"></span>
-          {%- endfor -%}
-          <span class="hm-deck__tag">{%- render 'hameleon-icon', icon: 'swatch' -%}Каталог</span>
-        </button>
-        <div class="hm-mini" id="HmMini-{{ section.id }}" role="dialog" aria-label="Каталог с цветове" hidden data-hm-mini>
-          <div class="hm-mini__top">
-            <p class="hm-mini__title">1320 цвята Vitex</p>
-            <label class="hm-mini__search">
-              {%- render 'hameleon-icon', icon: 'search' -%}
-              <input type="search" inputmode="search" placeholder="Код или име" aria-label="Търсене по код или име" data-hm-mini-search>
-            </label>
-            <button type="button" class="hm-mini__close" aria-label="Затворете" data-hm-mini-close>×</button>
-          </div>
-          <div class="hm-mini__tabs" data-hm-mini-tabs></div>
-          <div class="hm-mini__grid" data-hm-mini-grid></div>
+        <div class="hm-rail" role="group" aria-label="Пробвайте цвят">
+          <span class="hm-rail__label" aria-hidden="true">Цвят</span>
+          <ul class="hm-rail__list">
+            {%- for c in colors limit: 8 -%}
+              {%- assign parts = c | strip | split: '|' -%}
+              {%- if parts.size == 2 -%}
+                {%- assign c_name = parts[0] | strip | escape -%}
+                {%- assign c_hex = parts[1] | strip -%}
+                <li>
+                  <button type="button" class="hm-rail__swatch" style="background: {{ c_hex }};" data-hm-rail="{{ c_hex }}" data-name="{{ c_name }}" aria-pressed="false" aria-label="{{ c_name }}" title="{{ c_name }}"></button>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          <a class="hm-rail__more" href="{{ section.settings.card_link | default: catalogue_url }}" aria-label="{{ section.settings.card_link_label | default: 'Всички цветове' | escape }}" title="{{ section.settings.card_link_label | default: 'Всички цветове' | escape }}">+</a>
         </div>
         {%- if section.settings.ready_title != blank -%}
           <div class="hm-ready" aria-hidden="true">
@@ -689,31 +425,6 @@
       </div>
     </div>
 
-    <div class="hm-picker" id="cvetove" data-reveal style="--d: 3">
-      <div class="hm-picker__head">
-        <p class="hm-picker__title">{{ section.settings.picker_title | escape }} <span>{{ section.settings.picker_hint | escape }}</span></p>
-      </div>
-      <ul class="hm-families" aria-label="{{ section.settings.families_label | escape }}">
-        {%- for block in section.blocks -%}
-          <li {{ block.shopify_attributes }}>
-            <button type="button" class="hm-family" aria-pressed="false" data-hm-family="{{ block.settings.family }}">
-              <span class="hm-family__dot" style="background: {{ block.settings.color }};" aria-hidden="true"></span>
-              {{- block.settings.name | escape -}}
-            </button>
-          </li>
-        {%- endfor -%}
-        {%- if section.settings.card_link_label != blank -%}
-          <li>
-            <a class="hm-family hm-family--all" href="{{ section.settings.card_link | default: catalogue_url }}">
-              {{- section.settings.card_link_label | escape }} →
-            </a>
-          </li>
-        {%- endif -%}
-      </ul>
-      <div class="hm-shades">
-        <div class="hm-shades__row" data-hm-shades></div>
-      </div>
-    </div>
   </div>
 </hameleon-hero>
 
@@ -722,71 +433,104 @@
   "name": "Хамелеон: hero",
   "tag": "div",
   "class": "section",
-  "max_blocks": 12,
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Badge", "default": "Боя онлайн · тониране във Велико Търново" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Изберете цвят. Поръчайте онлайн." },
-    { "type": "text", "id": "heading_highlight", "label": "Heading, highlighted end", "default": "Ние я тонираме." },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "1320 цвята Vitex и 78 мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика." },
-    { "type": "text", "id": "button_label_1", "label": "Primary button label", "default": "Отворете каталога" },
-    { "type": "url", "id": "button_link_1", "label": "Primary button link (defaults to the paint catalogue)" },
-    { "type": "text", "id": "button_label_2", "label": "Secondary button label", "default": "Колко боя ми трябва?" },
-    { "type": "url", "id": "button_link_2", "label": "Secondary button link" },
-    { "type": "text", "id": "trust_1", "label": "Trust point 1", "default": "Поръчка онлайн 24/7" },
-    { "type": "text", "id": "trust_2", "label": "Trust point 2", "default": "Готово до 3 работни дни" },
-    { "type": "text", "id": "trust_3", "label": "Trust point 3", "default": "Вземане от магазина" },
-    { "type": "textarea", "id": "wall_colors", "label": "Wall colours shown in turn (one per line: Name|#HEX)", "default": "Blue Bliss|#0095AB\nAquadazzle|#217553\nZambia|#FE9A28\nPurple Hollyhock|#D771AF\nHappy Face|#FED426\nCherished One|#F89495\nJob's Tears|#00627E\nGlass Bottle|#96BC5E" },
-    { "type": "text", "id": "ready_title", "label": "Floating card title", "default": "Поръчката е готова" },
-    { "type": "text", "id": "ready_text", "label": "Floating card text", "default": "Тонирана и чака Ви на щанда" },
-    { "type": "text", "id": "picker_title", "label": "Colour strip title", "default": "Пробвайте цвят на стената." },
-    { "type": "text", "id": "picker_hint", "label": "Colour strip hint", "default": "Изберете група, после нюанс." },
-    { "type": "text", "id": "families_label", "label": "Colour families label (for screen readers)", "default": "Цветови групи" },
-    { "type": "text", "id": "card_link_label", "label": "Last pill: all colours", "default": "Всички 1320 цвята" },
-    { "type": "url", "id": "card_link", "label": "Last pill: link (defaults to the paint catalogue)" }
-  ],
-  "blocks": [
     {
-      "type": "family",
-      "name": "Colour family",
-      "settings": [
-        { "type": "text", "id": "name", "label": "Name", "default": "Бели" },
-        { "type": "color", "id": "color", "label": "Swatch colour", "default": "#E4E2D9" },
-        {
-          "type": "select",
-          "id": "family",
-          "label": "Vitex family",
-          "default": "white",
-          "options": [
-            { "value": "white", "label": "White" },
-            { "value": "beige", "label": "Beige" },
-            { "value": "yellow", "label": "Yellow" },
-            { "value": "orange", "label": "Orange" },
-            { "value": "red", "label": "Red" },
-            { "value": "purple", "label": "Purple" },
-            { "value": "blue", "label": "Blue" },
-            { "value": "green", "label": "Green" },
-            { "value": "brown", "label": "Brown" },
-            { "value": "gray", "label": "Gray" }
-          ]
-        }
-      ]
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Badge",
+      "default": "Боя онлайн · тониране във Велико Търново"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Изберете цвят. Поръчайте онлайн."
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Heading, highlighted end",
+      "default": "Ние я тонираме."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "1320 цвята Vitex и 78 мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика."
+    },
+    {
+      "type": "text",
+      "id": "button_label_1",
+      "label": "Primary button label",
+      "default": "Отворете каталога"
+    },
+    {
+      "type": "url",
+      "id": "button_link_1",
+      "label": "Primary button link (defaults to the paint catalogue)"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "Secondary button label",
+      "default": "Колко боя ми трябва?"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "text",
+      "id": "trust_1",
+      "label": "Trust point 1",
+      "default": "Поръчка онлайн 24/7"
+    },
+    {
+      "type": "text",
+      "id": "trust_2",
+      "label": "Trust point 2",
+      "default": "Готово до 3 работни дни"
+    },
+    {
+      "type": "text",
+      "id": "trust_3",
+      "label": "Trust point 3",
+      "default": "Вземане от магазина"
+    },
+    {
+      "type": "textarea",
+      "id": "wall_colors",
+      "label": "Colours to try (one per line: Name|#HEX, up to 8). The wall cycles through them.",
+      "default": "Blue Bliss|#0095AB\nAquadazzle|#217553\nZambia|#FE9A28\nPurple Hollyhock|#D771AF\nHappy Face|#FED426\nCherished One|#F89495\nJob's Tears|#00627E\nGlass Bottle|#96BC5E"
+    },
+    {
+      "type": "text",
+      "id": "ready_title",
+      "label": "Floating card title",
+      "default": "Поръчката е готова"
+    },
+    {
+      "type": "text",
+      "id": "ready_text",
+      "label": "Floating card text",
+      "default": "Тонирана и чака Ви на щанда"
+    },
+    {
+      "type": "text",
+      "id": "card_link_label",
+      "label": "\"All colours\" button title",
+      "default": "Всички 1320 цвята"
+    },
+    {
+      "type": "url",
+      "id": "card_link",
+      "label": "\"All colours\" button link (defaults to the paint catalogue)"
     }
   ],
   "presets": [
     {
-      "name": "Хамелеон: hero",
-      "blocks": [
-        { "type": "family", "settings": { "name": "Бели", "color": "#E4E2D9", "family": "white" } },
-        { "type": "family", "settings": { "name": "Бежови", "color": "#BCA180", "family": "beige" } },
-        { "type": "family", "settings": { "name": "Жълти", "color": "#FED426", "family": "yellow" } },
-        { "type": "family", "settings": { "name": "Оранжеви", "color": "#FE9A28", "family": "orange" } },
-        { "type": "family", "settings": { "name": "Червени", "color": "#F89495", "family": "red" } },
-        { "type": "family", "settings": { "name": "Виолетови", "color": "#D771AF", "family": "purple" } },
-        { "type": "family", "settings": { "name": "Сини", "color": "#0095AB", "family": "blue" } },
-        { "type": "family", "settings": { "name": "Зелени", "color": "#217553", "family": "green" } },
-        { "type": "family", "settings": { "name": "Кафяви", "color": "#AD8D6D", "family": "brown" } },
-        { "type": "family", "settings": { "name": "Сиви", "color": "#B7B8BC", "family": "gray" } }
-      ]
+      "name": "Хамелеон: hero"
     }
   ]
 }

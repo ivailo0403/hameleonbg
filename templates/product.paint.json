@@ -168,7 +168,7 @@
             "class": "Среден клас",
             "pack_litres": "1",
             "pack_sqm": "11",
-            "sizes": "1, 5, 10, 15",
+            "sizes": "1, 3, 10, 15",
             "product": "vitex-vito-acrylic-fasadna-boya"
           }
         },
@@ -260,11 +260,18 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "sample_offer": {
+      "type": "hameleon-sample-offer",
+      "settings": {
+        "padding_top": 16
+      }
     }
   },
   "order": [
     "main",
     "hameleon_paint",
+    "sample_offer",
     "disclosures",
     "related-products"
   ]

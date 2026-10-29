@@ -97,7 +97,7 @@
       {%- endif -%}
       <div class="hm-cta__buttons">
         {%- if section.settings.button_label_1 != blank -%}
-          <a class="hm-btn hm-btn--light" href="{{ section.settings.button_link_1 | default: '#cvetove' }}">
+          <a class="hm-btn hm-btn--light" href="{{ section.settings.button_link_1 | default: settings.hm_catalogue_page | default: '/pages/katalog-tsvetove' }}">
             {{- section.settings.button_label_1 | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
           </a>
         {%- endif -%}

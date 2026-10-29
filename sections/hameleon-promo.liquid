@@ -368,6 +368,81 @@
       height: 6.4rem;
     }
   }
+
+  /* With a photo: the photo fills the banner and the copy sits on a dark fade. */
+  .hm-promo--photo {
+    --pr-bg: #141618;
+    --pr-fg: #ffffff;
+    --pr-muted: rgba(255, 255, 255, 0.86);
+    min-height: 34rem;
+  }
+
+  .hm-promo--photo .hm-promo__art,
+  .hm-promos--2 .hm-promo--photo .hm-promo__art,
+  .hm-promos--3 .hm-promo--photo .hm-promo__art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: auto;
+    min-height: 0;
+  }
+
+  .hm-promo--photo .hm-promo__art img {
+    transition: transform 0.8s var(--hm-ease);
+  }
+
+  .hm-promo--photo:hover .hm-promo__art img {
+    transform: scale(1.04);
+  }
+
+  .hm-promo--photo .hm-promo__art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, rgba(10, 12, 13, 0.88) 0%, rgba(10, 12, 13, 0.55) 45%, rgba(10, 12, 13, 0.1) 100%);
+  }
+
+  .hm-promo--photo .hm-promo__copy {
+    align-self: end;
+    max-width: none;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .hm-promo--photo .hm-promo__tags li {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    backdrop-filter: blur(4px);
+  }
+
+  .hm-promo--photo .hm-promo__brands {
+    top: 1.6rem;
+    right: 1.6rem;
+    bottom: auto;
+    left: auto;
+    z-index: 1;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-promo--photo {
+      min-height: 40rem;
+    }
+
+    .hm-promo--photo .hm-promo__art::after {
+      background: linear-gradient(90deg, rgba(10, 12, 13, 0.9) 0%, rgba(10, 12, 13, 0.62) 42%, rgba(10, 12, 13, 0.05) 78%);
+    }
+
+    .hm-promos--2 .hm-promo--photo .hm-promo__art::after,
+    .hm-promos--3 .hm-promo--photo .hm-promo__art::after {
+      background: linear-gradient(0deg, rgba(10, 12, 13, 0.9) 0%, rgba(10, 12, 13, 0.5) 50%, rgba(10, 12, 13, 0.05) 100%);
+    }
+
+    .hm-promos--1 .hm-promo--photo .hm-promo__copy {
+      align-self: center;
+      max-width: 54rem;
+    }
+  }
 {%- endstyle -%}
 
 {%- assign count = section.blocks.size | at_most: 3 -%}
@@ -394,8 +469,12 @@
               assign icons = 'paint,swatch,plaster,ruler'
           endcase
           assign orbit = icons | split: ','
+          assign img_pos = ''
+          if block.settings.image != blank and block.settings.image.presentation.focal_point != blank
+            assign img_pos = 'object-position: ' | append: block.settings.image.presentation.focal_point
+          endif
         -%}
-        <a class="hm-promo hm-promo--{{ block.settings.style }}" href="{{ href }}" data-reveal="scale" style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+        <a class="hm-promo hm-promo--{{ block.settings.style }}{% if block.settings.image != blank %} hm-promo--photo{% endif %}" href="{{ href }}" data-reveal="scale" style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
           <div class="hm-promo__copy">
             {%- if block.settings.eyebrow != blank -%}
               <p class="hm-promo__eyebrow">{{ block.settings.eyebrow | escape }}</p>
@@ -415,7 +494,7 @@
           </div>
           <div class="hm-promo__art" aria-hidden="true">
             {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 900, 1200', sizes: '(min-width: 750px) 50vw, 100vw', alt: '' }}
+              {{ block.settings.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '500, 800, 1200, 1800', sizes: '100vw', alt: '', style: img_pos }}
             {%- else -%}
               {%- for ic in orbit offset: 1 -%}
                 <span class="hm-promo__orbit hm-promo__orbit--{{ forloop.index }}" style="--i: {{ forloop.index }}">{%- render 'hameleon-icon', icon: ic -%}</span>
