@@ -607,7 +607,7 @@
             "title": "Мострите са безплатни с боята",
             "text": "Вземете каталога с 1320 цвята за 20 €. Връщаме ги от първата Ви боя.",
             "button_label": "Вижте как",
-            "link": "#katalog-mostri",
+            "link": "/#katalog-mostri",
             "badge": "−20 €",
             "badge_note": "от боята",
             "style": "green",
