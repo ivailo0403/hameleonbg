@@ -98,8 +98,16 @@ if (!customElements.get('hameleon-paint-calc')) {
         this.querySelector('[data-r-add]').addEventListener('click', () => this.addToCart());
         this.querySelector('[data-r-color-link]').addEventListener('click', (event) => this.pickColor(event));
         this.querySelector('[data-r-pick]').addEventListener('click', (event) => this.pickColor(event));
-        this.querySelector('[data-r-white]').addEventListener('click', () =>
-          document.dispatchEvent(new CustomEvent('hameleon:color', { detail: window.Hameleon.whiteColor }))
+        /* "С цвят / Бяла": any paint can go white; switching back brings the last colour. */
+        this.querySelectorAll('[data-r-mode-btn]').forEach((button) =>
+          button.addEventListener('click', () => {
+            if (button.dataset.rModeBtn === 'white') {
+              document.dispatchEvent(new CustomEvent('hameleon:color', { detail: window.Hameleon.whiteColor }));
+            } else if (this.color && this.color.white) {
+              if (this.lastTint) document.dispatchEvent(new CustomEvent('hameleon:color', { detail: this.lastTint }));
+              else this.setColor(null);
+            }
+          })
         );
 
         document.addEventListener('hameleon:color', (event) => this.setColor(event.detail));
@@ -168,6 +176,7 @@ if (!customElements.get('hameleon-paint-calc')) {
 
       setColor(color) {
         this.color = color || null;
+        if (color && !color.white) this.lastTint = color;
         /* A Motivo colour belongs to one base: switch the calculator to that plaster (SS → Silver, GG → Gold, TT → Titanium). */
         if (color && color.base) {
           const current = this.querySelector('[data-product]:checked');
@@ -254,6 +263,10 @@ if (!customElements.get('hameleon-paint-calc')) {
           this.color && (this.color.custom || (this.color.white && catalogue === 'Vitex') || (this.color.catalogue === catalogue && (!base || !this.color.base || this.color.base === base))) ? this.color : null;
 
         this.renderColor(product, tintable, color, catalogue);
+        const mode = this.querySelector('[data-r-mode]');
+        mode.hidden = !(product && tintable && catalogue === 'Vitex');
+        const white = Boolean(color && color.white);
+        mode.querySelectorAll('[data-r-mode-btn]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.rModeBtn === 'white') === white)));
         this.querySelector('[data-r-tin]').innerHTML = window.Hameleon.tinHTML(
           product ? product.dataset.name : 'Vitex',
           '',
@@ -367,7 +380,6 @@ if (!customElements.get('hameleon-paint-calc')) {
         add.hidden = !(canBuy && !needsColor);
         pick.hidden = !(needsColor && this.combo.length);
         /* Paint (not plaster) can also go in white, without a colour. */
-        this.querySelector('[data-r-white]').hidden = !(pick.hidden === false && this.catalogueFor(product) === 'Vitex');
         if (product && product.dataset.url) {
           link.href = product.dataset.url;
           link.hidden = false;

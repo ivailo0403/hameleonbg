@@ -820,22 +820,53 @@
   gap: 0.4rem;
 }
 
-.hm-pc__actions .hm-pc__white {
-  gap: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: transparent;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.hm-pc__actions .hm-pc__white:hover {
-  border-color: #ffffff;
+.hm-pc__mode {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.4rem;
+  border-radius: var(--hm-radius-pill);
   background: rgba(255, 255, 255, 0.08);
 }
 
-.hm-pc__white .hm-pc__white-dot {
-  width: 2rem;
-  height: 2rem;
+.hm-pc__mode[hidden] {
+  display: none;
+}
+
+.hm-pc__mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 4rem;
+  padding: 0.4rem 1rem;
+  border: 0;
+  border-radius: var(--hm-radius-pill);
+  background: none;
+  color: #c9cfcc;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+
+.hm-pc__mode-btn[aria-pressed='true'] {
+  background: #ffffff;
+  color: #141618;
+}
+
+.hm-pc__mode-dot {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.hm-pc__mode-dot--tint {
+  background: conic-gradient(#fed426, #fe9a28, #f89495, #d771af, #0095ab, #217553, #fed426);
 }

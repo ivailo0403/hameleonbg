@@ -284,6 +284,15 @@
       </div>
     </div>
 
+    <div class="hm-pc__mode" role="group" aria-label="Тониране" data-r-mode hidden>
+      <button type="button" class="hm-pc__mode-btn" aria-pressed="true" data-r-mode-btn="tint">
+        <span class="hm-pc__mode-dot hm-pc__mode-dot--tint" aria-hidden="true"></span>С цвят
+      </button>
+      <button type="button" class="hm-pc__mode-btn" aria-pressed="false" data-r-mode-btn="white">
+        <span class="hm-pc__mode-dot" aria-hidden="true"></span>Бяла
+      </button>
+    </div>
+
     <div class="hm-pc__color" data-r-color>
       <span class="hm-pc__color-chip" data-r-color-chip></span>
       <span class="hm-pc__color-text">
@@ -311,9 +320,6 @@
       <a class="hm-btn hm-btn--light hm-pc__pick" href="{{ catalogue_url | default: '#' }}" data-r-pick hidden>
         {%- render 'hameleon-icon', icon: 'swatch' -%}<span>Изберете цвят</span>
       </a>
-      <button type="button" class="hm-btn hm-btn--ghost-light hm-pc__white" data-r-white hidden>
-        <span class="hm-pc__white-dot" aria-hidden="true"></span><span>Без тониране, бяла</span>
-      </button>
       <a class="hm-btn hm-btn--ghost-light" href="#" data-r-link hidden>Вижте продукта</a>
       <p class="hm-pc__added" data-r-added hidden></p>
     </div>
