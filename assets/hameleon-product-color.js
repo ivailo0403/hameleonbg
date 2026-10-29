@@ -45,7 +45,7 @@ if (!customElements.get('hameleon-product-color')) {
         /* Runs before Dawn's product form handler, so the line never goes in without a colour. */
         this.onSubmit = (event) => {
           /* getAttribute: the form's own input named "id" hides form.id. */
-          if (event.target.getAttribute('id') !== this.dataset.form || this.color || !this.hasAttribute('data-required')) return;
+          if (event.target.getAttribute('id') !== this.dataset.form || this.color || this.isWhite || !this.hasAttribute('data-required')) return;
           event.preventDefault();
           event.stopImmediatePropagation();
           this.message('Изберете цвят, за да добавим боята в количката. Въведете кода от мострата или изберете от каталога по-долу.', true);
@@ -72,10 +72,60 @@ if (!customElements.get('hameleon-product-color')) {
 
         const fromUrl = new URLSearchParams(window.location.search).get('color');
         if (fromUrl) this.set(this.find(fromUrl));
+
+        /* Sizes sold only in white (e.g. Vito 15 л): no colour box, the line goes in as white. */
+        this.whiteIds = String(this.dataset.whiteVariants || '').split(',').filter(Boolean);
+        if (this.whiteIds.length) {
+          this.white(this.dataset.variant);
+          if (typeof subscribe === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+            this.unsubscribe = subscribe(PUB_SUB_EVENTS.variantChange, (event) => {
+              const variant = event.data && event.data.variant;
+              this.white(variant ? variant.id : null);
+            });
+          }
+        }
+      }
+
+      /* Switches the box between "white only" for the chosen variant and the normal colour choice. */
+      white(variantId) {
+        const isWhite = variantId != null && this.whiteIds.includes(String(variantId));
+        if (isWhite === Boolean(this.isWhite)) return;
+        this.isWhite = isWhite;
+        this.classList.toggle('is-white', isWhite);
+        const name = this.querySelector('[data-name]');
+        const chip = this.querySelector('[data-chip]');
+        const label = this.querySelector('.hm-pcol__label');
+        if (!this.labelText) this.labelText = label.textContent;
+        label.textContent = isWhite ? 'Цвят' : this.labelText;
+        if (isWhite) {
+          this.props.color.value = 'Бяла (без тониране)';
+          this.props.catalogue.value = '—';
+          this.props.hex.value = '';
+          this.props.color.disabled = false;
+          this.props.catalogue.disabled = false;
+          this.props.hex.disabled = true;
+          chip.style.background = '#ffffff';
+          name.textContent = 'Само бяла, без тониране';
+          this.message('Тази разфасовка се продава само в бяло. За цвят изберете 1, 3 или 9 л.', false);
+          this.float.hidden = true;
+        } else if (this.color) {
+          const color = this.color;
+          this.color = null;
+          this.set(color);
+        } else {
+          Object.values(this.props).forEach((input) => {
+            input.value = '';
+            input.disabled = true;
+          });
+          chip.style.background = '';
+          name.textContent = 'Не е избран';
+          this.message('', false);
+        }
       }
 
       disconnectedCallback() {
         document.removeEventListener('submit', this.onSubmit, true);
+        if (this.unsubscribe) this.unsubscribe();
       }
 
       find(code) {
@@ -116,6 +166,8 @@ if (!customElements.get('hameleon-product-color')) {
       set(color) {
         if (!color || (color.catalogue !== this.catalogue && !color.custom)) return;
         this.color = color;
+        /* A white-only size keeps its "white" line; the colour waits for a tintable size. */
+        if (this.isWhite) return;
         this.props.color.value = color.custom ? color.code : `${color.code} ${color.name}`;
         this.props.catalogue.value = color.catalogue;
         this.props.hex.value = color.hex || '';
@@ -140,7 +192,7 @@ if (!customElements.get('hameleon-product-color')) {
       }
 
       toggleFloat() {
-        const show = Boolean(this.color && this.offScreen);
+        const show = Boolean(this.color && this.offScreen && !this.isWhite);
         this.float.hidden = !show;
         this.float.classList.toggle('is-on', show);
       }
