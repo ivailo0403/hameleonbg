@@ -2,7 +2,7 @@
   Хамелеон: the colour studio (a room whose wall takes the chosen colour, and the colour browser).
   Used inside <hameleon-catalogue> on the catalogue page and on the paint product page.
   Accepts:
-  - only: {String} 'vitex' or 'motivo' to show one catalogue without tabs (optional, both by default)
+  - only: {String} 'vitex' (the two Vitex collections) or 'motivo' (no tabs) (optional, all three by default)
   - go_label: {String} the button on the room card (optional)
   - base_prefix: {String} SS, GG or TT on a plaster product page, for the search hint (optional)
 {%- endcomment -%}
@@ -28,16 +28,19 @@
   </div>
 
   <div class="hm-cat__browser" id="katalog">
-    {%- if only == blank -%}
-      <div class="hm-cat__tabs" role="tablist">
-        <button type="button" class="hm-cat__tab" role="tab" aria-selected="true" data-tab="vitex">Бои Vitex<small>1320 цвята</small></button>
-        <button type="button" class="hm-cat__tab" role="tab" aria-selected="false" data-tab="motivo">Мазилки Motivo<small>124 цвята</small></button>
+    {%- unless only == 'motivo' -%}
+      <div class="hm-cat__tabs{% if only == blank %} hm-cat__tabs--3{% endif %}" role="tablist">
+        <button type="button" class="hm-cat__tab" role="tab" aria-selected="true" data-tab="global">Vitex Global<small>1320 цвята</small></button>
+        <button type="button" class="hm-cat__tab" role="tab" aria-selected="false" data-tab="colourful">Vitex Colourful<small>696 цвята</small></button>
+        {%- if only == blank -%}
+          <button type="button" class="hm-cat__tab" role="tab" aria-selected="false" data-tab="motivo">Motivo<small>124 мазилки</small></button>
+        {%- endif -%}
       </div>
-    {%- endif -%}
+    {%- endunless -%}
     <div class="hm-cat__tools">
       <label class="hm-cat__search">
         {%- render 'hameleon-icon', icon: 'search' -%}
-        <input type="search" inputmode="search" placeholder="{% if only == 'motivo' %}Код, напр. {{ base_prefix | default: 'SS' }}-012{% else %}Код или име, напр. 675{% endif %}" aria-label="Търсене по код или име" data-search>
+        <input type="search" inputmode="search" placeholder="{% if only == 'motivo' %}Код, напр. {{ base_prefix | default: 'SS' }}-012{% else %}Код или име, напр. 0675{% endif %}" aria-label="Търсене по код или име" data-search>
       </label>
       <ul class="hm-cat__families" data-families aria-label="Цветови групи"></ul>
       <ul class="hm-cat__families" data-bases aria-label="База на мазилката" hidden></ul>

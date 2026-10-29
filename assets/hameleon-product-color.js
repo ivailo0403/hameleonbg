@@ -136,12 +136,10 @@ if (!customElements.get('hameleon-product-color')) {
           const color = window.Hameleon.motivo.find(value, this.dataset.base, this.dataset.motivoBase);
           return color && (!this.dataset.base || color.base === this.dataset.base) ? color : null;
         }
-        if (this.catalogue === 'Vitex' && window.HameleonColors) {
-          const q = value.toLowerCase();
-          for (const family of window.HameleonColors.families) {
-            const item = family.items.find((c) => String(c[0]) === value || c[1].toLowerCase() === q);
-            if (item) return { code: String(item[0]), name: item[1], hex: `#${item[2]}`, catalogue: 'Vitex' };
-          }
+        /* Vitex: Global (0893, or 893) first, then Colourful (CL 11, 150-10 R); the tab the visitor is on decides shared codes. */
+        if (this.catalogue === 'Vitex' && window.Hameleon.vitex) {
+          const studio = document.querySelector('hameleon-catalogue');
+          return window.Hameleon.vitex.find(value, studio && studio.tab === 'colourful' ? 'colourful' : 'global');
         }
         return null;
       }
@@ -174,8 +172,9 @@ if (!customElements.get('hameleon-product-color')) {
         this.color = color;
         /* A white-only size keeps its "white" line; the colour waits for a tintable size. */
         if (this.isWhite) return;
-        this.props.color.value = color.custom ? color.code : `${color.code} ${color.name}`;
-        this.props.catalogue.value = color.catalogue;
+        this.props.color.value = color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ');
+        /* Staff need the fan deck: "Vitex Global Collection" or "Vitex Colourful Collection". */
+        this.props.catalogue.value = color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue;
         this.props.hex.value = color.hex || '';
         Object.values(this.props).forEach((input) => (input.disabled = !input.value));
 
@@ -187,7 +186,7 @@ if (!customElements.get('hameleon-product-color')) {
           this.message('Тонираме по Вашия код. Този цвят не можем да покажем на екрана, затова стаята остава неутрална.', false);
         } else {
           chip.style.background = color.image ? `center / cover url("${color.image}") ${color.hex}` : color.hex;
-          name.textContent = color.catalogue === 'Motivo' ? `${color.code} · ${color.name}` : `№ ${color.code} · ${color.name}`;
+          name.textContent = color.catalogue === 'Motivo' ? `${color.code} · ${color.name}` : `№ ${color.code} · ${color.name || color.collection}`;
           this.message('', false);
         }
         this.querySelector('[data-open-label]').textContent = 'Смени';

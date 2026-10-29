@@ -259,6 +259,24 @@
   font-weight: 600;
 }
 
+.hm-cat__tabs--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Three tabs on a phone: smaller type so "Vitex Colourful" fits. */
+@media screen and (max-width: 749px) {
+  .hm-cat__tabs--3 .hm-cat__tab {
+    padding: 0.9rem 0.4rem;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .hm-cat__tabs--3 .hm-cat__tab small {
+    font-size: 1.1rem;
+  }
+}
+
 .hm-cat__tab[aria-selected='true'] {
   background: #ffffff;
   color: var(--hm-text-strong);

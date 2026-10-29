@@ -22,17 +22,12 @@ window.Hameleon.tinHTML = (name, size, color) => {
   );
 };
 
-/* Finds a colour by code in the Vitex or Motivo catalogue (assets/hameleon-colors.js). */
-window.Hameleon.findColor = (code) => {
+/* Finds a colour by code in Vitex Global, Vitex Colourful or Motivo (assets/hameleon-colors.js). prefer: 'colourful' for codes both Vitex collections share. */
+window.Hameleon.findColor = (code, prefer) => {
   const value = String(code || '').trim();
   if (!value) return null;
   if (/^[sgt]/i.test(value) && window.Hameleon.motivo) return window.Hameleon.motivo.find(value, '', '');
-  if (window.HameleonColors) {
-    for (const family of window.HameleonColors.families) {
-      const item = family.items.find((c) => String(c[0]) === value);
-      if (item) return { code: String(item[0]), name: item[1], hex: `#${item[2]}`, catalogue: 'Vitex', family: family.name };
-    }
-  }
+  if (window.Hameleon.vitex && window.HameleonColors) return window.Hameleon.vitex.find(value, prefer);
   return null;
 };
 
@@ -124,7 +119,7 @@ if (!customElements.get('hameleon-paint-calc')) {
             this.querySelector('[data-product-cat]:not([hidden]) [data-product]');
           if (first) first.checked = true;
         }
-        const fromPage = window.Hameleon.currentColor || window.Hameleon.findColor(params.get('color'));
+        const fromPage = window.Hameleon.currentColor || window.Hameleon.findColor(params.get('color'), params.get('tab'));
         if (fromPage) this.color = fromPage;
         this.update();
       }
@@ -323,7 +318,7 @@ if (!customElements.get('hameleon-paint-calc')) {
           link.textContent = 'Смени';
         } else if (color) {
           chip.style.background = color.image ? `center / cover url("${color.image}")` : color.hex;
-          name.textContent = `${color.code} · ${color.name}`;
+          name.textContent = `${color.code} · ${color.name || `Vitex ${color.collection}`}`;
           link.textContent = 'Смени';
         } else {
           chip.style.background = '';
@@ -378,8 +373,8 @@ if (!customElements.get('hameleon-paint-calc')) {
         const coatsInput = this.querySelector('[data-coats]:checked');
         const coats = coatsInput ? coatsInput.value : '2';
         const properties = {
-          'Цвят': tintable && color ? (color.custom ? color.code : `${color.code} ${color.name}`) : 'Бяла (без тониране)',
-          'Каталог': tintable && color ? color.catalogue : '—',
+          'Цвят': tintable && color ? (color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ')) : 'Бяла (без тониране)',
+          'Каталог': tintable && color ? (color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue) : '—',
           'Сметка': `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
         };
         /* Hidden (underscore) properties let the cart draw the colour swatch. */

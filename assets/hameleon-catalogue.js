@@ -2,7 +2,8 @@
   Хамелеон: paint catalogue page (sections/hameleon-paint-catalogue.liquid).
   Picking a colour paints the room's wall, remembers it in "Последно", puts ?color=CODE in the
   address and sends a "hameleon:color" event that the calculator listens to.
-  Colours come from assets/hameleon-colors.js (window.HameleonColors, window.HameleonMotivo).
+  Colours come from assets/hameleon-colors.js: Vitex Global Collection, Vitex Colourful Collection and Motivo.
+  The tabs are "global", "colourful" and "motivo"; "vitex" means Global.
 */
 window.Hameleon = window.Hameleon || {};
 
@@ -19,13 +20,12 @@ if (!customElements.get('hameleon-catalogue')) {
     'hameleon-catalogue',
     class HameleonCatalogue extends HTMLElement {
       connectedCallback() {
-        this.families = (window.HameleonColors && window.HameleonColors.families) || [];
         this.motivo = window.HameleonMotivo || [];
         this.bases = window.HameleonMotivoBases || [];
         /* A plaster product page shows only its own base (Silver, Gold or Titanium). */
         this.lockedBase = this.dataset.base || '';
         this.base = this.lockedBase || 'all';
-        this.tab = 'vitex';
+        this.tab = 'global';
         this.family = 'all';
         this.query = '';
         this.recent = [];
@@ -51,11 +51,11 @@ if (!customElements.get('hameleon-catalogue')) {
             return;
           }
           const chip = event.target.closest('[data-code]');
-          if (chip) this.select(this.colorFromCode(chip.dataset.code), true);
+          if (chip) this.select(this.colorFromCode(chip.dataset.code, chip.dataset.col), true);
         });
         this.querySelector('[data-recent]').addEventListener('click', (event) => {
           const chip = event.target.closest('[data-code]');
-          if (chip) this.select(this.colorFromCode(chip.dataset.code), true);
+          if (chip) this.select(this.colorFromCode(chip.dataset.code, chip.dataset.col), true);
         });
         this.querySelector('[data-now-go]').addEventListener('click', (event) => {
           event.preventDefault();
@@ -64,27 +64,28 @@ if (!customElements.get('hameleon-catalogue')) {
         document.addEventListener('hameleon:open-catalogue', (event) => {
           const detail = event.detail || {};
           if (detail.base && !this.lockedBase) this.setBase(detail.base);
-          if (!this.dataset.only) this.setTab(detail.catalogue === 'Motivo' ? 'motivo' : 'vitex');
+          if (detail.catalogue === 'Motivo' && !this.dataset.only) this.setTab('motivo');
+          else if (detail.catalogue !== 'Motivo' && this.tab === 'motivo' && this.dataset.only !== 'motivo') this.setTab('global');
           this.querySelector('#katalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         document.addEventListener('hameleon:cart-updated', () => this.loadOrder());
         /* A code typed elsewhere on the page (the colour box next to "Add to cart"). */
         document.addEventListener('hameleon:pick-code', (event) => {
           const detail = event.detail || {};
-          const color = this.colorFromCode(detail.code) || detail.color;
+          const color = (detail.color && !detail.color.custom && detail.color) || this.colorFromCode(detail.code);
           if (color) this.select(color, true);
         });
 
         const params = new URLSearchParams(window.location.search);
-        if (params.get('tab') === 'motivo') this.tab = 'motivo';
+        this.tab = this.tabName(params.get('tab'));
         if (params.get('base') && !this.lockedBase && window.Hameleon.motivo.base(params.get('base'))) this.base = params.get('base');
         /* The paint product page shows only the catalogue that fits the product. */
-        if (this.dataset.only) this.tab = this.dataset.only;
-        this.renderFamilies();
+        if (this.dataset.only === 'motivo') this.tab = 'motivo';
+        if (this.dataset.only === 'vitex' && this.tab === 'motivo') this.tab = 'global';
         this.renderBases();
         this.setTab(this.tab);
         /* On the product page nothing is chosen until the visitor picks, so the order never gets a colour they did not choose. */
-        const fallback = this.hasAttribute('data-no-default') ? null : this.colorFromCode(this.tab === 'motivo' ? 'SS-001' : '675');
+        const fallback = this.hasAttribute('data-no-default') ? null : this.colorFromCode(this.tab === 'motivo' ? 'SS-001' : '0675', 'global');
         const first = this.colorFromCode(params.get('color')) || fallback;
         /* Wait a tick so the calculator (defined in another deferred script) hears the first colour. */
         setTimeout(() => this.select(first, false), 0);
@@ -95,27 +96,49 @@ if (!customElements.get('hameleon-catalogue')) {
         return String(text).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
       }
 
-      colorFromCode(code) {
+      tabName(tab) {
+        if (tab === 'motivo' || tab === 'colourful') return tab;
+        return 'global';
+      }
+
+      families() {
+        const collection = window.Hameleon.vitex.collection(this.tab);
+        return collection ? collection.families() : [];
+      }
+
+      /* collection: 'global' or 'colourful' (or "Vitex Colourful Collection" from a cart line); the two share some codes. */
+      colorFromCode(code, collection) {
         const value = String(code || '').trim();
         if (!value) return null;
         /* Motivo codes carry their base letter (SS-012); a bare number counts only on a plaster page or tab. */
-        if (/^[sgt]/i.test(value) || this.tab === 'motivo') {
+        const V = window.Hameleon.vitex;
+        const wanted = V.collection(collection || '');
+        if ((/^[sgt]/i.test(value) || this.tab === 'motivo') && !wanted) {
           const plaster = window.Hameleon.motivo.find(value, this.base === 'all' ? '' : this.base, this.dataset.motivoBase);
           if (plaster && (!this.lockedBase || plaster.base === this.lockedBase)) return plaster;
           if (/^[sgt]/i.test(value)) return null;
         }
-        for (const family of this.families) {
-          const item = family.items.find((c) => String(c[0]) === value);
-          if (item) return { code: String(item[0]), name: item[1], hex: `#${item[2]}`, catalogue: 'Vitex', family: family.name };
-        }
-        return null;
+        return V.find(value, wanted ? wanted.key : this.tab);
       }
 
       setTab(tab) {
+        tab = this.tabName(tab);
+        const changed = tab !== this.tab || !this.familiesDone;
         this.tab = tab;
         this.querySelectorAll('[data-tab]').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
-        this.querySelector('[data-families]').hidden = tab !== 'vitex';
-        if (!this.dataset.only) this.querySelector('[data-search]').placeholder = tab === 'motivo' ? 'Код, напр. SS-012 или G5' : 'Код или име, напр. 675';
+        this.querySelector('[data-families]').hidden = tab === 'motivo';
+        if (changed && tab !== 'motivo') {
+          this.family = 'all';
+          this.renderFamilies();
+          this.familiesDone = true;
+        }
+        if (this.dataset.only !== 'motivo') {
+          this.querySelector('[data-search]').placeholder = {
+            motivo: 'Код, напр. SS-012 или G5',
+            global: 'Код или име, напр. 0675',
+            colourful: 'Код, напр. CL 11 или 150-10 R',
+          }[tab];
+        }
         const bases = this.querySelector('[data-bases]');
         if (bases) bases.hidden = tab !== 'motivo' || Boolean(this.lockedBase);
         this.render();
@@ -151,13 +174,15 @@ if (!customElements.get('hameleon-catalogue')) {
 
       renderFamilies() {
         const list = this.querySelector('[data-families]');
-        const total = this.families.reduce((sum, f) => sum + f.items.length, 0);
+        const families = this.families();
+        const total = families.reduce((sum, f) => sum + f.items.length, 0);
+        const hex = (item) => item[item.length - 1];
         const button = (key, name, dot, count) =>
           `<li><button type="button" class="hm-cat__family" data-family="${key}" aria-pressed="${key === this.family}">` +
           `<i style="background:${dot}"></i>${name} <small>${count}</small></button></li>`;
         list.innerHTML =
           button('all', 'Всички', 'conic-gradient(#FED426, #FE9A28, #F89495, #D771AF, #0095AB, #217553, #FED426)', total) +
-          this.families.map((f) => button(f.key, f.name, `#${f.items[Math.floor(f.items.length * 0.6)][2]}`, f.items.length)).join('');
+          families.map((f) => button(f.key, f.name, `#${hex(f.items[Math.floor(f.items.length * 0.6)])}`, f.items.length)).join('');
         list.querySelectorAll('[data-family]').forEach((b) =>
           b.addEventListener('click', () => {
             this.family = b.dataset.family;
@@ -185,14 +210,27 @@ if (!customElements.get('hameleon-catalogue')) {
               return { code: m[0], label: m[0], name: color.name, style: `background-image:url('${color.image}');background-color:#${m[1]}` };
             });
         } else {
-          const pool = this.family === 'all' || q ? this.families : this.families.filter((f) => f.key === this.family);
+          const V = window.Hameleon.vitex;
+          const collection = V.collection(this.tab);
+          const families = this.families();
+          const pool = this.family === 'all' || q ? families : families.filter((f) => f.key === this.family);
+          /* "893" finds 0893; "cl1" finds CL 11…; Global colours also by name. */
+          const key = V.key(q);
           items = pool
-            .flatMap((f) => f.items)
-            .filter((c) => !q || String(c[0]).startsWith(q) || c[1].toLowerCase().includes(q))
-            .sort((a, b) => (q ? a[0] - b[0] : 0))
-            .map((c) => ({ code: String(c[0]), label: `№ ${c[0]}`, name: c[1], style: `background:#${c[2]}` }));
+            .flatMap((f) => f.items.map((c) => ({ c, family: f.name })))
+            .filter(({ c }) => {
+              if (!q) return true;
+              const code = V.key(c[0]);
+              return code.startsWith(key) || code.replace(/^0+/, '').startsWith(key) || (c.length > 2 && c[1].toLowerCase().includes(q));
+            })
+            .sort((a, b) => (q ? String(a.c[0]).localeCompare(String(b.c[0]), 'en', { numeric: true }) : 0))
+            .map(({ c, family }) => {
+              const color = V.color(collection, c, { name: family });
+              return { code: color.code, col: collection.key, label: `№ ${color.code}`, name: color.name || family, style: `background:${color.hex}` };
+            });
         }
         const current = this.current ? this.current.code : '';
+        const currentCol = this.current && this.current.collection ? window.Hameleon.vitex.collection(this.current.collection).key : '';
         this.querySelector('[data-count]').textContent = items.length
           ? `${items.length} ${items.length === 1 ? 'цвят' : 'цвята'}`
           : '';
@@ -201,12 +239,12 @@ if (!customElements.get('hameleon-catalogue')) {
           ? shown
               .map(
                 (i) =>
-                  `<button type="button" class="hm-chip" data-code="${i.code}" aria-pressed="${i.code === current}" aria-label="${i.label} ${i.name.replace(/"/g, '&quot;')}">` +
+                  `<button type="button" class="hm-chip" data-code="${i.code}"${i.col ? ` data-col="${i.col}"` : ''} aria-pressed="${i.code === current && (!i.col || i.col === currentCol)}" aria-label="${i.label} ${i.name.replace(/"/g, '&quot;')}">` +
                   `<span class="hm-chip__color" style="${i.style}"></span>` +
                   `<span class="hm-chip__meta"><span class="hm-chip__code">${i.label}</span><span class="hm-chip__name">${i.name}</span></span></button>`
               )
               .join('')
-          : `<div class="hm-cat__empty"><p>Няма такъв цвят в каталога ${this.tab === 'motivo' ? 'Motivo' : 'Vitex'}. Ако кодът е от друг каталог (RAL, NCS, друга марка), пак можем да тонираме по него.</p>` +
+          : `<div class="hm-cat__empty"><p>Няма такъв цвят в каталога ${this.tab === 'motivo' ? 'Motivo' : `Vitex ${window.Hameleon.vitex.collection(this.tab).name}`}. Ако кодът е от друг каталог (RAL, NCS, друга марка), пак можем да тонираме по него.</p>` +
             `<button type="button" class="hm-btn hm-btn--primary" data-custom-code>Поръчайте с код „${this.escape(this.query.toUpperCase())}“</button></div>`;
         if (items.length > shown.length) {
           this.grid.insertAdjacentHTML(
@@ -239,17 +277,24 @@ if (!customElements.get('hameleon-catalogue')) {
           ? 'Друг каталог'
           : color.catalogue === 'Motivo'
             ? `Motivo · ${color.code}`
-            : `Vitex · № ${color.code}`;
-        this.querySelector('[data-now-name]').textContent = color.custom ? `Код ${color.code}` : color.name;
+            : color.name
+              ? `Vitex ${String(color.collection || '').replace(' Collection', '')} · № ${color.code}`
+              : `Vitex ${color.collection}`;
+        /* Colourful colours have no name: the code is the big line ("№ NC 110", never split). */
+        this.querySelector('[data-now-name]').textContent = color.custom
+          ? `Код ${color.code}`
+          : color.name || `№ ${color.code}`.replace(/ /g, '\u00a0');
 
         this.grid.querySelectorAll('[aria-pressed="true"]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
-        const inGrid = color.custom ? null : this.grid.querySelector(`[data-code="${color.code}"]`);
+        const col = color.collection ? window.Hameleon.vitex.collection(color.collection).key : '';
+        const inGrid = color.custom ? null : this.grid.querySelector(`[data-code="${CSS.escape(color.code)}"]${col ? `[data-col="${col}"]` : ''}`);
         if (inGrid) inGrid.setAttribute('aria-pressed', 'true');
 
         if (userAction && !color.custom) {
           this.remember(color);
           const url = new URL(window.location.href);
           url.searchParams.set('color', color.code);
+          url.searchParams.set('tab', col || 'motivo');
           window.history.replaceState(null, '', url.toString());
         }
         window.Hameleon = window.Hameleon || {};
@@ -258,7 +303,9 @@ if (!customElements.get('hameleon-catalogue')) {
       }
 
       remember(color) {
-        this.recent = [color, ...this.recent.filter((c) => c.code !== color.code)].slice(0, 8);
+        this.recent = [color, ...this.recent.filter((c) => c.code !== color.code || c.collection !== color.collection)].slice(0, 8);
+        const colKey = (c) => (c.collection ? window.Hameleon.vitex.collection(c.collection).key : '');
+        const title = (c) => [c.code, c.name || (c.collection ? `Vitex ${c.collection}` : '')].filter(Boolean).join(' · ').replace(/"/g, '&quot;');
         const box = this.querySelector('[data-recent]');
         box.hidden = this.recent.length < 2;
         box.innerHTML =
@@ -266,7 +313,7 @@ if (!customElements.get('hameleon-catalogue')) {
           this.recent
             .map(
               (c) =>
-                `<button type="button" data-code="${c.code}" title="${c.code} · ${c.name.replace(/"/g, '&quot;')}" aria-label="${c.code} ${c.name.replace(/"/g, '&quot;')}" style="background:${c.hex}${c.image ? ` url('${c.image}') center/cover` : ''}"></button>`
+                `<button type="button" data-code="${c.code}"${colKey(c) ? ` data-col="${colKey(c)}"` : ''} title="${title(c)}" aria-label="${title(c)}" style="background:${c.hex}${c.image ? ` url('${c.image}') center/cover` : ''}"></button>`
             )
             .join('');
       }
@@ -287,8 +334,11 @@ if (!customElements.get('hameleon-catalogue')) {
           const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
           this.querySelector('[data-order-lines]').innerHTML = lines
             .map((item) => {
-              const code = String(item.properties['Цвят']).split(' ')[0];
-              const color = this.colorFromCode(item.properties['Каталог'] === 'Motivo' ? code : code);
+              /* Colourful codes have spaces ("CL 11") and no name; other lines are "code name". */
+              const catalogue = String(item.properties['Каталог'] || '');
+              const text = String(item.properties['Цвят']);
+              const code = /Colourful/.test(catalogue) ? text : text.split(' ')[0];
+              const color = this.colorFromCode(code, catalogue);
               const swatch = color ? `background:${color.hex}${color.image ? ` url('${color.image}') center/cover` : ''}` : 'background:#f4f4f0';
               return `<li class="hm-cat__line"><i style="${swatch}"></i><span><strong>${item.quantity} × ${esc(item.product_title)} ${esc(item.variant_title || '')}</strong> · ${esc(item.properties['Цвят'])}</span></li>`;
             })
