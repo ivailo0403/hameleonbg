@@ -12,6 +12,23 @@
   if title_down contains 'мазилк' or type_down contains 'мазилк'
     assign only = 'motivo'
   endif
+  comment
+    Each Motivo base has its own colours: Silver SS-…, Gold GG-…, Titanium TT-….
+  endcomment
+  assign base = ''
+  assign base_prefix = ''
+  if only == 'motivo'
+    if title_down contains 'silver' or title_down contains 'сребр'
+      assign base = 'silver'
+      assign base_prefix = 'SS'
+    elsif title_down contains 'gold' or title_down contains 'злат'
+      assign base = 'gold'
+      assign base_prefix = 'GG'
+    elsif title_down contains 'titan' or title_down contains 'титан'
+      assign base = 'titanium'
+      assign base_prefix = 'TT'
+    endif
+  endif
   assign tintable = true
   if product.tags contains 'без тониране'
     assign tintable = false
@@ -22,7 +39,7 @@
 <script src="{{ 'hameleon-catalogue.js' | asset_url }}" defer="defer"></script>
 
 {%- if tintable -%}
-  <hameleon-catalogue class="hm-section hm-cat hm-cat--product" style="display: block;" data-only="{{ only }}" data-no-default data-motivo-base="{{ 'hm-motivo-01.jpg' | asset_url }}">
+  <hameleon-catalogue class="hm-section hm-cat hm-cat--product" style="display: block;" data-only="{{ only }}" data-no-default{% if base != blank %} data-base="{{ base }}"{% endif %} data-motivo-base="{{ 'hm-mz-ss-001.jpg' | asset_url }}">
 {%- else -%}
   <div class="hm-section hm-cat hm-cat--product">
 {%- endif -%}
@@ -37,7 +54,7 @@
           <p class="hm-sub" data-reveal style="--d: 2">{{ section.settings.text | escape }}</p>
         {%- endif -%}
       </div>
-      {%- render 'hameleon-color-studio', only: only -%}
+      {%- render 'hameleon-color-studio', only: only, base_prefix: base_prefix -%}
     {%- endif -%}
 
     <div class="hm-cat__calc" id="kalkulator">

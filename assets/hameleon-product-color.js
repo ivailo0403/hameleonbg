@@ -131,13 +131,10 @@ if (!customElements.get('hameleon-product-color')) {
       find(code) {
         const value = String(code || '').trim().replace(/^№\s*/, '');
         if (!value) return null;
-        const motivo = value.match(/^m?-?\s*(\d+)$/i);
-        if (this.catalogue === 'Motivo' && motivo && window.HameleonMotivo) {
-          const n = parseInt(motivo[1], 10);
-          const item = window.HameleonMotivo.find((m) => m[0] === n);
-          if (!item) return null;
-          const image = String(this.dataset.motivoBase || '').replace('hm-motivo-01', `hm-motivo-${String(n).padStart(2, '0')}`);
-          return { code: `M${n}`, name: `Motivo ${n}`, hex: `#${item[1]}`, catalogue: 'Motivo', image };
+        /* Motivo: "12" means 12 in this product's base; "SS-012" or "S12" must be this base too. */
+        if (this.catalogue === 'Motivo' && window.Hameleon.motivo) {
+          const color = window.Hameleon.motivo.find(value, this.dataset.base, this.dataset.motivoBase);
+          return color && (!this.dataset.base || color.base === this.dataset.base) ? color : null;
         }
         if (this.catalogue === 'Vitex' && window.HameleonColors) {
           const q = value.toLowerCase();
@@ -152,6 +149,14 @@ if (!customElements.get('hameleon-product-color')) {
       applyCode(code) {
         const value = String(code || '').replace(/[<>"]/g, '').trim().slice(0, 40);
         if (!value) return;
+        /* A Motivo code from another base (e.g. SS-012 on Motivo Gold) is a mistake, not a custom colour. */
+        if (this.catalogue === 'Motivo' && this.dataset.base && window.Hameleon.motivo) {
+          const other = window.Hameleon.motivo.find(value, '', '');
+          if (other && other.base !== this.dataset.base) {
+            this.message(`${other.code} е цвят за ${other.name}. За тази мазилка изберете код, който започва с ${window.Hameleon.motivo.base(this.dataset.base).prefix}.`, true);
+            return;
+          }
+        }
         /* A code from another brand's fan deck (RAL, NCS, …) is fine too: we tint by it in the store. */
         const color = this.find(value) || window.Hameleon.customColor(value);
         this.querySelector('[data-code-input]').value = '';
@@ -165,6 +170,7 @@ if (!customElements.get('hameleon-product-color')) {
 
       set(color) {
         if (!color || (color.catalogue !== this.catalogue && !color.custom)) return;
+        if (color.base && this.dataset.base && color.base !== this.dataset.base) return;
         this.color = color;
         /* A white-only size keeps its "white" line; the colour waits for a tintable size. */
         if (this.isWhite) return;
@@ -181,7 +187,7 @@ if (!customElements.get('hameleon-product-color')) {
           this.message('Тонираме по Вашия код. Този цвят не можем да покажем на екрана, затова стаята остава неутрална.', false);
         } else {
           chip.style.background = color.image ? `center / cover url("${color.image}") ${color.hex}` : color.hex;
-          name.textContent = color.catalogue === 'Motivo' ? `${color.code} · Motivo` : `№ ${color.code} · ${color.name}`;
+          name.textContent = color.catalogue === 'Motivo' ? `${color.code} · ${color.name}` : `№ ${color.code} · ${color.name}`;
           this.message('', false);
         }
         this.querySelector('[data-open-label]').textContent = 'Смени';

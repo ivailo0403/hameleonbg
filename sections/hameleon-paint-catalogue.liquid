@@ -1,7 +1,7 @@
 {%- comment -%}
   Хамелеон: paint catalogue page.
   Left: a room whose wall shows the chosen colour (sticky while the visitor scrolls the colours).
-  Right: every Vitex colour (1320, by family, searchable by code or name) and the 78 Motivo plaster
+  Right: every Vitex colour (1320, by family, searchable by code or name) and the 124 Motivo plaster
   colours. Below: the calculator, which takes the chosen colour and adds the packs to the cart with
   the colour code on each line, and a summary of the paint already in the cart.
   Each "product" block is one paint for the calculator (same as the home page calculator).
@@ -12,7 +12,7 @@
 <script src="{{ 'hameleon-colors.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'hameleon-catalogue.js' | asset_url }}" defer="defer"></script>
 
-<hameleon-catalogue class="hm-section hm-cat" style="display: block;" data-motivo-base="{{ 'hm-motivo-01.jpg' | asset_url }}">
+<hameleon-catalogue class="hm-section hm-cat" style="display: block;" data-motivo-base="{{ 'hm-mz-ss-001.jpg' | asset_url }}">
   <div class="page-width">
     <div class="hm-cat__head">
       {%- if section.settings.eyebrow != blank -%}
@@ -57,7 +57,7 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Каталог на цветовете" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Вижте цвета на стената, преди да боядисате" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Изберете от 1320 цвята Vitex и 78 мазилки Motivo. Стаята се боядисва веднага. После изчислете колко боя Ви трябва и я поръчайте с кода на цвета." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Изберете от 1320 цвята Vitex и 124 цвята мазилки Motivo. Стаята се боядисва веднага. После изчислете колко боя Ви трябва и я поръчайте с кода на цвета." },
     { "type": "text", "id": "calc_eyebrow", "label": "Calculator eyebrow", "default": "Калкулатор и поръчка" },
     { "type": "text", "id": "calc_heading", "label": "Calculator heading", "default": "Колко боя Ви трябва?" },
     { "type": "textarea", "id": "calc_text", "label": "Calculator text", "default": "Изберете боята и площта. Пресмятаме литрите и най-изгодните опаковки, а цветът отива в поръчката с кода си." },

@@ -6,7 +6,7 @@
         "eyebrow": "Боя онлайн · тониране във Велико Търново",
         "heading": "Изберете цвят. Поръчайте онлайн.",
         "heading_highlight": "Ние я тонираме.",
-        "text": "1320 цвята Vitex и 78 мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика.",
+        "text": "1320 цвята Vitex и 124 цвята мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика.",
         "button_label_1": "Отворете каталога",
         "button_label_2": "Колко боя ми трябва?",
         "trust_1": "Поръчка онлайн 24/7",
@@ -367,43 +367,43 @@
       "settings": {
         "eyebrow": "Декоративни мазилки",
         "heading": "Стена, която спира погледа",
-        "text": "Motivo дава метален блясък и дълбочина, които боята не може. 78 цвята, всеки показан тук от истинска мостра. Вижте ги и на живо в магазина.",
+        "text": "Motivo дава метален блясък и дълбочина, които боята не може. 124 цвята в три бази (Silver, Gold и Titanium), всеки от истинска мостра. Вижте ги и на живо в магазина.",
         "point_1": "Мостри на живо на щанда",
         "point_2": "Тониране във всеки цвят",
         "point_3": "Съвет как се полага",
-        "button_label": "Вижте 78-те цвята Motivo"
+        "button_label": "Вижте 124-те цвята Motivo"
       },
       "blocks": {
         "finish-1": {
           "type": "finish",
           "settings": {
-            "name": "Motivo M36",
+            "name": "Motivo Gold GG-001",
             "texture": "gold",
-            "motivo": 36
+            "code": "GG-001"
           }
         },
         "finish-2": {
           "type": "finish",
           "settings": {
-            "name": "Motivo M20",
+            "name": "Motivo Silver SS-012",
             "texture": "silver",
-            "motivo": 20
+            "code": "SS-012"
           }
         },
         "finish-3": {
           "type": "finish",
           "settings": {
-            "name": "Motivo M50",
+            "name": "Motivo Titanium TT-007",
             "texture": "titanium",
-            "motivo": 50
+            "code": "TT-007"
           }
         },
         "finish-4": {
           "type": "finish",
           "settings": {
-            "name": "Motivo M58",
+            "name": "Motivo Silver SS-050",
             "texture": "motivo",
-            "motivo": 58
+            "code": "SS-050"
           }
         }
       },

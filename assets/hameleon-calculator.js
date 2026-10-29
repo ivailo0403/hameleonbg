@@ -26,11 +26,7 @@ window.Hameleon.tinHTML = (name, size, color) => {
 window.Hameleon.findColor = (code) => {
   const value = String(code || '').trim();
   if (!value) return null;
-  const motivo = value.match(/^m-?(\d+)$/i);
-  if (motivo && window.HameleonMotivo) {
-    const item = window.HameleonMotivo.find((m) => m[0] === parseInt(motivo[1], 10));
-    if (item) return { code: `M${item[0]}`, name: `Motivo ${item[0]}`, hex: `#${item[1]}`, catalogue: 'Motivo' };
-  }
+  if (/^[sgt]/i.test(value) && window.Hameleon.motivo) return window.Hameleon.motivo.find(value, '', '');
   if (window.HameleonColors) {
     for (const family of window.HameleonColors.families) {
       const item = family.items.find((c) => String(c[0]) === value);
@@ -170,7 +166,25 @@ if (!customElements.get('hameleon-paint-calc')) {
 
       setColor(color) {
         this.color = color || null;
+        /* A Motivo colour belongs to one base: switch the calculator to that plaster (SS → Silver, GG → Gold, TT → Titanium). */
+        if (color && color.base) {
+          const current = this.querySelector('[data-product]:checked');
+          if (!current || this.baseFor(current) !== color.base) {
+            const match = [...this.querySelectorAll('[data-product]')].find((p) => p.dataset.catValue === 'plaster' && this.baseFor(p) === color.base);
+            if (match) {
+              const cat = this.querySelector('[data-cat][value="plaster"]');
+              if (cat) cat.checked = true;
+              this.showCategory('plaster');
+              this.querySelectorAll('[data-product]').forEach((p) => (p.checked = p === match));
+            }
+          }
+        }
         this.update();
+      }
+
+      /* silver, gold or titanium for a Motivo plaster, from its name. */
+      baseFor(product) {
+        return product && product.dataset.catValue === 'plaster' && window.Hameleon.motivo ? window.Hameleon.motivo.baseOf(product.dataset.name) : '';
       }
 
       /* Which catalogue fits the chosen product: plasters use Motivo, paints use Vitex. */
@@ -183,7 +197,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         const catalogue = this.catalogueFor(product);
         if (this.hasAttribute('data-in-catalogue')) {
           event.preventDefault();
-          document.dispatchEvent(new CustomEvent('hameleon:open-catalogue', { detail: { catalogue } }));
+          document.dispatchEvent(new CustomEvent('hameleon:open-catalogue', { detail: { catalogue, base: this.baseFor(product) } }));
           return;
         }
         const base = this.dataset.catalogueUrl;
@@ -195,6 +209,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         const coats = this.querySelector('[data-coats]:checked');
         if (coats) url.searchParams.set('coats', coats.value);
         if (catalogue === 'Motivo') url.searchParams.set('tab', 'motivo');
+        if (this.baseFor(product)) url.searchParams.set('base', this.baseFor(product));
         window.location.href = url.toString();
       }
 
@@ -232,7 +247,9 @@ if (!customElements.get('hameleon-paint-calc')) {
         const detail = this.querySelector('[data-r-detail]');
         const tintable = product && product.dataset.tintable !== 'false';
         const catalogue = this.catalogueFor(product);
-        const color = this.color && (this.color.catalogue === catalogue || this.color.custom) ? this.color : null;
+        const base = this.baseFor(product);
+        const color =
+          this.color && (this.color.custom || (this.color.catalogue === catalogue && (!base || !this.color.base || this.color.base === base))) ? this.color : null;
 
         this.renderColor(product, tintable, color, catalogue);
         this.querySelector('[data-r-tin]').innerHTML = window.Hameleon.tinHTML(
@@ -310,7 +327,8 @@ if (!customElements.get('hameleon-paint-calc')) {
           link.textContent = 'Смени';
         } else {
           chip.style.background = '';
-          name.textContent = catalogue === 'Motivo' ? 'Не е избран (Motivo)' : 'Не е избран';
+          const base = this.baseFor(product) && window.Hameleon.motivo.base(this.baseFor(product));
+          name.textContent = catalogue === 'Motivo' ? (base ? `Не е избран (кодове ${base.prefix}-…)` : 'Не е избран (Motivo)') : 'Не е избран';
           link.textContent = 'Изберете';
         }
       }

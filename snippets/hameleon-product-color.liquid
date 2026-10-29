@@ -22,6 +22,24 @@
   assign catalogue_url = settings.hm_catalogue_page | default: '/pages/katalog-tsvetove'
 
   comment
+    Motivo bases each have their own colours: Silver SS-…, Gold GG-…, Titanium TT-….
+  endcomment
+  assign base = ''
+  assign base_prefix = ''
+  if catalogue == 'motivo'
+    if title_down contains 'silver' or title_down contains 'сребр'
+      assign base = 'silver'
+      assign base_prefix = 'SS'
+    elsif title_down contains 'gold' or title_down contains 'злат'
+      assign base = 'gold'
+      assign base_prefix = 'GG'
+    elsif title_down contains 'titan' or title_down contains 'титан'
+      assign base = 'titanium'
+      assign base_prefix = 'TT'
+    endif
+  endif
+
+  comment
     Sizes this product is sold in only white (e.g. Vito 15 л): their variant ids go to the box,
     which then sends the line as white instead of asking for a colour.
   endcomment
@@ -56,7 +74,8 @@
     data-form="{{ product_form_id }}"
     data-catalogue="{{ catalogue }}"
     data-catalogue-url="{{ catalogue_url }}"
-    data-motivo-base="{{ 'hm-motivo-01.jpg' | asset_url }}"
+    {% if base != blank %}data-base="{{ base }}"{% endif %}
+    data-motivo-base="{{ 'hm-mz-ss-001.jpg' | asset_url }}"
     {% if block.settings.required %}data-required{% endif %}
     {% if white_ids != blank %}data-white-variants="{{ white_ids }}" data-variant="{{ product.selected_or_first_available_variant.id }}"{% endif %}
     {{ block.shopify_attributes }}
@@ -71,7 +90,7 @@
         <span class="hm-pcol__label">Цвят за тониране{% if catalogue == 'motivo' %} · Motivo{% else %} · Vitex{% endif %}</span>
         <strong class="hm-pcol__name" data-name>Не е избран</strong>
       </span>
-      <a class="hm-pcol__open" href="{{ catalogue_url }}{% if catalogue == 'motivo' %}?tab=motivo{% endif %}" data-open>
+      <a class="hm-pcol__open" href="{{ catalogue_url }}{% if catalogue == 'motivo' %}?tab=motivo{% if base != blank %}&base={{ base }}{% endif %}{% endif %}" data-open>
         {%- render 'hameleon-icon', icon: 'swatch' -%}<span data-open-label>Изберете</span>
       </a>
     </div>
@@ -81,9 +100,9 @@
       <input
         id="HmPcolCode-{{ block.id }}"
         type="text"
-        inputmode="{% if catalogue == 'motivo' %}numeric{% else %}text{% endif %}"
+        inputmode="text"
         autocomplete="off"
-        placeholder="Код от мострата, напр. {% if catalogue == 'motivo' %}36{% else %}675{% endif %}"
+        placeholder="Код от мострата, напр. {% if catalogue == 'motivo' %}{{ base_prefix | default: 'SS' }}-012{% else %}675{% endif %}"
         data-code-input
       >
       <button type="submit" class="hm-pcol__apply">Приложи</button>

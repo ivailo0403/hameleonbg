@@ -4,6 +4,7 @@
   Accepts:
   - only: {String} 'vitex' or 'motivo' to show one catalogue without tabs (optional, both by default)
   - go_label: {String} the button on the room card (optional)
+  - base_prefix: {String} SS, GG or TT on a plaster product page, for the search hint (optional)
 {%- endcomment -%}
 <div class="hm-cat__studio">
   <div class="hm-cat__stage">
@@ -30,15 +31,16 @@
     {%- if only == blank -%}
       <div class="hm-cat__tabs" role="tablist">
         <button type="button" class="hm-cat__tab" role="tab" aria-selected="true" data-tab="vitex">Бои Vitex<small>1320 цвята</small></button>
-        <button type="button" class="hm-cat__tab" role="tab" aria-selected="false" data-tab="motivo">Мазилки Motivo<small>78 цвята</small></button>
+        <button type="button" class="hm-cat__tab" role="tab" aria-selected="false" data-tab="motivo">Мазилки Motivo<small>124 цвята</small></button>
       </div>
     {%- endif -%}
     <div class="hm-cat__tools">
       <label class="hm-cat__search">
         {%- render 'hameleon-icon', icon: 'search' -%}
-        <input type="search" inputmode="search" placeholder="{% if only == 'motivo' %}Код, напр. 36{% else %}Код или име, напр. 675{% endif %}" aria-label="Търсене по код или име" data-search>
+        <input type="search" inputmode="search" placeholder="{% if only == 'motivo' %}Код, напр. {{ base_prefix | default: 'SS' }}-012{% else %}Код или име, напр. 675{% endif %}" aria-label="Търсене по код или име" data-search>
       </label>
       <ul class="hm-cat__families" data-families aria-label="Цветови групи"></ul>
+      <ul class="hm-cat__families" data-bases aria-label="База на мазилката" hidden></ul>
     </div>
     <p class="hm-cat__count" data-count></p>
     <div class="hm-cat__grid" data-grid></div>

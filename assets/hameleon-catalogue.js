@@ -21,6 +21,10 @@ if (!customElements.get('hameleon-catalogue')) {
       connectedCallback() {
         this.families = (window.HameleonColors && window.HameleonColors.families) || [];
         this.motivo = window.HameleonMotivo || [];
+        this.bases = window.HameleonMotivoBases || [];
+        /* A plaster product page shows only its own base (Silver, Gold or Titanium). */
+        this.lockedBase = this.dataset.base || '';
+        this.base = this.lockedBase || 'all';
         this.tab = 'vitex';
         this.family = 'all';
         this.query = '';
@@ -58,7 +62,9 @@ if (!customElements.get('hameleon-catalogue')) {
           this.querySelector('#kalkulator').scrollIntoView({ behavior: 'smooth' });
         });
         document.addEventListener('hameleon:open-catalogue', (event) => {
-          if (!this.dataset.only) this.setTab(event.detail && event.detail.catalogue === 'Motivo' ? 'motivo' : 'vitex');
+          const detail = event.detail || {};
+          if (detail.base && !this.lockedBase) this.setBase(detail.base);
+          if (!this.dataset.only) this.setTab(detail.catalogue === 'Motivo' ? 'motivo' : 'vitex');
           this.querySelector('#katalog').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         document.addEventListener('hameleon:cart-updated', () => this.loadOrder());
@@ -71,12 +77,14 @@ if (!customElements.get('hameleon-catalogue')) {
 
         const params = new URLSearchParams(window.location.search);
         if (params.get('tab') === 'motivo') this.tab = 'motivo';
+        if (params.get('base') && !this.lockedBase && window.Hameleon.motivo.base(params.get('base'))) this.base = params.get('base');
         /* The paint product page shows only the catalogue that fits the product. */
         if (this.dataset.only) this.tab = this.dataset.only;
         this.renderFamilies();
+        this.renderBases();
         this.setTab(this.tab);
         /* On the product page nothing is chosen until the visitor picks, so the order never gets a colour they did not choose. */
-        const fallback = this.hasAttribute('data-no-default') ? null : this.colorFromCode(this.tab === 'motivo' ? 'M1' : '675');
+        const fallback = this.hasAttribute('data-no-default') ? null : this.colorFromCode(this.tab === 'motivo' ? 'SS-001' : '675');
         const first = this.colorFromCode(params.get('color')) || fallback;
         /* Wait a tick so the calculator (defined in another deferred script) hears the first colour. */
         setTimeout(() => this.select(first, false), 0);
@@ -87,17 +95,14 @@ if (!customElements.get('hameleon-catalogue')) {
         return String(text).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
       }
 
-      motivoImage(n) {
-        return String(this.dataset.motivoBase || '').replace('hm-motivo-01', `hm-motivo-${String(n).padStart(2, '0')}`);
-      }
-
       colorFromCode(code) {
         const value = String(code || '').trim();
         if (!value) return null;
-        const m = value.match(/^m-?(\d+)$/i);
-        if (m) {
-          const item = this.motivo.find((x) => x[0] === parseInt(m[1], 10));
-          return item ? { code: `M${item[0]}`, name: `Motivo ${item[0]}`, hex: `#${item[1]}`, catalogue: 'Motivo', image: this.motivoImage(item[0]) } : null;
+        /* Motivo codes carry their base letter (SS-012); a bare number counts only on a plaster page or tab. */
+        if (/^[sgt]/i.test(value) || this.tab === 'motivo') {
+          const plaster = window.Hameleon.motivo.find(value, this.base === 'all' ? '' : this.base, this.dataset.motivoBase);
+          if (plaster && (!this.lockedBase || plaster.base === this.lockedBase)) return plaster;
+          if (/^[sgt]/i.test(value)) return null;
         }
         for (const family of this.families) {
           const item = family.items.find((c) => String(c[0]) === value);
@@ -110,7 +115,33 @@ if (!customElements.get('hameleon-catalogue')) {
         this.tab = tab;
         this.querySelectorAll('[data-tab]').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
         this.querySelector('[data-families]').hidden = tab !== 'vitex';
+        if (!this.dataset.only) this.querySelector('[data-search]').placeholder = tab === 'motivo' ? 'Код, напр. SS-012 или G5' : 'Код или име, напр. 675';
+        const bases = this.querySelector('[data-bases]');
+        if (bases) bases.hidden = tab !== 'motivo' || Boolean(this.lockedBase);
         this.render();
+      }
+
+      setBase(key) {
+        this.base = key;
+        this.querySelectorAll('[data-base-btn]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.baseBtn === key)));
+        this.render();
+      }
+
+      renderBases() {
+        const list = this.querySelector('[data-bases]');
+        if (!list) return;
+        const count = (key) => this.motivo.filter((m) => key === 'all' || m[0].startsWith(window.Hameleon.motivo.base(key).prefix)).length;
+        const sample = (key) => {
+          const first = this.motivo.find((m) => m[0].startsWith(window.Hameleon.motivo.base(key).prefix));
+          return first ? `#${first[1]}` : '#ccc';
+        };
+        const button = (key, name, dot) =>
+          `<li><button type="button" class="hm-cat__family" data-base-btn="${key}" aria-pressed="${key === this.base}">` +
+          `<i style="background:${dot}"></i>${name} <small>${count(key)}</small></button></li>`;
+        list.innerHTML =
+          button('all', 'Всички', 'conic-gradient(#C9CDD0, #C9A24A, #50575D, #C9CDD0)') +
+          this.bases.map((b) => button(b.key, b.name, sample(b.key))).join('');
+        list.querySelectorAll('[data-base-btn]').forEach((b) => b.addEventListener('click', () => this.setBase(b.dataset.baseBtn)));
       }
 
       setScene(scene) {
@@ -141,9 +172,18 @@ if (!customElements.get('hameleon-catalogue')) {
         const q = this.query;
         let items;
         if (this.tab === 'motivo') {
+          const M = window.Hameleon.motivo;
+          const typed = q ? M.normalize(q, this.base === 'all' ? '' : this.base) : '';
+          /* A typed base letter ("t7") searches that base, unless the page is locked to one. */
+          let prefix = this.base === 'all' ? '' : M.base(this.base).prefix;
+          if (typed && /^[sgt]/i.test(q) && !this.lockedBase) prefix = typed.slice(0, 2);
           items = this.motivo
-            .filter((m) => !q || String(m[0]).startsWith(q.replace(/^m-?/, '')) || `motivo ${m[0]}`.includes(q))
-            .map((m) => ({ code: `M${m[0]}`, label: `M${m[0]}`, name: `Motivo ${m[0]}`, style: `background-image:url('${this.motivoImage(m[0])}');background-color:#${m[1]}` }));
+            .filter((m) => !prefix || m[0].startsWith(prefix))
+            .filter((m) => !q || m[0] === typed || m[0].toLowerCase().includes(q) || (/^\d+$/.test(q) && String(parseInt(m[0].slice(3), 10)).startsWith(q)))
+            .map((m) => {
+              const color = M.find(m[0], '', this.dataset.motivoBase);
+              return { code: m[0], label: m[0], name: color.name, style: `background-image:url('${color.image}');background-color:#${m[1]}` };
+            });
         } else {
           const pool = this.family === 'all' || q ? this.families : this.families.filter((f) => f.key === this.family);
           items = pool
