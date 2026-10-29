@@ -241,43 +241,6 @@
         "stat-4"
       ]
     },
-    "tools": {
-      "type": "hameleon-tools",
-      "settings": {
-        "eyebrow": "Електроинструменти",
-        "heading": "Машини, които издържат",
-        "text": "Бормашини, винтоверти, ъглошлайфи и перфоратори от DeWALT, TOTAL и RAIDER. С куриер до 3 работни дни.",
-        "products_to_show": 4,
-        "brands_label": "Марки:",
-        "button_label": "Всички електроинструменти",
-        "collection": "elektroinstrumenti"
-      },
-      "blocks": {
-        "brand-9": {
-          "type": "brand",
-          "settings": {
-            "name": "TOTAL"
-          }
-        },
-        "brand-10": {
-          "type": "brand",
-          "settings": {
-            "name": "RAIDER"
-          }
-        },
-        "brand-11": {
-          "type": "brand",
-          "settings": {
-            "name": "DeWALT"
-          }
-        }
-      },
-      "block_order": [
-        "brand-9",
-        "brand-10",
-        "brand-11"
-      ]
-    },
     "plasters": {
       "type": "hameleon-plasters",
       "settings": {
@@ -553,13 +516,60 @@
         "cat-11",
         "cat-12"
       ]
+    },
+    "showcase": {
+      "type": "hameleon-showcase",
+      "blocks": {
+        "tab_1": {
+          "type": "tab",
+          "settings": {
+            "source": "collection",
+            "label": "Електроинструменти",
+            "icon": "power",
+            "collection": "elektroinstrumenti"
+          }
+        },
+        "tab_2": {
+          "type": "tab",
+          "settings": {
+            "source": "collection",
+            "label": "Ръчни инструменти",
+            "icon": "hand",
+            "collection": "ruchni-instrumenti"
+          }
+        },
+        "tab_3": {
+          "type": "tab",
+          "settings": {
+            "source": "collection",
+            "label": "Градина",
+            "icon": "garden",
+            "collection": "gradina"
+          }
+        },
+        "tab_4": {
+          "type": "tab",
+          "settings": {
+            "source": "newest",
+            "label": "Нови",
+            "icon": "plus"
+          }
+        }
+      },
+      "block_order": [
+        "tab_1",
+        "tab_2",
+        "tab_3",
+        "tab_4"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "hero",
     "promo_slider",
     "all_categories",
-    "tools",
+    "showcase",
     "how_it_works",
     "calculator",
     "sample_offer",
