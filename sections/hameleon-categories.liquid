@@ -1,6 +1,7 @@
 {%- comment -%}
-  Хамелеон: category bento. The first tile is large (paint, with a colour fan); the others are
-  icon tiles that lift on hover. Each "category" block is one tile.
+  Хамелеон: category bento. Tiles marked "large" span two columns and two rows (paint and power
+  tools by default, so tools weigh as much as paint). A tile with a photo shows it behind a dark
+  gradient; without one it keeps the icon look (and the colour fan on a large paint tile).
 {%- endcomment -%}
 {%- style -%}
   .hm-bento {
@@ -85,15 +86,9 @@
     transform: translateX(4px);
   }
 
-  /* Featured tile */
-  .hm-bento > li:first-child {
+  /* Large tiles */
+  .hm-bento > li.hm-bento__big {
     grid-column: 1 / -1;
-  }
-
-  @media screen and (max-width: 749px) {
-    .hm-bento > li:last-child:nth-child(even) {
-      grid-column: 1 / -1;
-    }
   }
 
   .hm-tile--feature {
@@ -127,6 +122,85 @@
   .hm-tile--feature .hm-tile__icon {
     background: rgba(255, 255, 255, 0.2);
     color: #ffffff;
+  }
+
+  /* Photo tiles: the photo fills the tile, a dark gradient keeps the text readable. */
+  .hm-tile--photo {
+    justify-content: flex-end;
+    min-height: 19rem;
+    border: 0;
+    background: #141618;
+    color: #ffffff;
+    isolation: isolate;
+  }
+
+  .hm-tile__photo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hm-tile__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--hm-ease);
+  }
+
+  .hm-tile--photo:hover .hm-tile__photo img {
+    transform: scale(1.06);
+  }
+
+  .hm-tile__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(10, 12, 13, 0.9) 0%, rgba(10, 12, 13, 0.55) 45%, rgba(10, 12, 13, 0.08) 100%);
+  }
+
+  .hm-tile--photo .hm-tile__icon {
+    position: absolute;
+    top: 1.6rem;
+    left: 1.6rem;
+    width: 4.4rem;
+    height: 4.4rem;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    backdrop-filter: blur(6px);
+  }
+
+  .hm-tile--photo .hm-tile__icon svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .hm-tile--photo .hm-tile__title,
+  .hm-tile--photo .hm-tile__text {
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  }
+
+  .hm-tile--photo .hm-tile__text {
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  .hm-tile--photo .hm-tile__go {
+    margin-top: 0.4rem;
+    color: #8ee0ab;
+  }
+
+  .hm-tile--photo.hm-tile--feature .hm-tile__go {
+    color: var(--hm-text-strong);
+  }
+
+  .hm-tile--photo.hm-tile--feature .hm-tile__text {
+    max-width: 44rem;
+  }
+
+  .hm-tile--photo.hm-tile--feature .hm-tile__icon {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: auto;
   }
 
   .hm-fan {
@@ -178,7 +252,7 @@
 
   @media screen and (min-width: 750px) {
     .hm-bento {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1.6rem;
     }
 
@@ -190,10 +264,11 @@
 
   @media screen and (min-width: 990px) {
     .hm-bento {
-      grid-auto-rows: minmax(20rem, auto);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: minmax(21rem, auto);
     }
 
-    .hm-bento > li:first-child {
+    .hm-bento > li.hm-bento__big {
       grid-column: span 2;
       grid-row: span 2;
     }
@@ -217,6 +292,14 @@
       margin-left: -3.6rem;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm-tile__photo img,
+    .hm-tile--photo:hover .hm-tile__photo img {
+      transition: none;
+      transform: none;
+    }
+  }
 {%- endstyle -%}
 
 <section class="hm-section hm-space hm-cats">
@@ -234,12 +317,28 @@
     <nav aria-label="{{ section.settings.heading | escape }}">
       <ul class="hm-bento">
         {%- for block in section.blocks -%}
-          <li data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          {%- liquid
+            assign big = block.settings.large
+            assign photo = block.settings.image
+            assign img_pos = ''
+            if photo != blank and photo.presentation.focal_point != blank
+              assign img_pos = 'object-position: ' | append: photo.presentation.focal_point
+            endif
+          -%}
+          <li class="{% if big %}hm-bento__big{% endif %}" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
             <a
-              class="hm-tile hm-card{% if forloop.first %} hm-tile--feature{% endif %}"
+              class="hm-tile hm-card{% if big %} hm-tile--feature{% endif %}{% if photo != blank %} hm-tile--photo{% endif %}"
               href="{% if block.settings.link != blank %}{{ block.settings.link }}{% else %}{{ routes.search_url }}?type=product&amp;q={{ block.settings.title | url_encode }}{% endif %}"
             >
-              {%- if forloop.first -%}
+              {%- if photo != blank -%}
+                <span class="hm-tile__photo" aria-hidden="true">
+                  {%- if big -%}
+                    {{ photo | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '400, 700, 1000, 1400', sizes: '(min-width: 990px) 50vw, 100vw', alt: '', style: img_pos }}
+                  {%- else -%}
+                    {{ photo | image_url: width: 800 | image_tag: loading: 'lazy', widths: '300, 500, 800', sizes: '(min-width: 990px) 25vw, 50vw', alt: '', style: img_pos }}
+                  {%- endif -%}
+                </span>
+              {%- elsif big and block.settings.icon == 'paint' -%}
                 <span class="hm-fan" aria-hidden="true">
                   {%- assign fan = 'FED426,FE9A28,F89495,D771AF,0095AB,217553' | split: ',' -%}
                   {%- for c in fan -%}
@@ -266,7 +365,7 @@
   "name": "Хамелеон: categories",
   "tag": "div",
   "class": "section",
-  "max_blocks": 7,
+  "max_blocks": 10,
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Всичко за ремонта" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "От боята до последния винт" },
@@ -292,9 +391,14 @@
             { "value": "power", "label": "Power tool" },
             { "value": "hand", "label": "Wrench" },
             { "value": "garden", "label": "Leaf" },
-            { "value": "fasteners", "label": "Screw" }
+            { "value": "fasteners", "label": "Screw" },
+            { "value": "grinder", "label": "Grinder" },
+            { "value": "kit", "label": "Case" },
+            { "value": "battery", "label": "Battery" }
           ]
-        }
+        },
+        { "type": "checkbox", "id": "large", "label": "Large tile", "default": false },
+        { "type": "image_picker", "id": "image", "label": "Photo" }
       ]
     }
   ],
@@ -302,9 +406,9 @@
     {
       "name": "Хамелеон: categories",
       "blocks": [
-        { "type": "category", "settings": { "title": "Бои и тониране", "text": "Интериор и фасада Vitex. Всеки от 1320 цвята, тониран на място.", "icon": "paint" } },
+        { "type": "category", "settings": { "title": "Бои и тониране", "text": "Интериор и фасада Vitex. Всеки от 1320 цвята, тониран на място.", "icon": "paint", "large": true } },
         { "type": "category", "settings": { "title": "Мазилки", "text": "Motivo, Gold, Silver и Titanium", "icon": "plaster" } },
-        { "type": "category", "settings": { "title": "Електро\u00adинструменти", "text": "Бормашини, винтоверти, шлайфи", "icon": "power" } },
+        { "type": "category", "settings": { "title": "Електро\u00adинструменти", "text": "Бормашини, винтоверти, шлайфи", "icon": "power", "large": true } },
         { "type": "category", "settings": { "title": "Ръчни инструменти", "text": "Ключове, клещи, измерване", "icon": "hand" } },
         { "type": "category", "settings": { "title": "Градина", "text": "Машини и ръчни инструменти", "icon": "garden" } },
         { "type": "category", "settings": { "title": "Крепежи и консумативи", "text": "Винтове, дюбели, дискове", "icon": "fasteners" } }

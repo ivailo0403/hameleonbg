@@ -94,6 +94,7 @@
         { "type": "text", "id": "pack_litres", "label": "Coverage: one pack of … litres", "default": "1", "info": "With the next field: one pack of this many litres covers that many m² in one coat." },
         { "type": "text", "id": "pack_sqm", "label": "Coverage: … covers this many m² (one coat)", "default": "11" },
         { "type": "text", "id": "sizes", "label": "Pack sizes sold, in litres, comma separated", "default": "1, 3, 9, 15", "info": "Use a dot for decimals, e.g. 0.905" },
+        { "type": "text", "id": "white_sizes", "label": "Sizes sold only in white", "info": "Never tinted, so the calculator leaves them out for a colour. E.g. 15 for Vitex Vito." },
         { "type": "product", "id": "product", "label": "Shopify product (for price and add to cart)", "info": "Name the variants by pack size, e.g. \"1 л\", \"3 л\", \"9 л\". Each size the calculator picks must have a variant." },
         { "type": "url", "id": "link", "label": "Or a link (optional)" }
       ]
@@ -105,7 +106,7 @@
       "blocks": [
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Vi", "class": "Нисък клас", "note": "Само бяло", "tintable": false, "pack_litres": "3", "pack_sqm": "19", "sizes": "3, 9, 15" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Vipol", "class": "Средно-нисък клас", "note": "Само бяло", "tintable": false, "pack_litres": "1", "pack_sqm": "9", "sizes": "3, 9, 15" } },
-        { "type": "product", "settings": { "category": "interior", "name": "Vitex Vito", "class": "Среден клас", "pack_litres": "1", "pack_sqm": "11", "sizes": "1, 3, 9, 15" } },
+        { "type": "product", "settings": { "category": "interior", "name": "Vitex Vito", "class": "Среден клас", "pack_litres": "1", "pack_sqm": "11", "sizes": "1, 3, 9, 15", "white_sizes": "15" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Aspire", "class": "Средно-висок клас", "pack_litres": "1", "pack_sqm": "12", "sizes": "1, 3, 10" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Classic", "class": "Висок клас", "pack_litres": "1", "pack_sqm": "15", "sizes": "1, 3, 10" } },
         { "type": "product", "settings": { "category": "interior", "name": "Vitex Kitchen & Bath", "class": "Антибактериална", "note": "Кухня и баня", "pack_litres": "1", "pack_sqm": "14", "sizes": "1, 3" } },

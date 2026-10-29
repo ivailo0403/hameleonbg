@@ -70,37 +70,66 @@
     color: var(--hm-text-muted);
   }
 
-  .hm-sample__steps {
-    display: grid;
-    gap: 1rem;
+  /* The whole idea in one line: deck price − paint discount = 0 €. */
+  .hm-sample__sum {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.8rem;
     margin: 0.4rem 0 0;
     padding: 0;
     list-style: none;
-    counter-reset: hm-sample;
   }
 
-  .hm-sample__steps li {
+  .hm-sample__term {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    font-size: 1.5rem;
-    line-height: 1.45;
-    color: var(--hm-text-strong);
-    counter-increment: hm-sample;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.2rem;
+    min-width: 11rem;
+    padding: 1.2rem 1.6rem;
+    border: 1px solid var(--hm-border);
+    border-radius: 1.6rem;
+    background: #ffffff;
+    box-shadow: var(--hm-shadow-sm);
   }
 
-  .hm-sample__steps li::before {
-    content: counter(hm-sample);
-    flex: 0 0 2.6rem;
-    height: 2.6rem;
+  .hm-sample__term strong {
+    font-family: var(--hm-font-display);
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-sample__term span {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-sample__term--minus strong {
+    color: var(--hm-sale, #b42318);
+  }
+
+  .hm-sample__term--total {
+    border-color: transparent;
+    background: var(--hm-gradient-deep);
+    box-shadow: var(--hm-shadow-md);
+  }
+
+  .hm-sample__term--total strong,
+  .hm-sample__term--total span {
+    color: #ffffff;
+  }
+
+  .hm-sample__op {
     display: grid;
     place-items: center;
-    border-radius: 50%;
-    background: var(--hm-primary);
-    color: #ffffff;
     font-family: var(--hm-font-display);
-    font-size: 1.3rem;
+    font-size: 2.4rem;
     font-weight: 800;
+    color: var(--hm-text-muted);
   }
 
   .hm-sample__buy {
@@ -111,22 +140,20 @@
     margin-top: 0.8rem;
   }
 
-  .hm-sample__price {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
+  @media screen and (max-width: 749px) {
+    .hm-sample__term {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 1rem 1.1rem;
+    }
 
-  .hm-sample__price strong {
-    font-family: var(--hm-font-display);
-    font-size: 3.2rem;
-    font-weight: 800;
-    color: var(--hm-text-strong);
-  }
+    .hm-sample__term strong {
+      font-size: 2rem;
+    }
 
-  .hm-sample__price small {
-    font-size: 1.3rem;
-    color: var(--hm-text-muted);
+    .hm-sample__op {
+      font-size: 1.8rem;
+    }
   }
 
   .hm-sample__note {
@@ -279,19 +306,26 @@
         {%- if section.settings.text != blank -%}
           <p class="hm-sample__text">{{ section.settings.text | escape }}</p>
         {%- endif -%}
-        <ol class="hm-sample__steps">
-          <li>Поръчайте каталога с мостри за {{ section.settings.price | escape }} €.</li>
-          <li>Вижте цветовете на живо, на Вашата стена и на дневна светлина.</li>
-          <li>Поръчайте боята над {{ section.settings.min_order | escape }} € и {{ section.settings.discount | escape }} € се приспадат от сметката{% if section.settings.code != blank %} с кода от каталога{% endif %}.</li>
-        </ol>
+        <ul class="hm-sample__sum" aria-label="{{ section.settings.price | escape }} € за каталога, минус {{ section.settings.discount | escape }} € от боята, равно на 0 €">
+          <li class="hm-sample__term">
+            <strong>{{ section.settings.price | escape }} €</strong>
+            <span>каталогът</span>
+          </li>
+          <li class="hm-sample__op" aria-hidden="true">−</li>
+          <li class="hm-sample__term hm-sample__term--minus">
+            <strong>{{ section.settings.discount | escape }} €</strong>
+            <span>от боята</span>
+          </li>
+          <li class="hm-sample__op" aria-hidden="true">=</li>
+          <li class="hm-sample__term hm-sample__term--total">
+            <strong>0 €</strong>
+            <span>за Вас</span>
+          </li>
+        </ul>
         <div class="hm-sample__buy">
           <a class="hm-btn hm-btn--primary" href="{{ deck_url }}">
             {{- section.settings.button_label | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
           </a>
-          <span class="hm-sample__price">
-            <strong>{{ section.settings.price | escape }} €</strong>
-            <small>връщаме ги с поръчката на боя</small>
-          </span>
         </div>
         {%- if section.settings.note != blank -%}
           <p class="hm-sample__note">{{ section.settings.note | escape }}</p>
@@ -321,9 +355,9 @@
   "tag": "div",
   "class": "section",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Цветът на живо" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Екранът лъже. Мострата – не." },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Всеки монитор показва цветовете различно. Поръчайте каталога с мостри Vitex, изберете цвета вкъщи и си върнете парите с поръчката на боя." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Каталог с мостри" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Вижте цвета на живо. С боята е безплатно." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Екранът не показва цвета точно. Каталогът Vitex с истински мостри – да. Връщаме цената му с поръчката на боя." },
     { "type": "text", "id": "price", "label": "Fan deck price (€)", "default": "20" },
     { "type": "text", "id": "discount", "label": "Discount on the paint order (€)", "default": "20" },
     { "type": "text", "id": "min_order", "label": "Minimum paint order (€)", "default": "60" },
@@ -331,7 +365,7 @@
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Поръчайте каталога" },
     { "type": "product", "id": "product", "label": "Fan deck product" },
     { "type": "url", "id": "link", "label": "Or a link (defaults to /products/katalog-mostri-vitex)" },
-    { "type": "text", "id": "note", "label": "Small print", "default": "Отстъпката важи веднъж за клиент, за поръчка на боя в рамките на 60 дни." },
+    { "type": "text", "id": "note", "label": "Small print", "default": "С кода от каталога, при поръчка на боя над 60 € до 60 дни. Веднъж за клиент." },
     { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 32 },
     { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 32 }
   ],

@@ -112,8 +112,8 @@
           {%- if vendors.size > 1 -%}
             <li><strong>{{ vendors.size }}</strong> марки</li>
           {%- endif -%}
-          <li>{%- render 'hameleon-icon', icon: 'clock' -%}{{ section.settings.trust_1 | escape }}</li>
-          <li>{%- render 'hameleon-icon', icon: 'truck' -%}{{ section.settings.trust_2 | escape }}</li>
+          <li>{%- render 'hameleon-icon', icon: 'truck' -%}{{ section.settings.trust_1 | escape }}</li>
+          <li>{%- render 'hameleon-icon', icon: 'shield' -%}{{ section.settings.trust_2 | escape }}</li>
         </ul>
       </div>
 
@@ -199,13 +199,13 @@
       "type": "text",
       "id": "trust_1",
       "label": "Promise 1",
-      "default": "Взимане от магазина до 30 минути"
+      "default": "С куриер до 3 работни дни"
     },
     {
       "type": "text",
       "id": "trust_2",
       "label": "Promise 2",
-      "default": "С куриер до 3 работни дни"
+      "default": "Съвет и гаранция от магазина"
     },
     {
       "type": "checkbox",
