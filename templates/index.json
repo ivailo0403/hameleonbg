@@ -1,7 +1,7 @@
 {
   "sections": {
     "hero": {
-      "type": "hameleon-color-hero",
+      "type": "hameleon-hero",
       "settings": {
         "eyebrow": "Боя онлайн · тониране във Велико Търново",
         "heading": "Изберете цвят. Поръчайте онлайн.",
