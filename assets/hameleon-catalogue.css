@@ -305,14 +305,14 @@
   color: var(--hm-text-strong);
 }
 
+/* All shade families stay visible as chips that wrap, so nothing has to be scrolled sideways. */
 .hm-cat__families {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin: 0;
-  padding: 0 0 0.2rem;
+  padding: 0;
   list-style: none;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
 .hm-cat__families[hidden] {
@@ -323,10 +323,6 @@
   grid-column: 1 / -1;
   justify-self: center;
   margin-top: 0.8rem;
-}
-
-.hm-cat__families::-webkit-scrollbar {
-  display: none;
 }
 
 .hm-cat__family {
@@ -343,6 +339,36 @@
   color: var(--hm-text-strong);
   white-space: nowrap;
   cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hm-cat__family:hover {
+  border-color: var(--hm-text-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--hm-shadow-sm);
+}
+
+@media screen and (max-width: 749px) {
+  .hm-cat__family {
+    gap: 0.4rem;
+    padding: 0.4rem 1rem 0.4rem 0.4rem;
+    font-size: 1.2rem;
+  }
+
+  .hm-cat__families .hm-cat__family i {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-cat__family {
+    transition: none;
+  }
+
+  .hm-cat__family:hover {
+    transform: none;
+  }
 }
 
 .hm-cat__family i {
