@@ -32,23 +32,31 @@
           "settings": {
             "title": "Бои и тониране",
             "icon": "paint",
-            "text": "Интериор и фасада Vitex. Всеки от 1320 цвята, тониран на място."
+            "text": "Интериор и фасада Vitex. Всеки от 1320 цвята, тониран на място.",
+            "large": true,
+            "image": "shopify://shop_images/photo-1562259949-e8e7689d7828.jpg",
+            "link": "/pages/katalog-tsvetove"
           }
         },
         "category-2": {
           "type": "category",
           "settings": {
-            "title": "Мазилки",
-            "icon": "plaster",
-            "text": "Motivo, Gold, Silver и Titanium"
+            "title": "Електро­инструменти",
+            "icon": "power",
+            "text": "Бормашини, винтоверти, ъглошлайфи и перфоратори от TOTAL, RAIDER и DeWALT.",
+            "large": true,
+            "image": "shopify://shop_images/photo-1572981779307-38b8cabb2407.jpg",
+            "link": "/collections/elektroinstrumenti"
           }
         },
         "category-3": {
           "type": "category",
           "settings": {
-            "title": "Електро­инструменти",
-            "icon": "power",
-            "text": "Бормашини, винтоверти, шлайфи"
+            "title": "Мазилки",
+            "icon": "plaster",
+            "text": "Motivo, Gold, Silver и Titanium",
+            "large": false,
+            "image": "shopify://shop_images/photo-1768839725085-829e6ac7ac26.jpg"
           }
         },
         "category-4": {
@@ -56,7 +64,10 @@
           "settings": {
             "title": "Ръчни инструменти",
             "icon": "hand",
-            "text": "Ключове, клещи, измерване"
+            "text": "Ключове, клещи, измерване",
+            "large": false,
+            "image": "shopify://shop_images/photo-1503789146722-cf137a3c0fea.jpg",
+            "link": "/collections/ruchni-instrumenti"
           }
         },
         "category-5": {
@@ -64,7 +75,10 @@
           "settings": {
             "title": "Градина",
             "icon": "garden",
-            "text": "Машини и ръчни инструменти"
+            "text": "Машини и ръчни инструменти",
+            "large": false,
+            "image": "shopify://shop_images/photo-1526381805515-3fec2d69e7cc.jpg",
+            "link": "/collections/gradina"
           }
         },
         "category-6": {
@@ -72,7 +86,10 @@
           "settings": {
             "title": "Крепежи и консумативи",
             "icon": "fasteners",
-            "text": "Винтове, дюбели, дискове"
+            "text": "Винтове, дюбели, дискове",
+            "large": false,
+            "image": "shopify://shop_images/photo-1564226591723-659ff3852b2a.jpg",
+            "link": "/collections/konsumativi"
           }
         }
       },
@@ -493,7 +510,8 @@
             "button_label": "Разгледайте",
             "style": "dark",
             "icon": "power",
-            "image": "shopify://shop_images/photo-1513467535987-fd81bc7d62f8.jpg"
+            "image": "shopify://shop_images/photo-1513467535987-fd81bc7d62f8.jpg",
+            "link": "/collections/elektroinstrumenti"
           }
         }
       },
@@ -518,7 +536,8 @@
             "button_label": "Към инструментите",
             "style": "mint",
             "icon": "hand",
-            "image": "shopify://shop_images/photo-1540103711724-ebf833bde8d1.jpg"
+            "image": "shopify://shop_images/photo-1540103711724-ebf833bde8d1.jpg",
+            "link": "/collections/ruchni-instrumenti"
           }
         },
         "banner-garden": {
@@ -531,7 +550,8 @@
             "button_label": "Към градината",
             "style": "sand",
             "icon": "garden",
-            "image": "shopify://shop_images/photo-1523301551780-cd17359a95d0.jpg"
+            "image": "shopify://shop_images/photo-1523301551780-cd17359a95d0.jpg",
+            "link": "/collections/gradina"
           }
         }
       },
@@ -541,20 +561,77 @@
       ],
       "settings": {
         "padding_top": 16,
-        "padding_bottom": 56
+        "padding_bottom": 16
       }
     },
     "sample_offer": {
       "type": "hameleon-sample-offer",
       "settings": {}
+    },
+    "promo_more": {
+      "type": "hameleon-promo",
+      "blocks": {
+        "banner-consumables": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Консумативи",
+            "title": "Дискове, свредла и битове",
+            "text": "Всичко, което се износва, на склад и на добра цена.",
+            "tags": "Дискове, Свредла, Битове",
+            "button_label": "Към консумативите",
+            "style": "dark",
+            "icon": "fasteners",
+            "link": "/collections/konsumativi",
+            "image": "shopify://shop_images/photo-1598302936625-6075fbd98dd7.jpg"
+          }
+        },
+        "banner-air": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Пневматика",
+            "title": "Компресори и пневматика",
+            "text": "Компресори, пистолети и маркучи.",
+            "tags": "Компресори, Пистолети",
+            "button_label": "Разгледайте",
+            "style": "dark",
+            "icon": "power",
+            "link": "/collections/pnevmatika",
+            "image": "shopify://shop_images/photo-1787939060968-2a385b670fa1.jpg"
+          }
+        },
+        "banner-auto": {
+          "type": "banner",
+          "settings": {
+            "eyebrow": "Автосервиз",
+            "title": "Всичко за колата",
+            "text": "Гедоре, крикове и инструменти за сервиза.",
+            "tags": "Гедоре, Крикове",
+            "button_label": "Разгледайте",
+            "style": "dark",
+            "icon": "hand",
+            "link": "/collections/avtoservis",
+            "image": "shopify://shop_images/photo-1619642751034-765dfdf7c58e.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "banner-consumables",
+        "banner-air",
+        "banner-auto"
+      ],
+      "settings": {
+        "padding_top": 0,
+        "padding_bottom": 64
+      }
     }
   },
   "order": [
     "hero",
     "categories",
-    "promo_power",
     "tools",
+    "promo_power",
     "promo_duo",
+    "promo_more",
     "how_it_works",
     "calculator",
     "sample_offer",
