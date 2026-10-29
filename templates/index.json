@@ -3,19 +3,23 @@
     "hero": {
       "type": "hameleon-hero",
       "settings": {
-        "eyebrow": "Боя онлайн · тониране във Велико Търново",
-        "heading": "Изберете цвят. Поръчайте онлайн.",
-        "heading_highlight": "Ние я тонираме.",
-        "text": "1320 цвята Vitex и 124 цвята мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика.",
-        "button_label_1": "Отворете каталога",
-        "button_label_2": "Колко боя ми трябва?",
+        "eyebrow": "Железария и бои · Велико Търново",
+        "heading": "Всичко за ремонта.",
+        "heading_highlight": "Боята тонираме за 30 минути.",
+        "text": "Инструменти, градина, ВиК и железария в 12 категории. Над 2000 цвята Vitex и 124 мазилки Motivo, тонирани на място. Поръчайте онлайн, вземете от магазина.",
+        "button_label_1": "Разгледайте категориите",
+        "button_label_2": "Изберете цвят",
         "trust_1": "Поръчка онлайн 24/7",
-        "trust_2": "Готово за 30 минути в магазина",
-        "trust_3": "Вземане от магазина",
+        "trust_2": "Боя готова за 30 минути",
+        "trust_3": "Куриер до 3 работни дни",
         "wall_colors": "Blue Bliss|#0095AB\nAquadazzle|#217553\nZambia|#FE9A28\nPurple Hollyhock|#D771AF\nHappy Face|#FED426\nCherished One|#F89495\nJob's Tears|#00627E\nGlass Bottle|#96BC5E",
-        "ready_title": "Поръчката е готова",
+        "ready_title": "",
         "ready_text": "Тонирана и чака Ви на щанда",
-        "card_link_label": "Всички 1320 цвята"
+        "card_link_label": "Всички 2016 цвята",
+        "button_link_1": "#kategorii",
+        "button_link_2": "/pages/katalog-tsvetove",
+        "tools_title": "Инструменти за ремонта",
+        "tools_text": "Електро и ръчни, на склад във В. Търново"
       }
     },
     "how_it_works": {
@@ -204,9 +208,9 @@
         "stat-1": {
           "type": "stat",
           "settings": {
-            "number": 1320,
+            "number": 2016,
             "unit": "цвята",
-            "label": "в каталога Vitex, тонирани на място"
+            "label": "в двата каталога Vitex, тонирани на място"
           }
         },
         "stat-2": {
@@ -307,14 +311,10 @@
       "type": "hameleon-cta",
       "settings": {
         "heading": "Поръчайте сега. Боята е готова след 30 минути.",
-        "text": "Боята, тонирана по Вашия код, е готова за взимане до 30 минути. Инструментите от TOTAL, RAIDER и DeWALT пристигат с куриер до 3 работни дни.",
+        "text": "Боята, тонирана по Вашия код, е готова за взимане до 30 минути. Инструментите пристигат с куриер до 3 работни дни.",
         "button_label_1": "Изберете цвят",
         "button_label_2": "Обадете се: 089 500 10 44"
       }
-    },
-    "sample_offer": {
-      "type": "hameleon-sample-offer",
-      "settings": {}
     },
     "promo_slider": {
       "type": "hameleon-slider",
@@ -330,9 +330,9 @@
           "settings": {
             "eyebrow": "Каталог с мостри",
             "title": "Мострите са безплатни с боята",
-            "text": "Вземете каталога с 1320 цвята за 20 €. Връщаме ги от първата Ви боя.",
-            "button_label": "Вижте как",
-            "link": "/pages/katalog-tsvetove",
+            "text": "Вземете каталога с мостри за 20 €. Връщаме ги от първата Ви боя.",
+            "button_label": "Поръчайте каталога",
+            "link": "/products/katalog-mostri-vitex",
             "badge": "−20 €",
             "badge_note": "от боята",
             "style": "green",
@@ -353,7 +353,7 @@
           "settings": {
             "eyebrow": "Тониране на място",
             "title": "Поръчайте онлайн. Боята е готова до 30 минути.",
-            "text": "Изберете цвят от 1320 нюанса Vitex. Ние я тонираме и я държим 7 дни в магазина.",
+            "text": "Изберете цвят от над 2000 нюанса Vitex. Ние я тонираме и я държим 7 дни в магазина.",
             "button_label": "Изберете цвят",
             "link": "/pages/katalog-tsvetove",
             "badge": "30 мин",
@@ -453,7 +453,8 @@
             "title": "Генератори",
             "icon": "battery",
             "image": "shopify://shop_images/photo-1700318092011-6e4666e94ab5.jpg",
-            "collection": "generatori"
+            "collection": "generatori",
+            "text": "Генератори за дома, обекта и вилата."
           }
         },
         "cat-8": {
@@ -489,7 +490,8 @@
             "title": "Баня и ВиК",
             "icon": "house",
             "image": "shopify://shop_images/photo-1585704032915-c3400ca199e7.jpg",
-            "collection": "banya-vik"
+            "collection": "banya-vik",
+            "text": "Смесители, тръби, фитинги и всичко за банята и водопровода."
           }
         },
         "cat-12": {
@@ -572,7 +574,6 @@
     "showcase",
     "how_it_works",
     "calculator",
-    "sample_offer",
     "plasters",
     "numbers",
     "store",

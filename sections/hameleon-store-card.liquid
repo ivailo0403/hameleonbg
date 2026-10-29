@@ -52,6 +52,13 @@
     overflow: hidden;
   }
 
+  .hm-map--real {
+    display: block;
+    width: 100%;
+    border: 0;
+    filter: saturate(0.85);
+  }
+
   .hm-map__road {
     position: absolute;
     background: #ffffff;
@@ -153,6 +160,15 @@
             | image_url: width: 1200
             | image_tag: widths: '400, 600, 800, 1200', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy'
           }}
+        {%- elsif section.settings.real_map and settings.hm_store_address != blank -%}
+          {%- comment -%} A real Google map of the store address (no API key needed), loaded when it scrolls into view. {%- endcomment -%}
+          <iframe
+            class="hm-map hm-map--real"
+            src="https://maps.google.com/maps?q={{ settings.hm_store_address | url_encode }}&z=16&hl=bg&output=embed"
+            title="Карта: {{ settings.hm_store_address | escape }}"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
         {%- else -%}
           <div class="hm-map" aria-hidden="true">
             <span class="hm-map__road hm-map__road--a"></span>
@@ -179,7 +195,9 @@
         </div>
         {%- render 'hameleon-hours' -%}
         <div class="hm-store-card__buttons">
-          <a class="hm-btn hm-btn--primary" href="{{ settings.hm_store_maps_link | default: '#' }}"{% if settings.hm_store_maps_link != blank %} target="_blank" rel="noopener"{% endif %}>Упътване</a>
+          {%- assign destination = settings.hm_store_address | url_encode -%}
+          {%- assign directions = 'https://www.google.com/maps/dir/?api=1&destination=' | append: destination -%}
+          <a class="hm-btn hm-btn--primary" href="{{ settings.hm_store_maps_link | default: directions }}" target="_blank" rel="noopener">Упътване</a>
           <a class="hm-btn hm-btn--secondary" href="{{ section.settings.page_link | default: '#' }}">
             {{- section.settings.page_link_label | escape -}}
           </a>
@@ -199,6 +217,7 @@
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Магазинът" },
     { "type": "text", "id": "heading", "label": "Heading (defaults to the store name)" },
     { "type": "image_picker", "id": "image", "label": "Store photo" },
+    { "type": "checkbox", "id": "real_map", "label": "Show a Google map when there is no photo", "default": true },
     { "type": "text", "id": "page_link_label", "label": "Store page link label", "default": "Как да ни намерите" },
     { "type": "url", "id": "page_link", "label": "Store page link" },
     { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },

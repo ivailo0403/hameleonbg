@@ -266,9 +266,147 @@
   }
 
 
+  /* The store is more than paint: a floating "tools" card on the room. */
+  .hm-toolcard {
+    position: absolute;
+    right: 0.8rem;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    max-width: 30rem;
+    padding: 1rem 1.6rem 1rem 1rem;
+    border-radius: 1.6rem;
+    background: #141618;
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow: var(--hm-shadow-lg);
+    animation: hm-float 6s ease-in-out 1.2s infinite;
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-toolcard__icons {
+    display: flex;
+    flex: none;
+  }
+
+  .hm-toolcard__icons span {
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    border: 2px solid #141618;
+    border-radius: 50%;
+    background: var(--hm-gradient, linear-gradient(135deg, #19a54a, #00aac1));
+    color: #ffffff;
+  }
+
+  .hm-toolcard__icons span + span {
+    margin-left: -1.2rem;
+    background: #2a2f33;
+  }
+
+  .hm-toolcard__icons svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .hm-toolcard strong {
+    display: block;
+    font-family: var(--hm-font-display);
+    font-size: 1.4rem;
+  }
+
+  .hm-toolcard small {
+    display: block;
+    font-size: 1.25rem;
+    color: #b9c0bd;
+  }
+
+  .hm-toolcard__go {
+    margin-left: 0.4rem;
+    transition: transform 0.25s var(--hm-ease);
+  }
+
+  .hm-toolcard:hover .hm-toolcard__go {
+    transform: translateX(4px);
+  }
+
   @media screen and (max-width: 749px) {
     .hm-ready {
       display: none;
+    }
+
+    /* Phone: a shorter hero so the promo banner shows sooner. */
+    .hm-hero {
+      padding: 2.4rem 0 3.2rem;
+    }
+
+    .hm-hero__inner {
+      gap: 2.8rem;
+    }
+
+    .hm-hero__copy {
+      gap: 1.6rem;
+    }
+
+    .hm-hero__text {
+      font-size: 1.6rem;
+    }
+
+    .hm-hero__buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      gap: 0.8rem;
+    }
+
+    .hm-hero__buttons .hm-btn {
+      min-height: 5rem;
+      padding: 0 1rem;
+      font-size: 1.4rem;
+    }
+
+    .hm-hero__buttons .hm-btn__arrow {
+      display: none;
+    }
+
+    .hm-hero__trust {
+      gap: 0.6rem 1.6rem;
+      font-size: 1.3rem;
+    }
+
+    /* Phone: the room on top, the tools card under it (not over the colour rail). */
+    .hm-hero__visual {
+      min-height: 0;
+    }
+
+    .hm-wall {
+      inset: 0 0 auto 0;
+      height: 27rem;
+    }
+
+    .hm-rail {
+      top: 19.6rem;
+      bottom: auto;
+    }
+
+    .hm-toolcard {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      max-width: none;
+      margin-top: 28.2rem;
+      padding: 0.8rem 1.2rem 0.8rem 0.8rem;
+    }
+
+    .hm-toolcard__icons span {
+      width: 3.4rem;
+      height: 3.4rem;
+    }
+
+    .hm-toolcard__go {
+      margin-left: auto;
     }
 
     .hm-wall__label .hm-wall__code {
@@ -341,6 +479,34 @@
     .hm-hero__inner {
       grid-template-columns: 1fr 1.05fr;
       gap: 5.6rem;
+    }
+
+    /* Desktop: both buttons on one line, the three promises on one row. */
+    .hm-hero__buttons {
+      flex-wrap: nowrap;
+    }
+
+    .hm-hero__buttons .hm-btn {
+      flex: none;
+      padding: 0 2.4rem;
+      white-space: nowrap;
+    }
+
+    .hm-hero__trust {
+      flex-wrap: nowrap;
+      gap: 1.8rem;
+      font-size: 1.35rem;
+      white-space: nowrap;
+    }
+
+    .hm-toolcard {
+      right: 8.8rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm-toolcard {
+      animation: none;
     }
   }
 {%- endstyle -%}
@@ -421,6 +587,19 @@
             <span class="hm-ready__icon">{%- render 'hameleon-icon', icon: 'check' -%}</span>
             <span><strong>{{ section.settings.ready_title | escape }}</strong><span>{{ section.settings.ready_text | escape }}</span></span>
           </div>
+        {%- endif -%}
+        {%- if section.settings.tools_title != blank -%}
+          <a class="hm-toolcard" href="{{ section.settings.tools_link | default: '/collections/elektroinstrumenti' }}">
+            <span class="hm-toolcard__icons" aria-hidden="true">
+              <span>{%- render 'hameleon-icon', icon: 'power' -%}</span>
+              <span>{%- render 'hameleon-icon', icon: 'hand' -%}</span>
+            </span>
+            <span>
+              <strong>{{ section.settings.tools_title | escape }}</strong>
+              {%- if section.settings.tools_text != blank -%}<small>{{ section.settings.tools_text | escape }}</small>{%- endif -%}
+            </span>
+            <span class="hm-toolcard__go" aria-hidden="true">→</span>
+          </a>
         {%- endif -%}
       </div>
     </div>
@@ -527,7 +706,11 @@
       "type": "url",
       "id": "card_link",
       "label": "\"All colours\" button link (defaults to the paint catalogue)"
-    }
+    },
+    { "type": "header", "content": "Tools card on the room" },
+    { "type": "text", "id": "tools_title", "label": "Tools card title", "default": "Инструменти за ремонта" },
+    { "type": "text", "id": "tools_text", "label": "Tools card text", "default": "Електро и ръчни, на склад" },
+    { "type": "url", "id": "tools_link", "label": "Tools card link" }
   ],
   "presets": [
     {

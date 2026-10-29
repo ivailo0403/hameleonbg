@@ -191,9 +191,34 @@
     color: #ffffff;
   }
 
-  .hm-acat__more {
+  .hm-acat__text {
+    display: none;
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-acat__foot {
     margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+    padding-top: 0.4rem;
+  }
+
+  .hm-acat__count {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-acat__more {
     display: inline-flex;
+    color: var(--hm-primary) !important;
+    font-weight: 800 !important;
     align-items: center;
     gap: 0.5rem;
     font-size: 1.3rem;
@@ -208,6 +233,14 @@
 
   .hm-acat__rest {
     display: none;
+  }
+
+  /* Phone: no chips, so the footer says "Разгледайте →" and the count goes under the title. */
+  @media screen and (max-width: 749px) {
+    .hm-acat__foot {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+    }
   }
 
   @media screen and (max-width: 749px) {
@@ -255,7 +288,16 @@
       display: flex;
     }
 
-    .hm-acat__n {
+    .hm-acat__text {
+      display: block;
+    }
+
+    .hm-acat__foot {
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--hm-border);
+    }
+
+    .hm-acat__count:has(.hm-acat__rest) .hm-acat__n {
       display: none;
     }
 
@@ -345,15 +387,18 @@
                   {%- endif -%}
                 </ul>
               {%- endif -%}
-              <span class="hm-acat__more">
-                {%- if rest > 0 -%}
-                  <span class="hm-acat__n">{{ subs_count }} подкатегории</span><span class="hm-acat__rest">+ още {{ rest }}</span>
-                {%- elsif subs_count > 0 -%}
-                  {{ subs_count }} подкатегории
-                {%- else -%}
-                  {{ section.settings.go_label | escape }}
-                {%- endif %}
-                <span aria-hidden="true">→</span>
+              {%- if shown == 0 and block.settings.text != blank -%}
+                <p class="hm-acat__text">{{ block.settings.text | escape }}</p>
+              {%- endif -%}
+              {%- comment -%} Same footer on every card: "Разгледайте →" and, on the right, how many subcategories. {%- endcomment -%}
+              <span class="hm-acat__foot">
+                <span class="hm-acat__more">{{ section.settings.go_label | escape }} <span aria-hidden="true">→</span></span>
+                {%- if subs_count > 0 -%}
+                  <span class="hm-acat__count">
+                    <span class="hm-acat__n">{{ subs_count }} подкатегории</span>
+                    {%- if rest > 0 -%}<span class="hm-acat__rest">+ още {{ rest }}</span>{%- endif -%}
+                  </span>
+                {%- endif -%}
               </span>
             </div>
           </article>
@@ -410,6 +455,7 @@
             { "value": "shield", "label": "Shield" }
           ]
         },
+        { "type": "text", "id": "text", "label": "Short text (shown when there are no subcategories)" },
         { "type": "textarea", "id": "subs", "label": "Subcategories (optional, comma separated)", "info": "Leave empty to use the menu. Each name links to a search." }
       ]
     }

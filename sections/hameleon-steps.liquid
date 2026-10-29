@@ -189,11 +189,51 @@
       padding: 2.4rem;
     }
   }
+  /* Phone: compact rows (number, title, text) instead of three tall illustrated cards. */
+  @media screen and (max-width: 749px) {
+    .hm-steps__grid {
+      gap: 1rem;
+    }
+
+    .hm-step {
+      display: grid;
+      grid-template-columns: 4.4rem 1fr;
+      column-gap: 1.4rem;
+      row-gap: 0.4rem;
+      padding: 1.6rem;
+    }
+
+    .hm-step__art {
+      display: none;
+    }
+
+    .hm-step__num {
+      grid-row: span 2;
+      display: grid;
+      place-items: center;
+      width: 4.4rem;
+      height: 4.4rem;
+      border-radius: 50%;
+      background: var(--hm-gradient);
+      color: #ffffff;
+      letter-spacing: 0;
+      font-size: 1.5rem;
+    }
+
+    .hm-step__title {
+      font-size: 1.7rem;
+    }
+
+    .hm-step__text {
+      font-size: 1.45rem;
+      line-height: 1.5;
+    }
+  }
 {%- endstyle -%}
 
-<section class="hm-section hm-space hm-steps" style="padding-top: 0;">
+<section class="hm-section hm-space hm-steps">
   <div class="page-width">
-    <div class="hm-section-head hm-section-head--center">
+    <div class="hm-section-head">
       {%- if section.settings.eyebrow != blank -%}
         <p class="hm-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
       {%- endif -%}
