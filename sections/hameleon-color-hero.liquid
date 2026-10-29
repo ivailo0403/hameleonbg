@@ -1,0 +1,537 @@
+{%- comment -%}
+  Хамелеон: home hero.
+  Left: badge, big headline, text, buttons and a trust row.
+  Right: a room whose wall cycles through the "wall colours" until the visitor picks one from the
+  colour rail on its right (the "+" leads to the full catalogue). Logic: assets/hameleon-hero.js.
+{%- endcomment -%}
+{%- style -%}
+  .hm-hero {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 0 4.8rem;
+    background:
+      radial-gradient(60rem 40rem at 90% 10%, rgba(0, 170, 193, 0.12), transparent 60%),
+      radial-gradient(50rem 40rem at 0% 100%, rgba(25, 165, 74, 0.12), transparent 60%),
+      #ffffff;
+  }
+
+  .hm-hero__inner {
+    display: grid;
+    gap: 4.8rem;
+    align-items: center;
+  }
+
+  .hm-hero__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .hm-hero__title {
+    margin: 0;
+    font-family: var(--hm-font-display);
+    font-size: clamp(3.4rem, 4.8vw, 5.6rem);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-hero__text {
+    margin: 0;
+    max-width: 52rem;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: var(--hm-text-muted);
+  }
+
+  .hm-hero__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+  }
+
+  .hm-hero__buttons .hm-btn {
+    min-height: 5.6rem;
+    padding: 0 2.8rem;
+    font-size: 1.6rem;
+  }
+
+  .hm-hero__trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.4rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-hero__trust li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .hm-hero__trust svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--hm-brand-green);
+  }
+
+  /* Visual */
+  .hm-hero__visual {
+    position: relative;
+    min-height: 36rem;
+  }
+
+  .hm-wall {
+    position: absolute;
+    inset: 0 0 3.2rem 0;
+    border-radius: 2.4rem;
+    box-shadow: var(--hm-shadow-lg);
+    overflow: hidden;
+    background: var(--wall, #e8e2d6);
+  }
+
+  .hm-wall .hm-room {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hm-wall__label {
+    position: absolute;
+    top: 1.6rem;
+    left: 1.6rem;
+    right: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: fit-content;
+    max-width: calc(100% - 3.2rem);
+    padding: 0.6rem 0.6rem 0.6rem 0.6rem;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--hm-shadow-md);
+    font-family: var(--hm-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-wall__chip {
+    flex: 0 0 3.2rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    background: var(--wall, #0095ab);
+    transition: background-color 0.7s var(--hm-ease);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+
+  .hm-wall__name {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .hm-wall__code {
+    color: var(--hm-text-muted);
+    font-weight: 600;
+  }
+
+  .hm-wall__order {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--hm-radius-pill);
+    background: var(--hm-primary);
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .hm-wall__order:hover {
+    background: var(--hm-primary-hover);
+  }
+
+
+  /* Colour rail on the right of the room: a few colours to try; the full range is in the catalogue. */
+  .hm-rail {
+    position: absolute;
+    left: 50%;
+    bottom: 5.6rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--hm-shadow-lg);
+    transform: translateX(-50%);
+  }
+
+  .hm-rail__label {
+    display: none;
+  }
+
+  .hm-rail__list {
+    display: flex;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hm-rail__swatch {
+    display: block;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+
+  .hm-rail__swatch:hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 2px #ffffff, 0 0 0 4px rgba(26, 28, 30, 0.25);
+  }
+
+  .hm-rail__swatch[aria-pressed='true'] {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--hm-text-strong);
+  }
+
+  .hm-rail__swatch:focus-visible {
+    outline: 2px solid var(--hm-primary);
+    outline-offset: 3px;
+  }
+
+  .hm-rail__more {
+    display: none;
+  }
+
+  .hm-ready {
+    position: absolute;
+    left: -0.8rem;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    max-width: 26rem;
+    padding: 1.2rem 1.6rem;
+    border-radius: 1.6rem;
+    background: #ffffff;
+    box-shadow: var(--hm-shadow-lg);
+    animation: hm-float 5s ease-in-out infinite;
+  }
+
+  .hm-ready__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--hm-in-stock-bg);
+    color: var(--hm-in-stock);
+  }
+
+  .hm-ready__icon svg {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .hm-ready strong {
+    display: block;
+    font-family: var(--hm-font-display);
+    font-size: 1.4rem;
+    color: var(--hm-text-strong);
+  }
+
+  .hm-ready span {
+    font-size: 1.3rem;
+    color: var(--hm-text-muted);
+  }
+
+
+  @media screen and (max-width: 749px) {
+    .hm-ready {
+      display: none;
+    }
+
+    .hm-wall__label .hm-wall__code {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .hm-hero {
+      padding: 7.2rem 0 6.4rem;
+    }
+
+    .hm-hero__visual {
+      min-height: 50rem;
+    }
+
+    .hm-wall {
+      inset: 0 7.2rem 3.2rem 0;
+    }
+
+    .hm-rail {
+      left: auto;
+      right: 0;
+      top: 50%;
+      bottom: auto;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.2rem 0.9rem;
+      border-radius: 2.4rem;
+      transform: translateY(-58%);
+    }
+
+    .hm-rail__label {
+      display: block;
+      font-family: var(--hm-font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--hm-text-muted);
+    }
+
+    .hm-rail__list {
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .hm-rail__swatch {
+      width: 3.8rem;
+      height: 3.8rem;
+    }
+
+    .hm-rail__more {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3.8rem;
+      height: 3.8rem;
+      border-radius: 50%;
+      background: conic-gradient(#fed426, #fe9a28, #f89495, #d771af, #0095ab, #217553, #fed426);
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-decoration: none;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .hm-hero__inner {
+      grid-template-columns: 1fr 1.05fr;
+      gap: 5.6rem;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign colors = section.settings.wall_colors | newline_to_br | split: '<br />'
+  assign catalogue_url = settings.hm_catalogue_page | default: '/pages/katalog-tsvetove'
+-%}
+<script src="{{ 'hameleon-colors.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'hameleon-hero.js' | asset_url }}" defer="defer"></script>
+
+<hameleon-hero class="hm-section hm-hero" data-catalogue-url="{{ catalogue_url }}" data-wall-colors="{{ colors | json | escape }}">
+  <div class="page-width">
+    <div class="hm-hero__inner">
+      <div class="hm-hero__copy">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="hm-pill" data-reveal><span class="hm-pill__dot" aria-hidden="true"></span>{{ section.settings.eyebrow | escape }}</span>
+        {%- endif -%}
+        <h1 class="hm-hero__title" data-reveal style="--d: 1">
+          {{- section.settings.heading | escape -}}
+          {%- if section.settings.heading_highlight != blank %} <span class="hm-gradient-text">{{ section.settings.heading_highlight | escape }}</span>{% endif -%}
+        </h1>
+        {%- if section.settings.text != blank -%}
+          <p class="hm-hero__text" data-reveal style="--d: 2">{{ section.settings.text | escape }}</p>
+        {%- endif -%}
+        <div class="hm-hero__buttons" data-reveal style="--d: 3">
+          {%- if section.settings.button_label_1 != blank -%}
+            <a class="hm-btn hm-btn--primary" href="{{ section.settings.button_link_1 | default: catalogue_url }}">
+              {{- section.settings.button_label_1 | escape }} <span class="hm-btn__arrow" aria-hidden="true">→</span>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button_label_2 != blank -%}
+            <a class="hm-btn hm-btn--secondary" href="{{ section.settings.button_link_2 | default: '#kalkulator' }}">
+              {{- section.settings.button_label_2 | escape -}}
+            </a>
+          {%- endif -%}
+        </div>
+        <ul class="hm-hero__trust" data-reveal style="--d: 4">
+          {%- for i in (1..3) -%}
+            {%- liquid
+              assign key = 'trust_' | append: i
+              assign item = section.settings[key]
+            -%}
+            {%- if item != blank -%}
+              <li>{%- render 'hameleon-icon', icon: 'check' -%}{{ item | escape }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <div class="hm-hero__visual" data-reveal="scale" style="--d: 2">
+        <div class="hm-wall" data-hm-wall>
+          {%- render 'hameleon-room', id: 'hm-hero-room' -%}
+          <div class="hm-wall__label">
+            <span class="hm-wall__chip" aria-hidden="true"></span>
+            <span class="hm-wall__name" aria-live="polite"><span data-hm-wall-name>Blue Bliss</span> <span class="hm-wall__code" data-hm-wall-code></span></span>
+            <a class="hm-wall__order" href="{{ catalogue_url }}" data-hm-wall-order>Поръчайте <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <div class="hm-rail" role="group" aria-label="Пробвайте цвят">
+          <span class="hm-rail__label" aria-hidden="true">Цвят</span>
+          <ul class="hm-rail__list">
+            {%- for c in colors limit: 8 -%}
+              {%- assign parts = c | strip | split: '|' -%}
+              {%- if parts.size == 2 -%}
+                {%- assign c_name = parts[0] | strip | escape -%}
+                {%- assign c_hex = parts[1] | strip -%}
+                <li>
+                  <button type="button" class="hm-rail__swatch" style="background: {{ c_hex }};" data-hm-rail="{{ c_hex }}" data-name="{{ c_name }}" aria-pressed="false" aria-label="{{ c_name }}" title="{{ c_name }}"></button>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          <a class="hm-rail__more" href="{{ section.settings.card_link | default: catalogue_url }}" aria-label="{{ section.settings.card_link_label | default: 'Всички цветове' | escape }}" title="{{ section.settings.card_link_label | default: 'Всички цветове' | escape }}">+</a>
+        </div>
+        {%- if section.settings.ready_title != blank -%}
+          <div class="hm-ready" aria-hidden="true">
+            <span class="hm-ready__icon">{%- render 'hameleon-icon', icon: 'check' -%}</span>
+            <span><strong>{{ section.settings.ready_title | escape }}</strong><span>{{ section.settings.ready_text | escape }}</span></span>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+  </div>
+</hameleon-hero>
+
+{% schema %}
+{
+  "name": "Хамелеон: hero",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Badge",
+      "default": "Боя онлайн · тониране във Велико Търново"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Изберете цвят. Поръчайте онлайн."
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Heading, highlighted end",
+      "default": "Ние я тонираме."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "1320 цвята Vitex и 78 мазилки Motivo. Вижте цвета на стената, изчислете колко литра Ви трябват и поръчайте с няколко клика."
+    },
+    {
+      "type": "text",
+      "id": "button_label_1",
+      "label": "Primary button label",
+      "default": "Отворете каталога"
+    },
+    {
+      "type": "url",
+      "id": "button_link_1",
+      "label": "Primary button link (defaults to the paint catalogue)"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "Secondary button label",
+      "default": "Колко боя ми трябва?"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "text",
+      "id": "trust_1",
+      "label": "Trust point 1",
+      "default": "Поръчка онлайн 24/7"
+    },
+    {
+      "type": "text",
+      "id": "trust_2",
+      "label": "Trust point 2",
+      "default": "Готово до 3 работни дни"
+    },
+    {
+      "type": "text",
+      "id": "trust_3",
+      "label": "Trust point 3",
+      "default": "Вземане от магазина"
+    },
+    {
+      "type": "textarea",
+      "id": "wall_colors",
+      "label": "Colours to try (one per line: Name|#HEX, up to 8). The wall cycles through them.",
+      "default": "Blue Bliss|#0095AB\nAquadazzle|#217553\nZambia|#FE9A28\nPurple Hollyhock|#D771AF\nHappy Face|#FED426\nCherished One|#F89495\nJob's Tears|#00627E\nGlass Bottle|#96BC5E"
+    },
+    {
+      "type": "text",
+      "id": "ready_title",
+      "label": "Floating card title",
+      "default": "Поръчката е готова"
+    },
+    {
+      "type": "text",
+      "id": "ready_text",
+      "label": "Floating card text",
+      "default": "Тонирана и чака Ви на щанда"
+    },
+    {
+      "type": "text",
+      "id": "card_link_label",
+      "label": "\"All colours\" button title",
+      "default": "Всички 1320 цвята"
+    },
+    {
+      "type": "url",
+      "id": "card_link",
+      "label": "\"All colours\" button link (defaults to the paint catalogue)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Хамелеон: hero"
+    }
+  ]
+}
+{% endschema %}
