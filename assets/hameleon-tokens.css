@@ -912,3 +912,48 @@ a.hm-card:hover,
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
+
+/* "Без тониране? Купете я бяла": any paint can go in white. */
+.hm-pcol__white {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem 0.6rem 0.6rem;
+  border: 1px solid var(--hm-border-strong);
+  border-radius: var(--hm-radius-pill);
+  background: #ffffff;
+  font: inherit;
+  font-size: 1.35rem;
+  color: var(--hm-text-muted);
+  cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.hm-pcol__white strong {
+  color: var(--hm-text-strong);
+}
+
+.hm-pcol__white:hover {
+  border-color: var(--hm-text-strong);
+  box-shadow: var(--hm-shadow-sm);
+}
+
+.hm-pcol__white-dot,
+.hm-pc__white-dot {
+  flex: none;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.hm-pcol.is-white .hm-pcol__white,
+.hm-pcol.is-plain-white .hm-pcol__white {
+  display: none;
+}
+
+.hm-pcol.is-plain-white [data-chip] {
+  box-shadow: inset 0 0 0 1px var(--hm-border-strong);
+}

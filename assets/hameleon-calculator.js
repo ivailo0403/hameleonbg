@@ -22,6 +22,10 @@ window.Hameleon.tinHTML = (name, size, color) => {
   );
 };
 
+/* Any paint can be bought white, without tinting. */
+window.Hameleon.whiteColor =
+  window.Hameleon.whiteColor || { code: 'Бяла', name: 'без тониране', hex: '#FFFFFF', catalogue: 'Без тониране', white: true };
+
 /* Finds a colour by code in Vitex Global, Vitex Colourful or Motivo (assets/hameleon-colors.js). prefer: 'colourful' for codes both Vitex collections share. */
 window.Hameleon.findColor = (code, prefer) => {
   const value = String(code || '').trim();
@@ -94,6 +98,9 @@ if (!customElements.get('hameleon-paint-calc')) {
         this.querySelector('[data-r-add]').addEventListener('click', () => this.addToCart());
         this.querySelector('[data-r-color-link]').addEventListener('click', (event) => this.pickColor(event));
         this.querySelector('[data-r-pick]').addEventListener('click', (event) => this.pickColor(event));
+        this.querySelector('[data-r-white]').addEventListener('click', () =>
+          document.dispatchEvent(new CustomEvent('hameleon:color', { detail: window.Hameleon.whiteColor }))
+        );
 
         document.addEventListener('hameleon:color', (event) => this.setColor(event.detail));
 
@@ -244,7 +251,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         const catalogue = this.catalogueFor(product);
         const base = this.baseFor(product);
         const color =
-          this.color && (this.color.custom || (this.color.catalogue === catalogue && (!base || !this.color.base || this.color.base === base))) ? this.color : null;
+          this.color && (this.color.custom || (this.color.white && catalogue === 'Vitex') || (this.color.catalogue === catalogue && (!base || !this.color.base || this.color.base === base))) ? this.color : null;
 
         this.renderColor(product, tintable, color, catalogue);
         this.querySelector('[data-r-tin]').innerHTML = window.Hameleon.tinHTML(
@@ -305,6 +312,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         const name = this.querySelector('[data-r-color-name]');
         const link = this.querySelector('[data-r-color-link]');
         box.hidden = !product;
+        this.querySelector('.hm-pc__color-label').textContent = tintable && color && color.white ? 'Цвят · без тониране' : 'Цвят';
         if (!tintable) {
           chip.style.background = '#F4F4F0';
           name.textContent = 'Бяла, без тониране';
@@ -316,6 +324,10 @@ if (!customElements.get('hameleon-paint-calc')) {
           chip.style.background = window.Hameleon.customSwatch || '#F4F4F0';
           name.textContent = `Код ${color.code} · друг каталог`;
           link.textContent = 'Смени';
+        } else if (color && color.white) {
+          chip.style.background = '#FFFFFF';
+          name.textContent = 'Бяла';
+          link.textContent = 'Тонирай';
         } else if (color) {
           chip.style.background = color.image ? `center / cover url("${color.image}")` : color.hex;
           name.textContent = `${color.code} · ${color.name || `Vitex ${color.collection}`}`;
@@ -354,6 +366,8 @@ if (!customElements.get('hameleon-paint-calc')) {
 
         add.hidden = !(canBuy && !needsColor);
         pick.hidden = !(needsColor && this.combo.length);
+        /* Paint (not plaster) can also go in white, without a colour. */
+        this.querySelector('[data-r-white]').hidden = !(pick.hidden === false && this.catalogueFor(product) === 'Vitex');
         if (product && product.dataset.url) {
           link.href = product.dataset.url;
           link.hidden = false;
@@ -373,12 +387,12 @@ if (!customElements.get('hameleon-paint-calc')) {
         const coatsInput = this.querySelector('[data-coats]:checked');
         const coats = coatsInput ? coatsInput.value : '2';
         const properties = {
-          'Цвят': tintable && color ? (color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ')) : 'Бяла (без тониране)',
-          'Каталог': tintable && color ? (color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue) : '—',
+          'Цвят': tintable && color && !color.white ? (color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ')) : 'Бяла (без тониране)',
+          'Каталог': tintable && color && !color.white ? (color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue) : '—',
           'Сметка': `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
         };
         /* Hidden (underscore) properties let the cart draw the colour swatch. */
-        if (tintable && color && color.hex) {
+        if (tintable && color && color.hex && !color.white) {
           properties._hex = color.hex;
           if (color.image) properties._image = color.image;
         }
@@ -396,7 +410,7 @@ if (!customElements.get('hameleon-paint-calc')) {
           if (!response.ok) throw new Error(data.description || data.message || 'Грешка');
           const what = this.combo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ');
           note.classList.remove('is-error');
-          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${tintable && color ? `, цвят ${color.code}` : ''}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
+          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${tintable && color ? (color.white ? ', бяла без тониране' : `, цвят ${color.code}`) : ''}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
           note.hidden = false;
           this.refreshCartBubble();
           document.dispatchEvent(new CustomEvent('hameleon:cart-updated'));
