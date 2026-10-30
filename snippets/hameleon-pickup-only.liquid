@@ -1,0 +1,146 @@
+{%- comment -%}
+  Хамелеон: "pickup in the store only" notice.
+  Pickup-only is set by hand in admin, either:
+  - for the whole product: tag "Само от магазина" (any letter case), or
+  - for one size: the variant metafield "Само от магазина" (custom.pickup_only = true), e.g. only the 25 кг size.
+  Checkout is enforced separately: put the same products/variants in a shipping profile with no delivery rates.
+  Accepts:
+  - style: {String} 'box' (product page), 'button' (subline in Add to cart), 'chip' (product card),
+    'line' (cart line), 'cart' (note under the cart lines)
+  - product: {Object} the product (box, button, chip, line)
+  - variant: {Object} the selected variant or the cart line's variant (box, button, line)
+  - items: {Array} cart.items (cart)
+{%- endcomment -%}
+{%- liquid
+  assign hm_pickup = false
+  assign hm_sizes = ''
+  if style == 'cart'
+    for item in items
+      if item.variant.metafields.custom.pickup_only.value == true
+        assign hm_pickup = true
+        break
+      endif
+      for tag in item.product.tags
+        assign hm_tag = tag | downcase | strip
+        if hm_tag == 'само от магазина'
+          assign hm_pickup = true
+          break
+        endif
+      endfor
+      if hm_pickup
+        break
+      endif
+    endfor
+  else
+    for tag in product.tags
+      assign hm_tag = tag | downcase | strip
+      if hm_tag == 'само от магазина'
+        assign hm_pickup = true
+        break
+      endif
+    endfor
+    unless hm_pickup
+      if style == 'chip'
+        assign hm_count = 0
+        for v in product.variants
+          if v.metafields.custom.pickup_only.value == true
+            assign hm_count = hm_count | plus: 1
+            if hm_sizes != ''
+              assign hm_sizes = hm_sizes | append: ', '
+            endif
+            assign hm_sizes = hm_sizes | append: v.title
+          endif
+        endfor
+        if hm_count > 0
+          assign hm_pickup = true
+          if hm_count == product.variants.size
+            assign hm_sizes = ''
+          endif
+        endif
+      elsif variant.metafields.custom.pickup_only.value == true
+        assign hm_pickup = true
+      endif
+    endunless
+  endif
+-%}
+{%- if style == 'box' -%}
+  <div data-hm-pickup-box>
+    {%- if hm_pickup -%}
+      <div class="hm-pickup" role="note">
+        <div class="hm-pickup__head">
+          <span class="hm-pickup__icon">{%- render 'hameleon-icon', icon: 'house' -%}</span>
+          <div>
+            <p class="hm-pickup__eyebrow">Само от магазина</p>
+            <p class="hm-pickup__title">Поръчайте онлайн, вземете от магазина</p>
+          </div>
+        </div>
+        <p class="hm-pickup__text">
+          Този продукт <strong>не се изпраща с куриер</strong>. Поръчайте го тук и го вземете от магазина ни във
+          Велико Търново. Ще Ви се обадим, когато е готов.
+        </p>
+        <ul class="hm-pickup__list">
+          <li>
+            {%- render 'hameleon-icon', icon: 'pin' -%}
+            <span>
+              {{- settings.hm_store_address | escape -}}
+              {%- if settings.hm_store_maps_link != blank %}
+                · <a href="{{ settings.hm_store_maps_link }}" target="_blank" rel="noopener">Карта</a>
+              {%- endif -%}
+            </span>
+          </li>
+          <li>
+            {%- render 'hameleon-icon', icon: 'clock' -%}
+            <span>
+              {{- settings.hm_hours_weekdays_label | escape }}
+              {{ settings.hm_hours_weekdays | escape -}}
+              {%- if settings.hm_hours_weekend != blank %}
+                · {{ settings.hm_hours_weekend_label | escape }} {{ settings.hm_hours_weekend | escape -}}
+              {%- endif -%}
+            </span>
+          </li>
+          <li class="is-no">
+            {%- render 'hameleon-icon', icon: 'no-truck' -%}
+            <span>Без доставка до адрес, офис или автомат</span>
+          </li>
+        </ul>
+      </div>
+    {%- endif -%}
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.hmPickupWatch || typeof subscribe !== 'function') return;
+      window.hmPickupWatch = true;
+      // Dawn swaps price and buttons on a size change, not custom blocks: copy the notice from the new HTML.
+      subscribe(PUB_SUB_EVENTS.variantChange, function (event) {
+        var html = event.data && event.data.html;
+        if (!html) return;
+        ['[data-hm-pickup-box]', '[data-hm-pickup-button]'].forEach(function (selector) {
+          var source = html.querySelector(selector);
+          document.querySelectorAll(selector).forEach(function (target) {
+            if (source) target.innerHTML = source.innerHTML;
+          });
+        });
+      });
+    });
+  </script>
+{%- elsif style == 'button' -%}
+  <small class="hm-pickup-button" data-hm-pickup-button>{% if hm_pickup %}Вземане от магазина{% endif %}</small>
+{%- elsif hm_pickup -%}
+  {%- case style -%}
+    {%- when 'chip' -%}
+      <span class="hm-pickup-chip">
+        {%- render 'hameleon-icon', icon: 'house' -%}
+        {%- if hm_sizes != '' -%}{{ hm_sizes | escape }}: само от магазина{%- else -%}Само от магазина{%- endif -%}
+      </span>
+    {%- when 'line' -%}
+      <p class="hm-pickup-line">{%- render 'hameleon-icon', icon: 'house' -%}Само вземане от магазина</p>
+    {%- when 'cart' -%}
+      <p class="hm-pickup-note">
+        {%- render 'hameleon-icon', icon: 'house' -%}
+        <span>
+          Част от продуктите в количката се вземат само от магазина във Велико Търново. При поръчката изберете
+          <strong>„Вземане от магазина“</strong>.
+        </span>
+      </p>
+  {%- endcase -%}
+{%- endif -%}

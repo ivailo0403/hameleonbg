@@ -91,6 +91,12 @@
                 {{ 'products.product.add_to_cart' | t }}
               {%- endif -%}
             </span>
+            {%- comment -%} Хамелеон: pickup-only products {%- endcomment -%}
+            {%- render 'hameleon-pickup-only',
+              style: 'button',
+              product: product,
+              variant: product.selected_or_first_available_variant
+            -%}
             {%- render 'loading-spinner' -%}
           </button>
           {%- if show_dynamic_checkout -%}
