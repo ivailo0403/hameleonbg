@@ -1,0 +1,92 @@
+{%- comment -%}
+  Хамелеон: "pickup in the store only" notice.
+  A product is pickup-only when it has the tag "Само от магазина" (any letter case).
+  Checkout is enforced separately: put those products in a shipping profile with no delivery rates.
+  Accepts:
+  - style: {String} 'box' (product page), 'button' (subline in Add to cart), 'chip' (product card),
+    'line' (cart line), 'cart' (note under the cart lines)
+  - product: {Object} the product (box, chip, line)
+  - items: {Array} cart.items (cart)
+{%- endcomment -%}
+{%- liquid
+  assign hm_pickup = false
+  if style == 'cart'
+    for item in items
+      for tag in item.product.tags
+        assign hm_tag = tag | downcase | strip
+        if hm_tag == 'само от магазина'
+          assign hm_pickup = true
+          break
+        endif
+      endfor
+      if hm_pickup
+        break
+      endif
+    endfor
+  else
+    for tag in product.tags
+      assign hm_tag = tag | downcase | strip
+      if hm_tag == 'само от магазина'
+        assign hm_pickup = true
+        break
+      endif
+    endfor
+  endif
+-%}
+{%- if hm_pickup -%}
+  {%- case style -%}
+    {%- when 'box' -%}
+      <div class="hm-pickup" role="note">
+        <div class="hm-pickup__head">
+          <span class="hm-pickup__icon">{%- render 'hameleon-icon', icon: 'house' -%}</span>
+          <div>
+            <p class="hm-pickup__eyebrow">Само от магазина</p>
+            <p class="hm-pickup__title">Поръчайте онлайн, вземете от магазина</p>
+          </div>
+        </div>
+        <p class="hm-pickup__text">
+          Този продукт <strong>не се изпраща с куриер</strong>. Поръчайте го тук и го вземете от магазина ни във
+          Велико Търново. Ще Ви се обадим, когато е готов.
+        </p>
+        <ul class="hm-pickup__list">
+          <li>
+            {%- render 'hameleon-icon', icon: 'pin' -%}
+            <span>
+              {{- settings.hm_store_address | escape -}}
+              {%- if settings.hm_store_maps_link != blank %}
+                · <a href="{{ settings.hm_store_maps_link }}" target="_blank" rel="noopener">Карта</a>
+              {%- endif -%}
+            </span>
+          </li>
+          <li>
+            {%- render 'hameleon-icon', icon: 'clock' -%}
+            <span>
+              {{- settings.hm_hours_weekdays_label | escape }}
+              {{ settings.hm_hours_weekdays | escape -}}
+              {%- if settings.hm_hours_weekend != blank %}
+                · {{ settings.hm_hours_weekend_label | escape }} {{ settings.hm_hours_weekend | escape -}}
+              {%- endif -%}
+            </span>
+          </li>
+          <li class="is-no">
+            {%- render 'hameleon-icon', icon: 'no-truck' -%}
+            <span>Без доставка до адрес, офис или автомат</span>
+          </li>
+        </ul>
+      </div>
+    {%- when 'button' -%}
+      <small class="hm-pickup-button">Вземане от магазина</small>
+    {%- when 'chip' -%}
+      <span class="hm-pickup-chip">{%- render 'hameleon-icon', icon: 'house' -%}Само от магазина</span>
+    {%- when 'line' -%}
+      <p class="hm-pickup-line">{%- render 'hameleon-icon', icon: 'house' -%}Само вземане от магазина</p>
+    {%- when 'cart' -%}
+      <p class="hm-pickup-note">
+        {%- render 'hameleon-icon', icon: 'house' -%}
+        <span>
+          Част от продуктите в количката се вземат само от магазина във Велико Търново. При поръчката изберете
+          <strong>„Вземане от магазина“</strong>.
+        </span>
+      </p>
+  {%- endcase -%}
+{%- endif -%}

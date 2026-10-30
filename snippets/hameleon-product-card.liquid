@@ -39,6 +39,7 @@
     {%- if on_sale -%}
       <span class="hm-card__badge">−{{ saved }}%</span>
     {%- endif -%}
+    {%- render 'hameleon-pickup-only', style: 'chip', product: card_product -%}
   </a>
 
   <div class="hm-card__body">

@@ -499,6 +499,7 @@
                     product_form_id: product_form_id
                   -%}
                 {%- when 'buy_buttons' -%}
+                  {%- render 'hameleon-pickup-only', style: 'box', product: product -%}
                   {%- render 'buy-buttons',
                     block: block,
                     product: product,

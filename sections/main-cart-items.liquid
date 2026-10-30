@@ -142,6 +142,7 @@
                       {%- endif -%}
 
                       {%- render 'hameleon-line-color', item: item -%}
+                      {%- render 'hameleon-pickup-only', style: 'line', product: item.product -%}
 
                       {%- if item.product.has_only_default_variant == false
                         or item.properties.size != 0
@@ -452,6 +453,7 @@
                 {%- endfor -%}
               </tbody>
             </table>
+            {%- render 'hameleon-pickup-only', style: 'cart', items: cart.items -%}
           {%- endif -%}
         </div>
       </div>
