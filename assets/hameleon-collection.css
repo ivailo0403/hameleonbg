@@ -688,6 +688,45 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* Dawn's summary has no flex centring and pins the caret at right:0, so the
+   label rode high and the caret sat on the text inside our pill. */
+.hm-grid .facets__summary {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0;
+  padding: 0 4rem 0 1.8rem;
+  line-height: 1;
+}
+
+.hm-grid .facets__summary > div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  white-space: nowrap;
+}
+
+.hm-grid .facets__summary .icon-caret,
+.hm-grid .facets__summary .svg-wrapper {
+  position: absolute;
+  right: 1.6rem;
+  top: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+}
+
+.hm-grid .facet-filters__field .select__select {
+  padding-right: 4rem;
+}
+
+.hm-grid .facet-filters__field .select .svg-wrapper {
+  right: 1.6rem;
+}
+
+.hm-grid .facets__disclosure[open] .facets__summary .icon-caret {
+  transform: translateY(-50%) rotate(180deg);
+}
+
 .hm-grid .facets__summary:hover,
 .hm-grid .mobile-facets__open:hover {
   border-color: var(--hm-text-strong);
