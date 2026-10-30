@@ -24,7 +24,7 @@
           {%- render 'cart-disclosure-indicator', product: item.product, modal_id: modal_id -%}
         </div>
         {%- render 'hameleon-line-color', item: item -%}
-        {%- render 'hameleon-pickup-only', style: 'line', product: item.product -%}
+        {%- render 'hameleon-pickup-only', style: 'line', product: item.product, variant: item.variant -%}
         <dl>
           {%- unless item.product.has_only_default_variant -%}
             {%- for option in item.options_with_values -%}

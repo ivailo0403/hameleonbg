@@ -92,9 +92,11 @@
               {%- endif -%}
             </span>
             {%- comment -%} Хамелеон: pickup-only products {%- endcomment -%}
-            {%- if product.selected_or_first_available_variant.available -%}
-              {%- render 'hameleon-pickup-only', style: 'button', product: product -%}
-            {%- endif -%}
+            {%- render 'hameleon-pickup-only',
+              style: 'button',
+              product: product,
+              variant: product.selected_or_first_available_variant
+            -%}
             {%- render 'loading-spinner' -%}
           </button>
           {%- if show_dynamic_checkout -%}
