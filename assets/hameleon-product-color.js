@@ -87,8 +87,17 @@ if (!customElements.get('hameleon-product-color')) {
           }).observe(this.querySelector('[data-card]'));
         }
 
-        const fromUrl = new URLSearchParams(window.location.search).get('color');
-        if (fromUrl) this.set(this.find(fromUrl));
+        /* ?color=0675 (from the catalogue page) arrives already picked; ?custom=1 marks another fan deck's code. */
+        const params = new URLSearchParams(window.location.search);
+        const fromUrl = String(params.get('color') || '').replace(/[<>"]/g, '').trim().slice(0, 40);
+        if (fromUrl) {
+          const color = params.get('custom') ? window.Hameleon.customColor(fromUrl) : this.find(fromUrl);
+          if (color) {
+            this.set(color);
+            /* The studio and calculator on the page pick a catalogue colour from the URL themselves; a custom code they hear from here. */
+            if (color.custom) setTimeout(() => document.dispatchEvent(new CustomEvent('hameleon:color', { detail: color })), 0);
+          }
+        }
 
         /* Sizes sold only in white (e.g. Vito 15 л): no colour box, the line goes in as white. */
         this.whiteIds = String(this.dataset.whiteVariants || '').split(',').filter(Boolean);
