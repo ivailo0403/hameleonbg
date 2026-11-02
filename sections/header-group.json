@@ -45,10 +45,20 @@
         "padding_top": 12,
         "padding_bottom": 12
       }
+    },
+    "category-bar": {
+      "type": "hameleon-category-bar",
+      "settings": {
+        "label": "Всички категории",
+        "link_1_label": "Каталог на цветовете",
+        "link_2_label": "Калкулатор за боя",
+        "show_phone": true
+      }
     }
   },
   "order": [
     "announcement-bar",
-    "header"
+    "header",
+    "category-bar"
   ]
 }

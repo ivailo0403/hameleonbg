@@ -1,0 +1,269 @@
+{%- comment -%}
+  Хамелеон: category bar under the header.
+  A "Всички категории" button opens a panel: main categories on the left,
+  the hovered category's sub-categories on the right (desktop), or a drill-down drawer (phone).
+  Data: the menu in the "Categories menu" setting (default "kategorii"), two levels:
+  main categories → sub-categories. Add a category in Content → Menus and it appears here.
+  Each main category shows its collection image when one is set, otherwise a line icon.
+{%- endcomment -%}
+{%- liquid
+  assign menu = section.settings.menu
+  if menu == blank
+    assign menu = linklists['kategorii']
+  endif
+  assign cats = menu.links
+  assign phone = settings.hm_store_phone | default: '089 500 10 44'
+  assign phone_link = settings.hm_store_phone_link | default: 'tel:+359895001044'
+  assign address = settings.hm_store_address | default: 'бул. „България“ 21, Велико Търново'
+  assign hours = settings.hm_hours_weekdays | default: '08:00 – 19:00'
+  assign catalogue_url = section.settings.link_1_url | default: '/pages/katalog-tsvetove'
+-%}
+{{ 'hameleon-category-bar.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'hameleon-category-bar.js' | asset_url }}" defer="defer"></script>
+
+<div class="hm-catbar" data-hm-catbar>
+  <div class="page-width hm-catbar__inner">
+    <button
+      type="button"
+      class="hm-catbar__toggle"
+      aria-expanded="false"
+      aria-controls="HmCatPanel-{{ section.id }}"
+      data-hm-cat-toggle
+    >
+      <span class="hm-catbar__burger" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>{{ section.settings.label | escape }}</span>
+      <span class="hm-catbar__caret" aria-hidden="true">{%- render 'hameleon-icon', icon: 'chevron' -%}</span>
+    </button>
+
+    <div class="hm-catbar__links">
+      {%- if section.settings.link_1_label != blank -%}
+        <a class="hm-catbar__chip hm-catbar__chip--brand" href="{{ catalogue_url }}">
+          <span class="hm-catbar__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="hm-catbar__long">{{ section.settings.link_1_label | escape }}</span>
+          <span class="hm-catbar__short">{{ section.settings.link_1_short | default: section.settings.link_1_label | escape }}</span>
+        </a>
+      {%- endif -%}
+      {%- if section.settings.link_2_label != blank -%}
+        <a class="hm-catbar__chip hm-catbar__chip--ghost" href="{{ section.settings.link_2_url | default: '/#kalkulator' }}">
+          {%- render 'hameleon-icon', icon: 'ruler' -%}
+          {{ section.settings.link_2_label | escape }}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.show_phone -%}
+        <a class="hm-catbar__phone" href="{{ phone_link }}">
+          {%- render 'hameleon-icon', icon: 'phone' -%}
+          {{ phone | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="hm-catpanel" id="HmCatPanel-{{ section.id }}" data-hm-cat-panel>
+    <div class="hm-catpanel__scrim" data-hm-cat-close></div>
+    <div class="page-width hm-catpanel__wrap">
+      <div class="hm-catpanel__card" role="dialog" aria-label="{{ section.settings.label | escape }}" data-hm-cat-card>
+        <div class="hm-catpanel__mhead">
+          <button type="button" class="hm-catpanel__back" data-hm-cat-back aria-label="Назад">
+            {%- render 'hameleon-icon', icon: 'arrow-left' -%}
+          </button>
+          <strong class="hm-catpanel__mtitle" data-hm-cat-mtitle data-default="{{ section.settings.label | escape }}">{{ section.settings.label | escape }}</strong>
+          <button type="button" class="hm-catpanel__close" data-hm-cat-close aria-label="Затвори">
+            {%- render 'hameleon-icon', icon: 'close' -%}
+          </button>
+        </div>
+
+        <ul class="hm-catpanel__list" role="list">
+          {%- for link in cats -%}
+            {%- liquid
+              assign target = link.object
+              assign c_image = null
+              if link.type == 'collection_link' and target != blank
+                assign c_image = target.image
+              endif
+              assign h = link.url | split: '/' | last | downcase
+              assign c_icon = 'kit'
+              if h contains 'boi' or h contains 'mazil'
+                assign c_icon = 'paint'
+              elsif h contains 'boyadzh'
+                assign c_icon = 'plaster'
+              elsif h contains 'elektroinstr'
+                assign c_icon = 'power'
+              elsif h contains 'ruchni'
+                assign c_icon = 'hand'
+              elsif h contains 'gradin'
+                assign c_icon = 'garden'
+              elsif h contains 'pnevm' or h contains 'kompres'
+                assign c_icon = 'compressor'
+              elsif h contains 'generat'
+                assign c_icon = 'bolt'
+              elsif h contains 'konsum'
+                assign c_icon = 'grinder'
+              elsif h contains 'himiya'
+                assign c_icon = 'tube'
+              elsif h contains 'krepezh'
+                assign c_icon = 'fasteners'
+              elsif h contains 'zhelez'
+                assign c_icon = 'lock'
+              elsif h contains 'banya' or h contains 'vik'
+                assign c_icon = 'tap'
+              elsif h contains 'stalbi'
+                assign c_icon = 'ladder'
+              elsif h contains 'avto'
+                assign c_icon = 'car'
+              elsif h contains 'doma'
+                assign c_icon = 'house'
+              endif
+            -%}
+            <li>
+              <a
+                class="hm-catpanel__item{% if forloop.first %} is-active{% endif %}{% if link.child_active or link.active %} is-current{% endif %}"
+                href="{{ link.url }}"
+                data-hm-cat-item="{{ forloop.index0 }}"
+                {% if link.links.size > 0 %}data-has-subs{% endif %}
+              >
+                <span class="hm-catpanel__icon">
+                  {%- if c_image != blank -%}
+                    {{ c_image | image_url: width: 96 | image_tag: loading: 'lazy', alt: '', width: 48, height: 48 }}
+                  {%- else -%}
+                    {%- render 'hameleon-icon', icon: c_icon -%}
+                  {%- endif -%}
+                </span>
+                <span class="hm-catpanel__name">{{ link.title | escape }}</span>
+                {%- if link.links.size > 0 -%}
+                  <span class="hm-catpanel__chev" aria-hidden="true">{%- render 'hameleon-icon', icon: 'chevron' -%}</span>
+                {%- endif -%}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <div class="hm-catpanel__subs">
+          {%- for link in cats -%}
+            <section class="hm-catpanel__group{% if forloop.first %} is-active{% endif %}" data-hm-cat-group="{{ forloop.index0 }}" data-title="{{ link.title | escape }}">
+              <div class="hm-catpanel__ghead">
+                <p class="hm-catpanel__eyebrow">Категория</p>
+                <h3 class="hm-catpanel__gtitle">{{ link.title | escape }}</h3>
+                <a class="hm-catpanel__all" href="{{ link.url }}">
+                  Всички продукти <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              {%- if link.links.size > 0 -%}
+                <ul class="hm-catpanel__sublist" role="list">
+                  {%- for sub in link.links -%}
+                    <li>
+                      <a class="hm-catpanel__sub{% if sub.active %} is-current{% endif %}" href="{{ sub.url }}">{{ sub.title | escape }}</a>
+                      {%- if sub.links.size > 0 -%}
+                        <ul class="hm-catpanel__third" role="list">
+                          {%- for third in sub.links -%}
+                            <li><a href="{{ third.url }}">{{ third.title | escape }}</a></li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- else -%}
+                <a class="hm-catpanel__empty" href="{{ link.url }}">
+                  <span>Разгледайте всички продукти в „{{ link.title | escape }}“</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              {%- endif -%}
+            </section>
+          {%- endfor -%}
+          {%- if section.settings.show_promo -%}
+            <div class="hm-catpanel__promo">
+              <a class="hm-catpanel__tile hm-catpanel__tile--brand" href="{{ catalogue_url }}">
+                <span class="hm-catpanel__swatches" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span class="hm-catpanel__tiletext">
+                  <strong>{{ section.settings.promo_title | escape }}</strong>
+                  <small>{{ section.settings.promo_text | escape }}</small>
+                </span>
+                <span class="hm-catpanel__tilearrow" aria-hidden="true">→</span>
+              </a>
+              <div class="hm-catpanel__tile">
+                <span class="hm-catpanel__pin" aria-hidden="true">{%- render 'hameleon-icon', icon: 'pin' -%}</span>
+                <span class="hm-catpanel__tiletext">
+                  <strong>Вземете от магазина</strong>
+                  <small>{{ address | escape }} · {{ hours | escape }}</small>
+                </span>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Хамелеон: категории",
+  "class": "hm-catbar-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Categories menu",
+      "info": "Two levels: main categories, then sub-categories. Empty = menu \"kategorii\"."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Button label",
+      "default": "Всички категории"
+    },
+    {
+      "type": "text",
+      "id": "link_1_label",
+      "label": "Highlighted link",
+      "default": "Каталог на цветовете"
+    },
+    {
+      "type": "url",
+      "id": "link_1_url",
+      "label": "Highlighted link URL"
+    },
+    {
+      "type": "text",
+      "id": "link_1_short",
+      "label": "Highlighted link, short (phone)",
+      "default": "Цветове"
+    },
+    {
+      "type": "text",
+      "id": "link_2_label",
+      "label": "Second link",
+      "default": "Калкулатор за боя"
+    },
+    {
+      "type": "url",
+      "id": "link_2_url",
+      "label": "Second link URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "Show store phone",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo",
+      "label": "Show tiles under sub-categories",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "promo_title",
+      "label": "Colour tile title",
+      "default": "Боя във всеки цвят за 30 минути"
+    },
+    {
+      "type": "text",
+      "id": "promo_text",
+      "label": "Colour tile text",
+      "default": "Над 2000 цвята Vitex и 124 мазилки Motivo"
+    }
+  ]
+}
+{% endschema %}
