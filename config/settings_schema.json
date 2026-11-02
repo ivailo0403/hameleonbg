@@ -72,6 +72,41 @@
         "id": "hm_catalogue_page",
         "label": "Paint catalogue page",
         "info": "The page that uses the \"page.paint-catalogue\" template. Empty = /pages/katalog-tsvetove"
+      },
+      {
+        "type": "header",
+        "content": "Plaster primer (calculator)"
+      },
+      {
+        "type": "text",
+        "id": "hm_primer_name",
+        "label": "Primer name",
+        "default": "Грунд по формулата на мазилката"
+      },
+      {
+        "type": "text",
+        "id": "hm_primer_litres",
+        "label": "Coverage: one pack of … litres",
+        "default": "1"
+      },
+      {
+        "type": "text",
+        "id": "hm_primer_sqm",
+        "label": "Coverage: … covers this many m²",
+        "default": "10"
+      },
+      {
+        "type": "text",
+        "id": "hm_primer_sizes",
+        "label": "Primer pack sizes, litres",
+        "default": "1, 3",
+        "info": "Comma separated, dot for decimals."
+      },
+      {
+        "type": "product",
+        "id": "hm_primer_product",
+        "label": "Primer product (for add to cart)",
+        "info": "Variants named by size, e.g. \"1 л\". Without it the primer is shown but not added to the cart."
       }
     ]
   },

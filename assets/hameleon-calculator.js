@@ -1,6 +1,7 @@
 /*
   Хамелеон: paint calculator (snippets/hameleon-paint-calc.liquid).
   litres = area × coats ÷ (m² per litre), then the mix of the product's pack sizes
+  (plaster: always 1 coat, plus 1 coat of primer tinted to the plaster's formula, from Theme settings)
   with the least paint left over (fewest packs on a tie).
   The colour comes from a "hameleon:color" event on document ({ code, name, hex, catalogue, image })
   or from ?color= in the address. "Add to cart" posts one line per pack size, each carrying the colour.
@@ -252,8 +253,10 @@ if (!customElements.get('hameleon-paint-calc')) {
       update() {
         const product = this.querySelector('[data-product]:checked');
         const area = this.num(this.areaInput.value);
+        const plaster = Boolean(product && product.dataset.catValue === 'plaster');
+        this.lockCoats(plaster);
         const coatsInput = this.querySelector('[data-coats]:checked');
-        const coats = coatsInput ? parseInt(coatsInput.value, 10) : 2;
+        const coats = plaster ? 1 : coatsInput ? parseInt(coatsInput.value, 10) : 2;
         const contents = this.querySelectorAll('[data-r-content]');
         const detail = this.querySelector('[data-r-detail]');
         const tintable = product && product.dataset.tintable !== 'false';
@@ -287,6 +290,8 @@ if (!customElements.get('hameleon-paint-calc')) {
         if (!product || area <= 0 || !packL || !packSqm || !sizes.length) {
           contents.forEach((el) => (el.hidden = true));
           this.combo = [];
+          this.primerCombo = [];
+          this.querySelector('[data-r-primer]').hidden = true;
           this.querySelector('[data-r-litres]').textContent = '0';
           detail.textContent = product ? 'Въведете площта в м².' : 'Изберете боя и площ.';
           this.renderActions(product, tintable, color);
@@ -299,7 +304,14 @@ if (!customElements.get('hameleon-paint-calc')) {
         const total = combo.reduce((sum, p) => sum + p.count * p.size, 0);
         this.combo = combo;
 
-        detail.textContent = `${product.dataset.name} · ${this.format(area)} м² × ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л`;
+        const primerLitres = plaster ? this.renderPrimer(area, tintable, color) : 0;
+        if (!plaster) {
+          this.primerCombo = [];
+          this.querySelector('[data-r-primer]').hidden = true;
+        }
+        detail.textContent = plaster
+          ? `${product.dataset.name} · ${this.format(area)} м² × 1 ръка · нужни ${this.format(litres)} л мазилка${primerLitres ? ` + ${this.format(primerLitres)} л грунд` : ''}`
+          : `${product.dataset.name} · ${this.format(area)} м² × ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л`;
         this.animate(this.querySelector('[data-r-litres]'), total);
 
         const ratio = Math.min(litres / total, 1);
@@ -317,6 +329,61 @@ if (!customElements.get('hameleon-paint-calc')) {
 
         this.renderPrice(product, combo);
         this.renderActions(product, tintable, color);
+      }
+
+      /* Plaster goes on in one coat only: lock the coats to 1 and swap the hints; paint gets its last choice back. */
+      lockCoats(plaster) {
+        const inputs = [...this.querySelectorAll('[data-coats]')];
+        if (plaster && !this.coatsLocked) {
+          const current = this.querySelector('[data-coats]:checked');
+          this.paintCoats = current ? current.value : '2';
+          this.coatsLocked = true;
+        } else if (!plaster && this.coatsLocked) {
+          this.coatsLocked = false;
+          const back = inputs.find((i) => i.value === this.paintCoats);
+          if (back) back.checked = true;
+        }
+        inputs.forEach((input) => {
+          if (plaster) input.checked = input.value === '1';
+          input.disabled = plaster && input.value !== '1';
+          input.closest('label')?.classList.toggle('is-disabled', input.disabled);
+        });
+        this.querySelectorAll('[data-coats-hint]').forEach((el) => (el.hidden = (el.dataset.coatsHint === 'plaster') !== plaster));
+        this.querySelectorAll('[data-r-warn]').forEach((el) => (el.hidden = (el.dataset.rWarn === 'plaster') !== plaster));
+      }
+
+      /* One coat of primer, tinted to the plaster's formula, under the plaster. Returns the litres needed. */
+      renderPrimer(area, tintable, color) {
+        const box = this.querySelector('[data-r-primer]');
+        const primer = this.querySelector('[data-primer]');
+        const packL = primer ? this.num(primer.dataset.packL) : 0;
+        const packSqm = primer ? this.num(primer.dataset.packSqm) : 0;
+        const sizes = primer
+          ? String(primer.dataset.sizes || '')
+              .split(',')
+              .map((s) => this.num(s))
+              .filter((n) => n > 0)
+              .sort((a, b) => b - a)
+          : [];
+        if (!packL || !packSqm || !sizes.length) {
+          box.hidden = true;
+          this.primerCombo = [];
+          return 0;
+        }
+        const litres = area / (packSqm / packL);
+        const combo = this.packs(litres, sizes);
+        this.primerCombo = combo;
+        const tin = tintable && color && color.hex ? color.hex : '#B9975B';
+        this.querySelector('[data-r-primer-packs]').innerHTML = combo
+          .map((p, i) => `<li class="hm-pc__pack" style="animation-delay: ${i * 0.08}s">${window.Hameleon.tinHTML('Vitex Грунд', '', tin)}<strong>${p.count} ×</strong><span>${this.size(p.size)}</span></li>`)
+          .join('');
+        const variants = this.variantsOf(primer);
+        const linked = combo.every((p) => this.variantFor(variants, p.size));
+        this.querySelector('[data-r-primer-note]').textContent = linked
+          ? `${primer.dataset.name}: тонираме го в същия цвят и го добавяме в количката заедно с мазилката.`
+          : `${primer.dataset.name}: тонираме го в същия цвят в магазина. Ще го добавим към поръчката при потвърждението.`;
+        box.hidden = false;
+        return litres;
       }
 
       renderColor(product, tintable, color, catalogue) {
@@ -365,6 +432,12 @@ if (!customElements.get('hameleon-paint-calc')) {
           }
           cents += v.price * p.count;
         }
+        const primer = this.querySelector('[data-primer]');
+        const primerVariants = primer ? this.variantsOf(primer) : [];
+        for (const p of this.primerCombo || []) {
+          const v = this.variantFor(primerVariants, p.size);
+          if (v) cents += v.price * p.count;
+        }
         el.innerHTML = `<span>Ориентировъчна цена</span><strong>${(cents / 100).toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>`;
         el.hidden = !cents;
       }
@@ -396,12 +469,13 @@ if (!customElements.get('hameleon-paint-calc')) {
         const tintable = product.dataset.tintable !== 'false';
         const color = this.color;
         const area = this.num(this.areaInput.value);
+        const plaster = product.dataset.catValue === 'plaster';
         const coatsInput = this.querySelector('[data-coats]:checked');
-        const coats = coatsInput ? coatsInput.value : '2';
+        const coats = plaster ? '1' : coatsInput ? coatsInput.value : '2';
         const properties = {
           'Цвят': tintable && color && !color.white ? (color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ')) : 'Бяла (без тониране)',
           'Каталог': tintable && color && !color.white ? (color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue) : '—',
-          'Сметка': `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
+          'Сметка': plaster ? `${this.format(area)} м², 1 ръка върху грунд в същия цвят` : `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
         };
         /* Hidden (underscore) properties let the cart draw the colour swatch. */
         if (tintable && color && color.hex && !color.white) {
@@ -409,6 +483,16 @@ if (!customElements.get('hameleon-paint-calc')) {
           if (color.image) properties._image = color.image;
         }
         const items = this.combo.map((p) => ({ id: this.variantFor(variants, p.size).id, quantity: p.count, properties }));
+        /* The tinted primer rides along when a primer product is linked in Theme settings. */
+        let primerWhat = '';
+        if (plaster && this.primerCombo && this.primerCombo.length) {
+          const primerVariants = this.variantsOf(this.querySelector('[data-primer]'));
+          if (this.primerCombo.every((p) => this.variantFor(primerVariants, p.size))) {
+            const primerProps = { ...properties, 'Сметка': `${this.format(area)} м², грунд 1 ръка под мазилката` };
+            this.primerCombo.forEach((p) => items.push({ id: this.variantFor(primerVariants, p.size).id, quantity: p.count, properties: primerProps }));
+            primerWhat = ` + грунд ${this.primerCombo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ')}`;
+          }
+        }
         const button = this.querySelector('[data-r-add]');
         const note = this.querySelector('[data-r-added]');
         button.setAttribute('aria-busy', 'true');
@@ -422,7 +506,7 @@ if (!customElements.get('hameleon-paint-calc')) {
           if (!response.ok) throw new Error(data.description || data.message || 'Грешка');
           const what = this.combo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ');
           note.classList.remove('is-error');
-          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${tintable && color ? (color.white ? ', бяла без тониране' : `, цвят ${color.code}`) : ''}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
+          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${primerWhat}${tintable && color ? (color.white ? ', бяла без тониране' : `, цвят ${color.code}`) : ''}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
           note.hidden = false;
           this.refreshCartBubble();
           document.dispatchEvent(new CustomEvent('hameleon:cart-updated'));
