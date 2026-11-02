@@ -502,6 +502,36 @@
   line-height: 1.5;
 }
 
+.hm-cat__custom {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  width: 100%;
+  padding: 1.2rem 1.6rem;
+  border: 1px dashed var(--hm-border-strong);
+  border-radius: 1.4rem;
+  background: var(--hm-surface-sunken);
+  color: var(--hm-text-muted);
+  font: inherit;
+  font-size: 1.35rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s var(--hm-ease), background-color 0.2s var(--hm-ease);
+}
+
+.hm-cat__custom strong {
+  color: var(--hm-primary);
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.hm-cat__custom:hover {
+  border-color: var(--hm-primary);
+  background: #fff;
+}
+
 /* Calculator and cart summary */
 .hm-cat__calc {
   margin-top: 6.4rem;

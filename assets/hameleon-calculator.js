@@ -457,7 +457,14 @@ if (!customElements.get('hameleon-paint-calc')) {
         pick.hidden = !(needsColor && this.combo.length);
         /* Paint (not plaster) can also go in white, without a colour. */
         if (product && product.dataset.url) {
-          link.href = product.dataset.url;
+          /* The chosen colour goes along, so the product page opens with it already picked. */
+          const url = new URL(product.dataset.url, window.location.origin);
+          if (tintable && color && !color.white) {
+            url.searchParams.set('color', color.code);
+            if (color.custom) url.searchParams.set('custom', '1');
+            else url.searchParams.set('tab', color.collection ? window.Hameleon.vitex.collection(color.collection).key : 'motivo');
+          }
+          link.href = url.pathname + url.search;
           link.hidden = false;
         } else {
           link.hidden = true;
