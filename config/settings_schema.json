@@ -81,7 +81,7 @@
         "type": "text",
         "id": "hm_primer_name",
         "label": "Primer name",
-        "default": "Грунд по формулата на мазилката"
+        "default": "Vitex Motivo Primer"
       },
       {
         "type": "text",
@@ -93,7 +93,7 @@
         "type": "text",
         "id": "hm_primer_sqm",
         "label": "Coverage: … covers this many m²",
-        "default": "10"
+        "default": "8"
       },
       {
         "type": "text",
@@ -106,7 +106,7 @@
         "type": "product",
         "id": "hm_primer_product",
         "label": "Primer product (for add to cart)",
-        "info": "Variants named by size, e.g. \"1 л\". Without it the primer is shown but not added to the cart."
+        "info": "Variants named by size, e.g. \"1 л\". Empty = product motivo-primer."
       }
     ]
   },

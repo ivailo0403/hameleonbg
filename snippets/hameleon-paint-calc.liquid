@@ -35,6 +35,18 @@
   if has_interior
     assign first_cat = 'interior'
   endif
+  comment
+    Primer for plaster: the product in Theme settings, else the product with handle motivo-primer.
+  endcomment
+  assign primer = settings.hm_primer_product
+  if primer == blank
+    assign primer = all_products['motivo-primer']
+  endif
+  assign primer_name = settings.hm_primer_name | default: 'Vitex Motivo Primer'
+  assign primer_l = settings.hm_primer_litres | default: '1'
+  assign primer_sqm = settings.hm_primer_sqm | default: '8'
+  assign primer_sizes = settings.hm_primer_sizes | default: '1, 3'
+  assign is_primer = false
   if product != blank
     assign match = null
     assign title_down = product.title | downcase
@@ -79,15 +91,23 @@
         assign p_tintable = false
       endif
     endif
+    comment
+      The primer's own page: one coat, its own coverage and sizes, Motivo colours.
+    endcomment
+    if primer != blank and product.id == primer.id
+      assign is_primer = true
+      assign p_cat = 'interior'
+      assign p_pack_l = primer_l
+      assign p_pack_sqm = primer_sqm
+      assign p_sizes = primer_sizes
+    endif
   endif
-  assign primer = settings.hm_primer_product
-  assign primer_name = settings.hm_primer_name | default: 'Грунд по формулата на мазилката'
-  assign primer_l = settings.hm_primer_litres | default: '1'
-  assign primer_sqm = settings.hm_primer_sqm | default: '10'
-  assign primer_sizes = settings.hm_primer_sizes | default: '1, 3'
   assign default_coats = section.settings.default_coats | plus: 0
   if default_coats < 1
     assign default_coats = 2
+  endif
+  if is_primer
+    assign default_coats = 1
   endif
 -%}
 
@@ -119,6 +139,7 @@
         hidden
         data-product
         data-cat-value="{{ p_cat }}"
+        {% if is_primer %}data-catalogue="Motivo" data-one-coat{% endif %}
         data-name="{{ product.title | escape }}"
         data-pack-l="{{ p_pack_l | escape }}"
         data-pack-sqm="{{ p_pack_sqm | escape }}"
