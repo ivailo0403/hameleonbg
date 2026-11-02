@@ -201,6 +201,7 @@ if (!customElements.get('hameleon-paint-calc')) {
 
       /* Which catalogue fits the chosen product: plasters use Motivo, paints use Vitex. */
       catalogueFor(product) {
+        if (product && product.dataset.catalogue) return product.dataset.catalogue;
         return product && product.dataset.catValue === 'plaster' ? 'Motivo' : 'Vitex';
       }
 
@@ -254,9 +255,11 @@ if (!customElements.get('hameleon-paint-calc')) {
         const product = this.querySelector('[data-product]:checked');
         const area = this.num(this.areaInput.value);
         const plaster = Boolean(product && product.dataset.catValue === 'plaster');
-        this.lockCoats(plaster);
+        /* The plaster primer also goes on in one coat. */
+        const oneCoat = plaster || Boolean(product && product.hasAttribute('data-one-coat'));
+        this.lockCoats(oneCoat);
         const coatsInput = this.querySelector('[data-coats]:checked');
-        const coats = plaster ? 1 : coatsInput ? parseInt(coatsInput.value, 10) : 2;
+        const coats = oneCoat ? 1 : coatsInput ? parseInt(coatsInput.value, 10) : 2;
         const contents = this.querySelectorAll('[data-r-content]');
         const detail = this.querySelector('[data-r-detail]');
         const tintable = product && product.dataset.tintable !== 'false';
@@ -475,7 +478,11 @@ if (!customElements.get('hameleon-paint-calc')) {
         const properties = {
           'Цвят': tintable && color && !color.white ? (color.custom ? color.code : [color.code, color.name].filter(Boolean).join(' ')) : 'Бяла (без тониране)',
           'Каталог': tintable && color && !color.white ? (color.collection ? `${color.catalogue} ${color.collection}` : color.catalogue) : '—',
-          'Сметка': plaster ? `${this.format(area)} м², 1 ръка върху грунд в същия цвят` : `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
+          'Сметка': plaster
+            ? `${this.format(area)} м², 1 ръка върху грунд в същия цвят`
+            : product.hasAttribute('data-one-coat')
+              ? `${this.format(area)} м², грунд 1 ръка под мазилката`
+              : `${this.format(area)} м², ${coats} ${coats === '1' ? 'ръка' : 'ръце'}`,
         };
         /* Hidden (underscore) properties let the cart draw the colour swatch. */
         if (tintable && color && color.hex && !color.white) {
