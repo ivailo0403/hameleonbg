@@ -51,20 +51,15 @@ if (!customElements.get('hameleon-paint-calc')) {
           const packL = this.num(input.dataset.packL);
           const packSqm = this.num(input.dataset.packSqm);
           if (label && packL && packSqm) label.textContent = `${this.format(packSqm / packL)} м²/л${holder ? '' : ' с една ръка'}`;
-          /* On a product page without a matching calculator block, the sizes come from the variant names. */
-          if (!String(input.dataset.sizes || '').trim()) {
+          /* On a product page the variants decide the sizes (e.g. "1 л", "3 л", "9 л"); a calculator block's list is the fallback. */
+          const variantSizes = holder ? [] : [...new Set(this.variantsOf(input).map((v) => this.litresIn(v.title)).filter((n) => n > 0))];
+          if (variantSizes.length) {
+            input.dataset.sizes = variantSizes.join(',');
+          } else if (!String(input.dataset.sizes || '').trim()) {
             const sizes = this.variantsOf(input)
               .map((v) => this.litresIn(v.title))
               .filter((n) => n > 0);
             input.dataset.sizes = [...new Set(sizes)].join(',');
-          } else if (!holder) {
-            /* On a product page, offer only the sizes this product is sold in. */
-            const variants = this.variantsOf(input);
-            const sold = String(input.dataset.sizes)
-              .split(',')
-              .map((s) => this.num(s))
-              .filter((n) => n > 0 && this.variantFor(variants, n));
-            if (sold.length) input.dataset.sizes = sold.join(',');
           }
           /* Sizes sold only in white (e.g. Vito 15 л) are never tinted, so a tintable paint leaves them out. */
           const white = String(input.dataset.whiteSizes || '')
