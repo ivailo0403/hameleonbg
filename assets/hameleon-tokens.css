@@ -775,6 +775,30 @@ a.hm-card:hover,
   color: var(--hm-text-muted);
 }
 
+.hm-pcol__other {
+  display: block;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1.45;
+  color: var(--hm-text-muted);
+  text-align: left;
+  cursor: pointer;
+}
+
+.hm-pcol__other[hidden] {
+  display: none;
+}
+
+.hm-pcol__other strong {
+  color: var(--hm-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .hm-pcol__msg.is-error {
   color: var(--hm-sale);
   font-weight: 600;

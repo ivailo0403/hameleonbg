@@ -48,6 +48,12 @@ if (!customElements.get('hameleon-product-color')) {
           );
         }
 
+        /* A typed code that is also in our catalogue may still be from another fan deck: let the visitor say so. */
+        this.querySelector('[data-as-custom]').addEventListener('click', (event) => {
+          const code = event.currentTarget.dataset.code;
+          if (code) document.dispatchEvent(new CustomEvent('hameleon:color', { detail: window.Hameleon.customColor(code) }));
+        });
+
         this.querySelector('[data-code-form]').addEventListener('submit', (event) => {
           event.preventDefault();
           this.applyCode(this.querySelector('[data-code-input]').value);
@@ -169,12 +175,14 @@ if (!customElements.get('hameleon-product-color')) {
         /* A code from another brand's fan deck (RAL, NCS, …) is fine too: we tint by it in the store. */
         const color = this.find(value) || window.Hameleon.customColor(value);
         this.querySelector('[data-code-input]').value = '';
+        this.typed = color.custom ? '' : value;
         /* The studio paints the room and tells the calculator; without it, this box takes the colour itself. */
         if (document.querySelector('hameleon-catalogue')) {
           document.dispatchEvent(new CustomEvent('hameleon:pick-code', { detail: { code: color.code, color } }));
         } else {
           document.dispatchEvent(new CustomEvent('hameleon:color', { detail: color }));
         }
+        this.typed = '';
       }
 
       set(color) {
@@ -211,6 +219,11 @@ if (!customElements.get('hameleon-product-color')) {
           name.textContent = color.catalogue === 'Motivo' ? `${color.code} · ${color.name}` : `№ ${color.code} · ${color.name || color.collection}`;
           this.message('', false);
         }
+        const other = this.querySelector('[data-as-custom]');
+        const typed = !color.custom && !color.white ? (this.typed || '').toUpperCase() : '';
+        other.hidden = !typed;
+        other.dataset.code = typed;
+        other.innerHTML = typed ? `Кодът „${typed.replace(/[&<>"]/g, '')}“ е от друг каталог? <strong>Поръчайте по него</strong>` : '';
         this.querySelector('[data-open-label]').textContent = 'Смени';
         this.classList.add('has-color');
         this.querySelector('[data-float-chip]').style.background = chip.style.background;
