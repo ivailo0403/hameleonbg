@@ -246,6 +246,13 @@ if (!customElements.get('hameleon-catalogue')) {
               .join('')
           : `<div class="hm-cat__empty"><p>Няма такъв цвят в каталога ${this.tab === 'motivo' ? 'Motivo' : `Vitex ${window.Hameleon.vitex.collection(this.tab).name}`}. Ако кодът е от друг каталог (RAL, NCS, друга марка), пак можем да тонираме по него.</p>` +
             `<button type="button" class="hm-btn hm-btn--primary" data-custom-code>Поръчайте с код „${this.escape(this.query.toUpperCase())}“</button></div>`;
+        /* Any text works as a code: a colour from another fan deck (RAL, NCS, another brand) or a description. */
+        if (items.length && q) {
+          this.grid.insertAdjacentHTML(
+            'afterbegin',
+            `<button type="button" class="hm-cat__custom" data-custom-code><span>Цветът е от друг каталог? <strong>Поръчайте с код „${this.escape(this.query.toUpperCase())}“</strong></span><span aria-hidden="true">→</span></button>`
+          );
+        }
         if (items.length > shown.length) {
           this.grid.insertAdjacentHTML(
             'beforeend',
