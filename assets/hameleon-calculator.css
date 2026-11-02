@@ -870,3 +870,27 @@
 .hm-pc__mode-dot--tint {
   background: conic-gradient(#fed426, #fe9a28, #f89495, #d771af, #0095ab, #217553, #fed426);
 }
+
+/* Plaster: coats locked to 1, tinted primer under the plaster */
+.hm-pc__opt.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hm-pc__opt.is-disabled .hm-pc__seg-face { pointer-events: none; }
+
+.hm-pc__primer[hidden],
+.hm-pc__warn[hidden],
+.hm-pc__hint[hidden] { display: none; }
+
+.hm-pc__primer {
+  padding-top: 1.6rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.28);
+}
+
+.hm-pc__primer-note {
+  margin: 1rem 0 0;
+  font-size: 1.3rem;
+  line-height: 1.45;
+  opacity: 0.85;
+}
