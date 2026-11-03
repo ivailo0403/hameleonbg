@@ -378,9 +378,9 @@ if (!customElements.get('hameleon-paint-calc')) {
         }
         const litres = area / (packSqm / packL);
         const combo = this.packs(litres, sizes);
-        /* Ticked by default: the primer goes into the cart with the plaster unless the visitor already has some. */
+        /* Unticked by default: the visitor ticks it to add the tinted primer with the plaster. */
         const toggle = this.querySelector('[data-r-primer-on]');
-        const on = !toggle || toggle.checked;
+        const on = Boolean(toggle && toggle.checked);
         box.classList.toggle('is-off', !on);
         this.primerCombo = on ? combo : [];
         const tin = tintable && color && color.hex ? color.hex : '#B9975B';
@@ -390,7 +390,7 @@ if (!customElements.get('hameleon-paint-calc')) {
         const variants = this.variantsOf(primer);
         const linked = combo.every((p) => this.variantFor(variants, p.size));
         this.querySelector('[data-r-primer-note]').textContent = !on
-          ? 'Без грунд. Мазилката се полага върху една ръка грунд в същия цвят: махнете отметката само ако вече имате такъв.'
+          ? `По желание: ${primer.dataset.name}, тониран в цвета на мазилката. Мазилката се полага върху една ръка грунд в същия цвят: отметнете, ако нямате такъв.`
           : linked
             ? `${primer.dataset.name}: тонираме го в същия цвят и го добавяме в количката заедно с мазилката.`
             : `${primer.dataset.name}: тонираме го в същия цвят в магазина. Ще го добавим към поръчката при потвърждението.`;
