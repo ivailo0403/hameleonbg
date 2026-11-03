@@ -370,18 +370,24 @@ if (!customElements.get('hameleon-paint-calc')) {
         }
         const litres = area / (packSqm / packL);
         const combo = this.packs(litres, sizes);
-        this.primerCombo = combo;
+        /* Ticked by default: the primer goes into the cart with the plaster unless the visitor already has some. */
+        const toggle = this.querySelector('[data-r-primer-on]');
+        const on = !toggle || toggle.checked;
+        box.classList.toggle('is-off', !on);
+        this.primerCombo = on ? combo : [];
         const tin = tintable && color && color.hex ? color.hex : '#B9975B';
         this.querySelector('[data-r-primer-packs]').innerHTML = combo
           .map((p, i) => `<li class="hm-pc__pack" style="animation-delay: ${i * 0.08}s">${window.Hameleon.tinHTML('Vitex Грунд', '', tin)}<strong>${p.count} ×</strong><span>${this.size(p.size)}</span></li>`)
           .join('');
         const variants = this.variantsOf(primer);
         const linked = combo.every((p) => this.variantFor(variants, p.size));
-        this.querySelector('[data-r-primer-note]').textContent = linked
-          ? `${primer.dataset.name}: тонираме го в същия цвят и го добавяме в количката заедно с мазилката.`
-          : `${primer.dataset.name}: тонираме го в същия цвят в магазина. Ще го добавим към поръчката при потвърждението.`;
+        this.querySelector('[data-r-primer-note]').textContent = !on
+          ? 'Без грунд. Мазилката се полага върху една ръка грунд в същия цвят: махнете отметката само ако вече имате такъв.'
+          : linked
+            ? `${primer.dataset.name}: тонираме го в същия цвят и го добавяме в количката заедно с мазилката.`
+            : `${primer.dataset.name}: тонираме го в същия цвят в магазина. Ще го добавим към поръчката при потвърждението.`;
         box.hidden = false;
-        return litres;
+        return on ? litres : 0;
       }
 
       renderColor(product, tintable, color, catalogue) {
