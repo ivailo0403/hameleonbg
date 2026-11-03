@@ -107,6 +107,41 @@
         "id": "hm_primer_product",
         "label": "Primer product (for add to cart)",
         "info": "Variants named by size, e.g. \"1 л\". Empty = product motivo-primer."
+      },
+      {
+        "type": "header",
+        "content": "Paint primer (calculator, optional)"
+      },
+      {
+        "type": "text",
+        "id": "hm_base_primer_name",
+        "label": "Primer name",
+        "default": "Vitex Primer 100% Acrylic"
+      },
+      {
+        "type": "text",
+        "id": "hm_base_primer_litres",
+        "label": "Coverage: one pack of … litres",
+        "default": "1"
+      },
+      {
+        "type": "text",
+        "id": "hm_base_primer_sqm",
+        "label": "Coverage: … covers this many m²",
+        "default": "20"
+      },
+      {
+        "type": "text",
+        "id": "hm_base_primer_sizes",
+        "label": "Primer pack sizes, litres",
+        "default": "0.75, 3",
+        "info": "Comma separated, dot for decimals."
+      },
+      {
+        "type": "product",
+        "id": "hm_base_primer_product",
+        "label": "Primer product (for add to cart)",
+        "info": "Not tinted. Offered under paint as an unticked option. Empty = product vitex-primer-100-acrylic."
       }
     ]
   },
