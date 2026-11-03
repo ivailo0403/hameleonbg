@@ -223,7 +223,7 @@ if (!customElements.get('hameleon-paint-calc')) {
 
       variantsOf(product) {
         try {
-          return JSON.parse(product.dataset.variants || '[]');
+          return JSON.parse((product && product.dataset.variants) || '[]');
         } catch (e) {
           return [];
         }
@@ -289,7 +289,9 @@ if (!customElements.get('hameleon-paint-calc')) {
           contents.forEach((el) => (el.hidden = true));
           this.combo = [];
           this.primerCombo = [];
+          this.baseCombo = [];
           this.querySelector('[data-r-primer]').hidden = true;
+          this.querySelector('[data-r-base]').hidden = true;
           this.querySelector('[data-r-litres]').textContent = '0';
           detail.textContent = product ? 'Въведете площта в м².' : 'Изберете боя и площ.';
           this.renderActions(product, tintable, color);
@@ -307,9 +309,15 @@ if (!customElements.get('hameleon-paint-calc')) {
           this.primerCombo = [];
           this.querySelector('[data-r-primer]').hidden = true;
         }
+        /* Paint (not plaster, not a primer page) can take an optional untinted primer, unticked by default. */
+        const baseLitres = !plaster && !oneCoat ? this.renderBasePrimer(area) : 0;
+        if (plaster || oneCoat) {
+          this.baseCombo = [];
+          this.querySelector('[data-r-base]').hidden = true;
+        }
         detail.textContent = plaster
           ? `${product.dataset.name} · ${this.format(area)} м² × 1 ръка · нужни ${this.format(litres)} л мазилка${primerLitres ? ` + ${this.format(primerLitres)} л грунд` : ''}`
-          : `${product.dataset.name} · ${this.format(area)} м² × ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л`;
+          : `${product.dataset.name} · ${this.format(area)} м² × ${coats} ${coats === 1 ? 'ръка' : 'ръце'} · нужни ${this.format(litres)} л${baseLitres ? ` + ${this.format(baseLitres)} л грунд` : ''}`;
         this.animate(this.querySelector('[data-r-litres]'), total);
 
         const ratio = Math.min(litres / total, 1);
@@ -390,6 +398,42 @@ if (!customElements.get('hameleon-paint-calc')) {
         return on ? litres : 0;
       }
 
+      /* Optional untinted primer before painting (e.g. Vitex Primer 100% Acrylic): one coat, only when ticked. Returns the litres. */
+      renderBasePrimer(area) {
+        const box = this.querySelector('[data-r-base]');
+        const primer = this.querySelector('[data-base-primer]');
+        const packL = primer ? this.num(primer.dataset.packL) : 0;
+        const packSqm = primer ? this.num(primer.dataset.packSqm) : 0;
+        const sizes = primer
+          ? String(primer.dataset.sizes || '')
+              .split(',')
+              .map((s) => this.num(s))
+              .filter((n) => n > 0)
+              .sort((a, b) => b - a)
+          : [];
+        const variants = primer ? this.variantsOf(primer) : [];
+        const litres = packL && packSqm ? area / (packSqm / packL) : 0;
+        const combo = litres ? this.packs(litres, sizes) : [];
+        /* Only offered when the primer can actually go in the cart. */
+        if (!combo.length || !combo.every((p) => this.variantFor(variants, p.size))) {
+          box.hidden = true;
+          this.baseCombo = [];
+          return 0;
+        }
+        const toggle = this.querySelector('[data-r-base-on]');
+        const on = Boolean(toggle && toggle.checked);
+        box.classList.toggle('is-off', !on);
+        this.baseCombo = on ? combo : [];
+        this.querySelector('[data-r-base-packs]').innerHTML = combo
+          .map((p, i) => `<li class="hm-pc__pack" style="animation-delay: ${i * 0.08}s">${window.Hameleon.tinHTML('Vitex Грунд', '', '#E4E8E6')}<strong>${p.count} ×</strong><span>${this.size(p.size)}</span></li>`)
+          .join('');
+        this.querySelector('[data-r-base-note]').textContent = on
+          ? `${primer.dataset.name}: нетониран, разрежда се 1:4 с вода, около ${this.format(packSqm / packL)} м²/л. Добавяме го в количката заедно с боята.`
+          : `По желание: ${primer.dataset.name} за нови, гипсирани или силно попиващи стени. Разрежда се 1:4 с вода.`;
+        box.hidden = false;
+        return on ? litres : 0;
+      }
+
       renderColor(product, tintable, color, catalogue) {
         const box = this.querySelector('[data-r-color]');
         const chip = this.querySelector('[data-r-color-chip]');
@@ -440,6 +484,11 @@ if (!customElements.get('hameleon-paint-calc')) {
         const primerVariants = primer ? this.variantsOf(primer) : [];
         for (const p of this.primerCombo || []) {
           const v = this.variantFor(primerVariants, p.size);
+          if (v) cents += v.price * p.count;
+        }
+        const basePrimerVariants = this.variantsOf(this.querySelector('[data-base-primer]'));
+        for (const p of this.baseCombo || []) {
+          const v = this.variantFor(basePrimerVariants, p.size);
           if (v) cents += v.price * p.count;
         }
         el.innerHTML = `<span>Ориентировъчна цена</span><strong>${(cents / 100).toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>`;
@@ -508,6 +557,15 @@ if (!customElements.get('hameleon-paint-calc')) {
             primerWhat = ` + грунд ${this.primerCombo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ')}`;
           }
         }
+        /* The untinted paint primer goes in without colour properties, only when ticked. */
+        if (!plaster && this.baseCombo && this.baseCombo.length) {
+          const baseVariants = this.variantsOf(this.querySelector('[data-base-primer]'));
+          if (this.baseCombo.every((p) => this.variantFor(baseVariants, p.size))) {
+            const baseProps = { 'Сметка': `${this.format(area)} м², 1 ръка грунд преди боядисване (1:4 с вода)` };
+            this.baseCombo.forEach((p) => items.push({ id: this.variantFor(baseVariants, p.size).id, quantity: p.count, properties: baseProps }));
+            primerWhat += ` + грунд ${this.baseCombo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ')}`;
+          }
+        }
         const button = this.querySelector('[data-r-add]');
         const note = this.querySelector('[data-r-added]');
         button.setAttribute('aria-busy', 'true');
@@ -521,7 +579,7 @@ if (!customElements.get('hameleon-paint-calc')) {
           if (!response.ok) throw new Error(data.description || data.message || 'Грешка');
           const what = this.combo.map((p) => `${p.count} × ${this.size(p.size)}`).join(' + ');
           note.classList.remove('is-error');
-          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${primerWhat}${tintable && color ? (color.white ? ', бяла без тониране' : `, цвят ${color.code}`) : ''}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
+          note.innerHTML = `Добавено: ${what} ${product.dataset.name}${tintable && color ? (color.white ? ', бяла без тониране' : `, цвят ${color.code}`) : ''}${primerWhat}. <a href="${this.dataset.cartUrl || '/cart'}">Към количката →</a>`;
           note.hidden = false;
           this.refreshCartBubble();
           document.dispatchEvent(new CustomEvent('hameleon:cart-updated'));
