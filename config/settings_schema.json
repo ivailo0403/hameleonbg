@@ -93,7 +93,7 @@
         "type": "text",
         "id": "hm_primer_sqm",
         "label": "Coverage: … covers this many m²",
-        "default": "8"
+        "default": "10"
       },
       {
         "type": "text",
