@@ -888,6 +888,47 @@
   border-top: 1px dashed rgba(255, 255, 255, 0.28);
 }
 
+.hm-pc__primer-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1.2rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.hm-pc__primer-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.hm-pc__primer-check {
+  flex: 0 0 2.2rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0.6rem;
+  background: transparent;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.hm-pc__primer-toggle input:checked + .hm-pc__primer-check {
+  border-color: var(--hm-brand-green, #19a54a);
+  background: var(--hm-brand-green, #19a54a) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 1.6rem no-repeat;
+}
+
+.hm-pc__primer-toggle input:focus-visible + .hm-pc__primer-check {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.hm-pc__primer.is-off .hm-pc__packs {
+  opacity: 0.35;
+}
+
 .hm-pc__primer-note {
   margin: 1rem 0 0;
   font-size: 1.3rem;
